@@ -36,7 +36,7 @@
 		</div>
 
 		<!-- Action Cards -->
-		<div class="grid grid-cols-1 gap-10 lg:grid-cols-3">
+		<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
 			{#each actions as action (action.title)}
 				<div
 					class="group flex flex-col rounded-2xl border border-outline-variant/10 bg-surface-container-lowest/5 backdrop-blur-md transition-all duration-500 hover:shadow-[0_0_40px_rgba(57,81,193,0.12)]"
@@ -45,10 +45,14 @@
 					<div
 						class="flex h-56 items-center justify-center overflow-hidden rounded-t-2xl bg-linear-to-br from-brand-surface to-[#2a2a2a]"
 					>
-						<img src="https://placehold.co/1600x900" alt="" />
+						<img
+							src="https://placehold.co/1600x900"
+							alt={action.title}
+							class="h-full w-full object-cover"
+						/>
 					</div>
 
-					<div class="flex flex-1 flex-col p-8">
+					<div class="flex flex-1 flex-col px-4 py-8">
 						<!-- Tag & Date -->
 						<div class="mb-6 flex items-start justify-between">
 							<span
