@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap');
+
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  /* Brand Colors */
+  --color-primary: #3951c1;
+  --color-primary-dim: #2b44b4;
+  --color-primary-container: #879aff;
+  --color-primary-fixed: #879aff;
+  --color-primary-fixed-dim: #758bfd;
+  --color-on-primary: #f2f1ff;
+  --color-on-primary-container: #00166b;
+  --color-on-primary-fixed: #000000;
+  --color-on-primary-fixed-variant: #001d82;
+
+  --color-secondary: #534db6;
+  --color-secondary-dim: #4741a9;
+  --color-secondary-container: #d0cdff;
+  --color-secondary-fixed: #d0cdff;
+  --color-secondary-fixed-dim: #c1bdff;
+  --color-on-secondary: #f5f1ff;
+  --color-on-secondary-container: #3e37a0;
+  --color-on-secondary-fixed: #2a208d;
+  --color-on-secondary-fixed-variant: #4842aa;
+
+  --color-tertiary: #923881;
+  --color-tertiary-dim: #842c74;
+  --color-tertiary-container: #fb92e1;
+  --color-tertiary-fixed: #fb92e1;
+  --color-tertiary-fixed-dim: #ec85d3;
+  --color-on-tertiary: #ffeef6;
+  --color-on-tertiary-container: #620957;
+  --color-on-tertiary-fixed: #3e0036;
+  --color-on-tertiary-fixed-variant: #6d1660;
+
+  --color-error: #b41340;
+  --color-error-dim: #a70138;
+  --color-error-container: #f74b6d;
+  --color-on-error: #ffefef;
+  --color-on-error-container: #510017;
+
+  --color-surface: #f9f5ff;
+  --color-surface-dim: #d3d0ff;
+  --color-surface-bright: #f9f5ff;
+  --color-surface-variant: #dcd9ff;
+  --color-surface-tint: #3951c1;
+  --color-surface-container: #e9e5ff;
+  --color-surface-container-low: #f2eeff;
+  --color-surface-container-high: #e3dfff;
+  --color-surface-container-highest: #dcd9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #2c2a51;
+  --color-on-surface-variant: #7f7da1;
+
+  --color-outline: #75729e;
+  --color-outline-variant: #aba8d7;
+  --color-background: #f9f5ff;
+  --color-on-background: #2c2a51;
+
+  --color-inverse-surface: #0b082f;
+  --color-inverse-on-surface: #9b98c6;
+  --color-inverse-primary: #7288fb;
+
+  /* Brand shorthand */
+  --color-brand-dark: #121212;
+  --color-brand-surface: #1e1e1e;
+  --color-brand-text: #e0e0e0;
+  --color-brand-muted: #b0b0b0;
+
+  /* Fonts */
+  --font-headline: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-label: 'Inter', sans-serif;
+}
+
+/* Base body styles for dark theme */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Scroll margin for anchor links (accounts for sticky navbar) */
+[id] {
+  scroll-margin-top: 6rem;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}

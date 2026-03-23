@@ -1,0 +1,701 @@
+<!doctype html>
+
+<html class="dark" lang="pl">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<title>VIVIENA Sleek Dark</title>
+		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet"
+		/>
+		<script id="tailwind-config">
+			tailwind.config = {
+				darkMode: 'class',
+				theme: {
+					extend: {
+						colors: {
+							'on-tertiary-container': '#620957',
+							'surface-bright': '#f9f5ff',
+							'inverse-surface': '#0b082f',
+							'error-dim': '#a70138',
+							error: '#b41340',
+							'on-secondary-container': '#3e37a0',
+							'primary-fixed-dim': '#758bfd',
+							outline: '#75729e',
+							'surface-container': '#e9e5ff',
+							'tertiary-container': '#fb92e1',
+							'on-primary': '#f2f1ff',
+							primary: '#3951c1',
+							'on-primary-container': '#00166b',
+							'surface-dim': '#d3d0ff',
+							'secondary-container': '#d0cdff',
+							'secondary-fixed': '#d0cdff',
+							background: '#f9f5ff',
+							'on-surface': '#2c2a51',
+							'secondary-dim': '#4741a9',
+							'on-secondary': '#f5f1ff',
+							'on-secondary-fixed': '#2a208d',
+							'on-tertiary-fixed-variant': '#6d1660',
+							'error-container': '#f74b6d',
+							'surface-variant': '#dcd9ff',
+							'inverse-primary': '#7288fb',
+							'on-tertiary': '#ffeef6',
+							'primary-fixed': '#879aff',
+							'on-secondary-fixed-variant': '#4842aa',
+							'on-tertiary-fixed': '#3e0036',
+							'secondary-fixed-dim': '#c1bdff',
+							'surface-container-low': '#f2eeff',
+							secondary: '#534db6',
+							'surface-tint': '#3951c1',
+							surface: '#f9f5ff',
+							tertiary: '#923881',
+							'primary-container': '#879aff',
+							'on-primary-fixed-variant': '#001d82',
+							'on-background': '#2c2a51',
+							'on-primary-fixed': '#000000',
+							'surface-container-lowest': '#ffffff',
+							'surface-container-highest': '#dcd9ff',
+							'tertiary-fixed-dim': '#ec85d3',
+							'outline-variant': '#aba8d7',
+							'primary-dim': '#2b44b4',
+							'on-surface-variant': '#595781',
+							'on-error-container': '#510017',
+							'surface-container-high': '#e3dfff',
+							'on-error': '#ffefef',
+							'tertiary-fixed': '#fb92e1',
+							'tertiary-dim': '#842c74',
+							'inverse-on-surface': '#9b98c6'
+						},
+						fontFamily: {
+							headline: ['Manrope'],
+							body: ['Inter'],
+							label: ['Inter']
+						},
+						borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' }
+					}
+				}
+			};
+		</script>
+		<style>
+			.material-symbols-outlined {
+				font-variation-settings:
+					'FILL' 0,
+					'wght' 400,
+					'GRAD' 0,
+					'opsz' 24;
+			}
+			body {
+				background-color: #121212;
+			}
+		</style>
+	</head>
+	<body
+		class="font-body selection:bg-primary selection:text-on-primary bg-[#121212] text-[#e0e0e0]"
+	>
+		<!-- Top Navigation Shell -->
+		<nav class="docked full-width no-border flat no-shadows sticky top-0 z-50 bg-[#1e1e1e]">
+			<div class="mx-auto flex w-full max-w-[1440px] items-center justify-between px-8 py-6">
+				<div class="flex items-center gap-4">
+					<img
+						alt="VIVIENA Logo"
+						class="h-10 w-auto"
+						data-alt="Official VIVIENA association minimalist logo"
+						src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_BAkMtxRd0PHnys3gGtbx-MVpmrUywglbfSWE2LKMpjOdNgewcArtzg0oNAC8rBxGS54O4YPIdJvyPdGSjUqH3UMgScCp8z82iTKFtc7Pdqgnm7SufAtaWx4VK0VSbq6OaDuF1XCNcVPpCoUSVJZ9xMzkUXrMTV_sShCPwOxG7dGcudp6zSuYtH-Wo1t-typkgkZB1jXSrV80eDU5fJo9_Jto65bHgWNbpjckNU89wkO70qfqjTqzqxUtB6w0Q-KR-74UdFwZgKqj"
+					/>
+					<span class="font-headline text-2xl font-black tracking-tighter text-[#879aff] uppercase"
+						>VIVIENA</span
+					>
+				</div>
+				<div class="hidden items-center gap-8 md:flex">
+					<a
+						class="font-headline border-b-2 border-[#879aff] pb-1 font-extrabold text-[#879aff] transition-all duration-300"
+						href="#"
+						>Start</a
+					>
+					<a
+						class="font-headline font-medium text-[#e0e0e0] opacity-80 transition-all duration-300 hover:text-[#879aff]"
+						href="#"
+						>O nas</a
+					>
+					<a
+						class="font-headline font-medium text-[#e0e0e0] opacity-80 transition-all duration-300 hover:text-[#879aff]"
+						href="#"
+						>Obszary działań</a
+					>
+					<a
+						class="font-headline font-medium text-[#e0e0e0] opacity-80 transition-all duration-300 hover:text-[#879aff]"
+						href="#"
+						>Nasze działania</a
+					>
+					<a
+						class="font-headline font-medium text-[#e0e0e0] opacity-80 transition-all duration-300 hover:text-[#879aff]"
+						href="#"
+						>Zespół</a
+					>
+					<a
+						class="font-headline font-medium text-[#e0e0e0] opacity-80 transition-all duration-300 hover:text-[#879aff]"
+						href="#"
+						>Dokumenty</a
+					>
+					<a
+						class="font-headline font-medium text-[#e0e0e0] opacity-80 transition-all duration-300 hover:text-[#879aff]"
+						href="#"
+						>Kontakt</a
+					>
+				</div>
+				<button
+					class="from-primary to-primary-container text-on-primary-container font-headline scale-105 rounded-full bg-gradient-to-br px-6 py-2 font-bold transition-transform"
+				>
+					Dołącz do nas
+				</button>
+			</div>
+		</nav>
+		<main>
+			<!-- Hero Section -->
+			<section class="relative flex min-h-[819px] items-center overflow-hidden px-8 py-24">
+				<div class="z-10 mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-12 lg:grid-cols-12">
+					<div class="flex flex-col justify-center lg:col-span-7">
+						<span class="label-md text-tertiary-fixed mb-6 font-semibold tracking-[0.2em] uppercase"
+							>Architectural Academic NGO</span
+						>
+						<h1
+							class="display-lg font-headline text-surface-bright mb-8 text-6xl leading-none font-black tracking-tighter md:text-8xl"
+						>
+							Tworzymy
+							<span
+								class="from-primary-fixed to-tertiary-fixed bg-gradient-to-r bg-clip-text text-transparent"
+								>przyszłość</span
+							>
+							młodych.
+						</h1>
+						<p class="body-lg text-on-surface-variant mb-10 max-w-xl text-xl leading-relaxed">
+							VIVIENA to przestrzeń, gdzie profesjonalizm spotyka się z energią. Budujemy solidne
+							fundamenty dla innowacyjnych inicjatyw młodzieżowych.
+						</p>
+						<div class="flex flex-wrap gap-4">
+							<button
+								class="from-primary to-primary-container text-on-primary-container font-headline rounded-full bg-gradient-to-br px-8 py-4 text-lg font-bold transition-all hover:scale-105"
+							>
+								Poznaj naszą misję
+							</button>
+							<button
+								class="border-outline-variant border-opacity-20 text-surface-bright font-headline hover:bg-surface-container-low rounded-full border bg-transparent px-8 py-4 text-lg font-bold transition-all"
+							>
+								Nasze projekty
+							</button>
+						</div>
+					</div>
+					<div class="relative hidden lg:col-span-5 lg:block">
+						<div
+							class="from-primary/20 to-tertiary/20 absolute inset-0 rounded-full bg-gradient-to-tr blur-3xl"
+						></div>
+						<div
+							class="bg-surface-container-low/30 border-outline-variant border-opacity-10 relative rotate-3 rounded-2xl border p-2 backdrop-blur-xl"
+						>
+							<img
+								alt="Team Work"
+								class="rounded-xl grayscale transition-all duration-700 hover:grayscale-0"
+								data-alt="Modern office collaborative youth workshop setting"
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgevg5JlddNFXfYk841p-NNQuPD5TjZjVF73ffV8FaVQ2iZLDlXJt2VjrqSQvEZx2gJIusI7MU7U_SHUkXNo1wf1hpAuNTR4A0Vnmh0utiU4y6WQXX2G6dnJKk0WkvSooMxtePQ1Ztc-SvJbH71uMTjbUBa9FXiVtsE1iiZFaLwoP4cbkOqBBDhZdyt2EmxX_Dbd-mMTSOx9nSpAYm45dK-MmVdkrQ5wpPDK4hUfq9isw7coaZCrc4LtDalVvfrhWJ-y3_Y0E-Mfaa"
+							/>
+						</div>
+					</div>
+				</div>
+			</section>
+			<!-- Obszary Działań (Areas of action) - Bento Grid -->
+			<section class="bg-[#1a1a1a] px-8 py-24">
+				<div class="mx-auto max-w-[1440px]">
+					<div class="mb-16">
+						<span
+							class="label-md text-primary-fixed mb-4 block font-semibold tracking-[0.2em] uppercase"
+							>Zakres Wpływu</span
+						>
+						<h2 class="font-headline text-surface-bright text-4xl font-black md:text-5xl">
+							Obszary działań
+						</h2>
+					</div>
+					<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+						<!-- Area 1 -->
+						<div
+							class="group bg-surface-container-low/5 border-outline-variant border-opacity-5 hover:border-primary/40 relative overflow-hidden rounded-2xl border p-12 transition-all duration-500 md:col-span-2"
+						>
+							<div
+								class="bg-primary/10 group-hover:bg-primary/20 absolute -right-20 -bottom-20 h-64 w-64 rounded-full blur-3xl transition-all"
+							></div>
+							<span
+								class="material-symbols-outlined text-primary-fixed mb-8 text-5xl"
+								data-icon="school"
+								>school</span
+							>
+							<h3 class="font-headline text-surface-bright mb-4 text-3xl font-bold">
+								Edukacja i Rozwój
+							</h3>
+							<p class="text-on-surface-variant max-w-md text-lg leading-relaxed">
+								Wspieramy procesy edukacyjne poprzez nowoczesne warsztaty, mentoring oraz dostęp do
+								unikalnych zasobów wiedzy projektowej.
+							</p>
+						</div>
+						<!-- Area 2 -->
+						<div
+							class="group bg-surface-container-low/5 border-outline-variant border-opacity-5 hover:border-tertiary/40 relative overflow-hidden rounded-2xl border p-12 transition-all duration-500"
+						>
+							<div
+								class="bg-tertiary/10 group-hover:bg-tertiary/20 absolute -top-10 -right-10 h-32 w-32 rounded-full blur-2xl transition-all"
+							></div>
+							<span
+								class="material-symbols-outlined text-tertiary-fixed mb-8 text-5xl"
+								data-icon="diversity_3"
+								>diversity_3</span
+							>
+							<h3 class="font-headline text-surface-bright mb-4 text-2xl font-bold">
+								Integracja Społeczna
+							</h3>
+							<p class="text-on-surface-variant leading-relaxed">
+								Budujemy mosty między pokoleniami i środowiskami, promując dialog i wzajemne
+								zrozumienie.
+							</p>
+						</div>
+						<!-- Area 3 -->
+						<div
+							class="group bg-surface-container-low/5 border-outline-variant border-opacity-5 hover:border-secondary-fixed/40 relative overflow-hidden rounded-2xl border p-12 transition-all duration-500"
+						>
+							<span
+								class="material-symbols-outlined text-secondary-fixed mb-8 text-5xl"
+								data-icon="lightbulb"
+								>lightbulb</span
+							>
+							<h3 class="font-headline text-surface-bright mb-4 text-2xl font-bold">
+								Inicjatywy Lokalne
+							</h3>
+							<p class="text-on-surface-variant leading-relaxed">
+								Aktywizujemy lokalne społeczności do działania na rzecz swojego otoczenia.
+							</p>
+						</div>
+						<!-- Area 4 -->
+						<div
+							class="group bg-surface-container-low/5 border-outline-variant border-opacity-5 hover:border-primary/40 relative overflow-hidden rounded-2xl border p-12 transition-all duration-500 md:col-span-2"
+						>
+							<div
+								class="from-primary/5 absolute inset-0 bg-gradient-to-r to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+							></div>
+							<span
+								class="material-symbols-outlined text-primary-fixed mb-8 text-5xl"
+								data-icon="monitoring"
+								>monitoring</span
+							>
+							<h3 class="font-headline text-surface-bright mb-4 text-3xl font-bold">
+								Wsparcie Profesjonalne
+							</h3>
+							<p class="text-on-surface-variant max-w-md text-lg leading-relaxed">
+								Oferujemy doradztwo prawne i merytoryczne dla młodych liderów i organizacji
+								pozarządowych.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+			<!-- Nasze Działania (Our Actions) - Illuminated Cards -->
+			<section class="relative overflow-hidden px-8 py-24">
+				<!-- Background Glow -->
+				<div
+					class="bg-primary/5 absolute top-1/2 left-1/2 h-[1000px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px]"
+				></div>
+				<div class="relative z-10 mx-auto max-w-[1440px]">
+					<div class="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
+						<div class="max-w-2xl">
+							<span
+								class="label-md text-tertiary-fixed mb-4 block font-semibold tracking-[0.2em] uppercase"
+								>Projekty w realizacji</span
+							>
+							<h2
+								class="font-headline text-surface-bright text-4xl leading-tight font-black md:text-6xl"
+							>
+								Nasze aktualne <br />
+								działania
+							</h2>
+						</div>
+						<div class="pb-2">
+							<a
+								class="text-primary-fixed font-headline flex items-center gap-2 font-bold transition-all hover:underline"
+								href="#"
+							>
+								Zobacz wszystkie projekty
+								<span class="material-symbols-outlined">arrow_right_alt</span>
+							</a>
+						</div>
+					</div>
+					<div class="grid grid-cols-1 gap-10 lg:grid-cols-3">
+						<!-- Action Card 1 -->
+						<div
+							class="bg-surface-container-lowest/5 border-outline-variant border-opacity-10 group flex flex-col rounded-2xl border backdrop-blur-md transition-all duration-500 hover:shadow-[0_0_40px_rgba(57,81,193,0.15)]"
+						>
+							<div class="h-64 overflow-hidden rounded-t-2xl">
+								<img
+									alt="Students workshop"
+									class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+									data-alt="Young people discussing at a bright workshop table"
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPopfdSpTlnr4zwwah1WyE8Hm5JsIFyBC0zUGj3vwLqg0jOQngppc_PbRrhCNqkDwjfyG-r8_J4V8S9Vrfz34Z86yuxBI6VuorX3MupfgMYhpYDI0wq_AkFV0RYLAdGq2pZ3C-MQpHGCbccUXA_Z8D4LQF9pogKMztjm-r0EKjhULKLdUYfVqNZSdDfAmf2y2VNzw3CUXnI5cEAyvUB_FXJ1EulZCcSfeipCSQvEa4_ICZQVITM-kj5zYgd2G-4LHAQdF_SMIQYWJ5"
+								/>
+							</div>
+							<div class="p-8">
+								<div class="mb-6 flex items-start justify-between">
+									<span
+										class="bg-primary/20 text-primary-fixed rounded px-3 py-1 text-xs font-bold tracking-widest uppercase"
+										>Edukacja</span
+									>
+									<span class="text-on-surface-variant text-sm italic">Czerwiec 2024</span>
+								</div>
+								<h3
+									class="font-headline text-surface-bright group-hover:text-primary-fixed mb-4 text-2xl font-bold transition-colors"
+								>
+									Akademia Liderów VIVIENA
+								</h3>
+								<p class="text-on-surface-variant mb-8 leading-relaxed">
+									Cykl szkoleń z zakresu zarządzania projektami i budowania zespołów dla młodzieży
+									licealnej.
+								</p>
+								<button
+									class="text-surface-bright flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-transform group-hover:translate-x-2"
+								>
+									Szczegóły projektu
+									<span class="material-symbols-outlined text-sm">chevron_right</span>
+								</button>
+							</div>
+						</div>
+						<!-- Action Card 2 -->
+						<div
+							class="bg-surface-container-lowest/5 border-outline-variant border-opacity-10 group flex flex-col rounded-2xl border backdrop-blur-md transition-all duration-500 hover:shadow-[0_0_40px_rgba(146,56,129,0.15)]"
+						>
+							<div class="h-64 overflow-hidden rounded-t-2xl">
+								<img
+									alt="Community meeting"
+									class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+									data-alt="Group of people collaborating on a community project"
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNuJ2HQkXRm0XDasA5owPMO5IDDrwWS4deVIpo2UEt3pO_by1HoI9Jm8UTcEUYRA7m_FEg_BAew6gF7-gfnMGXAAx0lkpHAhvXjHoOgsifwoo5G34pWEosEolzyIgjT6NAfIMOBUnS6DVZTBH8pda2mrx7LTEY5S_cnkZsBgfmdtU8Qg7Abs1coHZQIAKb0AyOOBkG1sImQC5pNUTwU-XcjWUKmNCXiDdAmtUg37oisGnCB1AEgOlATPBJAHPeqIfct7n1OQu582oH"
+								/>
+							</div>
+							<div class="p-8">
+								<div class="mb-6 flex items-start justify-between">
+									<span
+										class="bg-tertiary/20 text-tertiary-fixed rounded px-3 py-1 text-xs font-bold tracking-widest uppercase"
+										>Społeczność</span
+									>
+									<span class="text-on-surface-variant text-sm italic">Lipiec 2024</span>
+								</div>
+								<h3
+									class="font-headline text-surface-bright group-hover:text-tertiary-fixed mb-4 text-2xl font-bold transition-colors"
+								>
+									Lokalne Forum Inicjatyw
+								</h3>
+								<p class="text-on-surface-variant mb-8 leading-relaxed">
+									Platforma wymiany doświadczeń między mieszkańcami a władzami lokalnymi w celu
+									poprawy infrastruktury.
+								</p>
+								<button
+									class="text-surface-bright flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-transform group-hover:translate-x-2"
+								>
+									Szczegóły projektu
+									<span class="material-symbols-outlined text-sm">chevron_right</span>
+								</button>
+							</div>
+						</div>
+						<!-- Action Card 3 -->
+						<div
+							class="bg-surface-container-lowest/5 border-outline-variant border-opacity-10 group flex flex-col rounded-2xl border backdrop-blur-md transition-all duration-500 hover:shadow-[0_0_40px_rgba(57,81,193,0.15)]"
+						>
+							<div class="h-64 overflow-hidden rounded-t-2xl">
+								<img
+									alt="Legal documents"
+									class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+									data-alt="Close up of professional legal documents on dark surface"
+									src="https://lh3.googleusercontent.com/aida-public/AB6AXuDle8RRBzmlWVsqy5vp7ExnjnqxrRmEIY1rundDpF_f74cWqKQizXohsCn_m_XSB6RbmGSGuMVgujMfAjQ8ZkPAe7Wi7YLJCOcYHzp0Hcjv4EsZwNR-LmAQwmAD5ejYo_8zm_FLXImumZw0QQK-KRZID3Xy-VXk3Tn-NnYWXdv-_KSfz5TGj6wU1dj596l_dq297ieTNQ3rAHLMctJMjqLxPAxlRvrd47rN1Y2oJGkodxA5WiFKw0IAW8bBl2_ba2OjoqLt43BX9ABS"
+								/>
+							</div>
+							<div class="p-8">
+								<div class="mb-6 flex items-start justify-between">
+									<span
+										class="bg-primary/20 text-primary-fixed rounded px-3 py-1 text-xs font-bold tracking-widest uppercase"
+										>Wsparcie</span
+									>
+									<span class="text-on-surface-variant text-sm italic">Sierpień 2024</span>
+								</div>
+								<h3
+									class="font-headline text-surface-bright group-hover:text-primary-fixed mb-4 text-2xl font-bold transition-colors"
+								>
+									Klinika Prawna NGO
+								</h3>
+								<p class="text-on-surface-variant mb-8 leading-relaxed">
+									Bezpłatne porady prawne dla nowo powstających stowarzyszeń i fundacji prowadzonych
+									przez młodych.
+								</p>
+								<button
+									class="text-surface-bright flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-transform group-hover:translate-x-2"
+								>
+									Szczegóły projektu
+									<span class="material-symbols-outlined text-sm">chevron_right</span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<!-- Zespół (Team) Section -->
+			<section class="bg-[#161616] px-8 py-24">
+				<div class="mx-auto mb-16 max-w-[1440px] text-center">
+					<span
+						class="label-md text-primary-fixed mb-4 block font-semibold tracking-[0.2em] uppercase"
+						>Ludzie VIVIENY</span
+					>
+					<h2 class="font-headline text-surface-bright mb-6 text-4xl font-black md:text-5xl">
+						Nasz zespół
+					</h2>
+					<p class="body-lg text-on-surface-variant mx-auto max-w-2xl">
+						Eksperci, aktywiści i wizjonerzy połączeni wspólnym celem budowania silnego
+						społeczeństwa obywatelskiego.
+					</p>
+				</div>
+				<div class="mx-auto grid max-w-[1440px] grid-cols-2 gap-8 md:grid-cols-4">
+					<!-- Team Member -->
+					<div class="group text-center">
+						<div class="relative mx-auto mb-6 h-48 w-48">
+							<div
+								class="bg-primary absolute inset-0 scale-0 rounded-full opacity-20 transition-transform duration-500 group-hover:scale-105"
+							></div>
+							<img
+								alt="Jan Kowalski"
+								class="h-full w-full rounded-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+								data-alt="Portrait of a young professional male team member"
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5z1uxxqedFbOVIeSiOA1CTaPrGEY9lGM7-bUy0pxaFu795cBpXmAAM_aJZYafVQ1r0F-U5CnF0yrqh-RRPxnZNI56-SAHJPDJ0kDtCbcDQdpibe4VWd_FauztiAHF4Iv4BZbeX7GacgqI7GWFS_w8PjEV2TvS7TYnZtzo4DLRgZw6Jqbl3X1Iz3xBroadh-Kl4tU3owyVgBpGBY43l-3g3k-gQD8HVFQiOHM83gZ8O0r7cE8r-NX6ppZJhA8ox68xtHe8K1usJscz"
+							/>
+						</div>
+						<h4 class="font-headline text-surface-bright text-xl font-bold">Jan Kowalski</h4>
+						<p class="text-on-surface-variant mt-1 text-sm tracking-widest uppercase">
+							Prezes Zarządu
+						</p>
+					</div>
+					<!-- Team Member -->
+					<div class="group text-center">
+						<div class="relative mx-auto mb-6 h-48 w-48">
+							<div
+								class="bg-tertiary absolute inset-0 scale-0 rounded-full opacity-20 transition-transform duration-500 group-hover:scale-105"
+							></div>
+							<img
+								alt="Anna Nowak"
+								class="h-full w-full rounded-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+								data-alt="Portrait of a professional female project manager"
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2EoIl21ZEXoA9GTjbyf-FYozrIwkFLlxIyPp4OupNt5WS3WRpmOaKAQ5H4rAW58Cb6nPuwlmmBp1Cp5KLqJEafQlz3fwSg1dhmfKEKgQEsM3QXO4HbJpSMPOzZ1es_F2ACko5LjEv1RqxZ9n0On0dam7_KXBoFCQBXCYPAFrqUg3PeO9CK0TpzOX9_ubQBtI-R5-sZ8WZG5cp4JvgjvQ0FVApprS04jLDPLeaO5IPpmIBdfqaW1tGFf-HS_E8N13vKwRUajR2tbMh"
+							/>
+						</div>
+						<h4 class="font-headline text-surface-bright text-xl font-bold">Anna Nowak</h4>
+						<p class="text-on-surface-variant mt-1 text-sm tracking-widest uppercase">
+							Dyrektor Programowa
+						</p>
+					</div>
+					<!-- Team Member -->
+					<div class="group text-center">
+						<div class="relative mx-auto mb-6 h-48 w-48">
+							<div
+								class="bg-primary absolute inset-0 scale-0 rounded-full opacity-20 transition-transform duration-500 group-hover:scale-105"
+							></div>
+							<img
+								alt="Piotr Wiśniewski"
+								class="h-full w-full rounded-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+								data-alt="Portrait of a young male creative director"
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk_7QFXAVMuIm8RCc24r8v7SEpR4FdVkNfAiZHRYKeT2koJJH_wMhmGKfUvk_PHocqegAoCIGgYXodkmAJbuJI3jG_fzk0eWGYcQk0UpBDC0C7HDKCqwjhke_WUx7cXhCm_fRg0CrWhEw0Hyn4OgG2GuqQdw4t7Q_HCg3yPf8I8x-LTKq-V2__bs8BPE45RG9ldnsHpIN3c4KkrqskG5r9Mo7LzhMmYFcFKXRQn-o3jQpAGs9Zk9Rm8nOPXIxOS94JdUL8PhqbvTCA"
+							/>
+						</div>
+						<h4 class="font-headline text-surface-bright text-xl font-bold">Piotr Wiśniewski</h4>
+						<p class="text-on-surface-variant mt-1 text-sm tracking-widest uppercase">
+							Koordynator Projektów
+						</p>
+					</div>
+					<!-- Team Member -->
+					<div class="group text-center">
+						<div class="relative mx-auto mb-6 h-48 w-48">
+							<div
+								class="bg-tertiary absolute inset-0 scale-0 rounded-full opacity-20 transition-transform duration-500 group-hover:scale-105"
+							></div>
+							<img
+								alt="Marta Zielińska"
+								class="h-full w-full rounded-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+								data-alt="Portrait of a female specialist team member"
+								src="https://lh3.googleusercontent.com/aida-public/AB6AXuBousvdZQXGkf4Cq43bT_K8kCNLYLUQbzqjMbDek0lk3IlgolZEzSMctoY_mytA6uDOT8y3CwLxfDxIay0iwEM2vy8cp2Z1CWWzbN0TAVDb3RyNHNMn0JM7PAdBxuyUuDKN0rZQz1kYpqSfqavHFjUwxWRe-J937M0zI99Hsx5A3vvdlBw2hBGFb-p5yUARf2Os3ymmJvXiMTIM9CBe86-DvRt0hrSdoWcyhARgsYOvh4b_isIJucL8xc4Zu3He3l5YwXluowiR8qsK"
+							/>
+						</div>
+						<h4 class="font-headline text-surface-bright text-xl font-bold">Marta Zielińska</h4>
+						<p class="text-on-surface-variant mt-1 text-sm tracking-widest uppercase">
+							Specjalistka ds. Komunikacji
+						</p>
+					</div>
+				</div>
+			</section>
+			<!-- Dokumenty & Kontakt (Documents & Contact) -->
+			<section class="mx-auto grid max-w-[1440px] grid-cols-1 gap-24 px-8 py-24 lg:grid-cols-2">
+				<div>
+					<span
+						class="label-md text-primary-fixed mb-4 block font-semibold tracking-[0.2em] uppercase"
+						>Transparentność</span
+					>
+					<h2 class="font-headline text-surface-bright mb-10 text-4xl font-black">Dokumenty</h2>
+					<div class="space-y-4">
+						<a
+							class="bg-surface-container-low/5 border-outline-variant border-opacity-10 hover:bg-surface-container-low/10 group flex items-center justify-between rounded-xl border p-6 transition-all"
+							href="#"
+						>
+							<div class="flex items-center gap-4">
+								<span class="material-symbols-outlined text-primary-fixed" data-icon="description"
+									>description</span
+								>
+								<span class="font-medium">Statut Stowarzyszenia VIVIENA</span>
+							</div>
+							<span
+								class="material-symbols-outlined text-on-surface-variant group-hover:text-surface-bright transition-colors"
+								data-icon="download"
+								>download</span
+							>
+						</a>
+						<a
+							class="bg-surface-container-low/5 border-outline-variant border-opacity-10 hover:bg-surface-container-low/10 group flex items-center justify-between rounded-xl border p-6 transition-all"
+							href="#"
+						>
+							<div class="flex items-center gap-4">
+								<span class="material-symbols-outlined text-primary-fixed" data-icon="description"
+									>description</span
+								>
+								<span class="font-medium">Sprawozdanie merytoryczne 2023</span>
+							</div>
+							<span
+								class="material-symbols-outlined text-on-surface-variant group-hover:text-surface-bright transition-colors"
+								data-icon="download"
+								>download</span
+							>
+						</a>
+						<a
+							class="bg-surface-container-low/5 border-outline-variant border-opacity-10 hover:bg-surface-container-low/10 group flex items-center justify-between rounded-xl border p-6 transition-all"
+							href="#"
+						>
+							<div class="flex items-center gap-4">
+								<span class="material-symbols-outlined text-primary-fixed" data-icon="description"
+									>description</span
+								>
+								<span class="font-medium">Polityka prywatności i RODO</span>
+							</div>
+							<span
+								class="material-symbols-outlined text-on-surface-variant group-hover:text-surface-bright transition-colors"
+								data-icon="download"
+								>download</span
+							>
+						</a>
+					</div>
+				</div>
+				<div id="kontakt">
+					<span
+						class="label-md text-tertiary-fixed mb-4 block font-semibold tracking-[0.2em] uppercase"
+						>Bądźmy w kontakcie</span
+					>
+					<h2 class="font-headline text-surface-bright mb-10 text-4xl font-black">Kontakt</h2>
+					<form class="space-y-6">
+						<div class="grid grid-cols-2 gap-6">
+							<div class="space-y-2">
+								<label class="text-on-surface-variant text-xs font-bold tracking-widest uppercase"
+									>Imię</label
+								>
+								<input
+									class="bg-surface-container-high/10 focus:border-primary-fixed text-surface-bright w-full rounded-lg border-none p-4 transition-all focus:border-l-2 focus:ring-0"
+									placeholder="Twoje imię"
+									type="text"
+								/>
+							</div>
+							<div class="space-y-2">
+								<label class="text-on-surface-variant text-xs font-bold tracking-widest uppercase"
+									>Email</label
+								>
+								<input
+									class="bg-surface-container-high/10 focus:border-primary-fixed text-surface-bright w-full rounded-lg border-none p-4 transition-all focus:border-l-2 focus:ring-0"
+									placeholder="Twoje email"
+									type="email"
+								/>
+							</div>
+						</div>
+						<div class="space-y-2">
+							<label class="text-on-surface-variant text-xs font-bold tracking-widest uppercase"
+								>Wiadomość</label
+							>
+							<textarea
+								class="bg-surface-container-high/10 focus:border-primary-fixed text-surface-bright w-full rounded-lg border-none p-4 transition-all focus:border-l-2 focus:ring-0"
+								placeholder="W czym możemy pomóc?"
+								rows="4"
+							></textarea>
+						</div>
+						<button
+							class="from-primary to-primary-container text-on-primary-container font-headline hover:shadow-primary/20 w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold shadow-lg transition-all"
+							type="submit"
+						>
+							Wyślij wiadomość
+						</button>
+					</form>
+				</div>
+			</section>
+		</main>
+		<!-- Footer Shell -->
+		<footer class="full-width flat no-shadows bg-[#1a1a1a] py-24">
+			<div class="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-12 px-24 md:grid-cols-4">
+				<div class="space-y-6">
+					<span class="font-headline text-xl font-bold text-[#879aff]">VIVIENA</span>
+					<p class="font-body text-sm leading-relaxed text-[#b0b0b0]">
+						Stowarzyszenie VIVIENA to nowoczesna organizacja wspierająca młodych liderów w ich
+						dążeniu do profesjonalizacji działań społecznych.
+					</p>
+				</div>
+				<div class="flex flex-col gap-4">
+					<h5 class="mb-2 text-sm font-bold tracking-widest text-[#879aff] uppercase">
+						Media Społecznościowe
+					</h5>
+					<a class="font-body text-sm text-[#b0b0b0] transition-opacity hover:opacity-70" href="#"
+						>Instagram</a
+					>
+					<a class="font-body text-sm text-[#b0b0b0] transition-opacity hover:opacity-70" href="#"
+						>Facebook</a
+					>
+					<a class="font-body text-sm text-[#b0b0b0] transition-opacity hover:opacity-70" href="#"
+						>LinkedIn</a
+					>
+				</div>
+				<div class="flex flex-col gap-4">
+					<h5 class="mb-2 text-sm font-bold tracking-widest text-[#879aff] uppercase">
+						Dane Rejestrowe
+					</h5>
+					<span class="font-body text-sm text-[#b0b0b0]">KRS: 0000000000</span>
+					<span class="font-body text-sm text-[#b0b0b0]">NIP: 0000000000</span>
+					<span class="font-body text-sm text-[#b0b0b0]">REGON: 000000000</span>
+				</div>
+				<div class="flex flex-col gap-4">
+					<h5 class="mb-2 text-sm font-bold tracking-widest text-[#879aff] uppercase">
+						Lokalizacja
+					</h5>
+					<p class="font-body text-sm text-[#b0b0b0]">
+						Warszawa, Polska<br />
+						kontakt@viviena.org
+					</p>
+				</div>
+			</div>
+			<div
+				class="border-outline-variant border-opacity-10 mx-auto mt-24 flex max-w-[1440px] items-center justify-between border-t px-24 pt-8"
+			>
+				<p class="font-body text-xs text-[#b0b0b0]">
+					© 2024 Stowarzyszenie VIVIENA. Wszelkie prawa zastrzeżone.
+				</p>
+				<div class="flex gap-6">
+					<a class="text-xs text-[#b0b0b0] hover:text-[#879aff]" href="#">Polityka Cookies</a>
+					<a class="text-xs text-[#b0b0b0] hover:text-[#879aff]" href="#">Regulamin</a>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
