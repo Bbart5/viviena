@@ -10,14 +10,14 @@
 	let { howWeWork }: Props = $props();
 </script>
 
-<section id="o-nas" class="bg-[#1a1a1a] px-6 py-24 md:px-8">
+<section id="o-nas" class="bg-surface-container-low px-6 py-24 md:px-8">
 	<div class="mx-auto max-w-360">
 		<!-- Section Header -->
 		<div class="mb-16">
-			<span class="mb-4 block font-label text-sm font-semibold tracking-[0.2em] uppercase text-primary-fixed">
+			<span class="mb-4 block font-label text-sm font-semibold tracking-[0.2em] uppercase text-primary">
 				O stowarzyszeniu
 			</span>
-			<h2 class="font-headline text-4xl font-black text-surface-bright md:text-5xl">
+			<h2 class="font-headline text-4xl font-black text-brand-text md:text-5xl">
 				Kim jesteśmy
 			</h2>
 		</div>
@@ -27,26 +27,31 @@
 			<!-- Text Column -->
 			<div class="space-y-6 text-lg leading-relaxed text-brand-muted">
 				<p>
-					Viviena powstała pod koniec 2025 roku z potrzeby tworzenia działań, które odpowiadają na zmieniające się realia współczesnego świata. Jesteśmy młodym zespołem, który uważnie obserwuje to, co dzieje się wokół, i zamienia ważne tematy społeczne oraz edukacyjne w konkretne inicjatywy.
+					VIVIENA powstała z potrzeby tworzenia działań, które realnie wspierają młodych ludzi w
+					edukacji i rozwoju. Skupiamy się na tematach, które mają bezpośredni wpływ na codzienne
+					decyzje i przyszłość.
 				</p>
 				<p>
-					Wierzymy, że dobra organizacja społeczna powinna być uważna, elastyczna i odpowiedzialna. Dlatego nie działamy według jednego zamkniętego schematu. Tworzymy projekty dopasowane do aktualnych wyzwań, odbiorców i sytuacji, które naprawdę wymagają reakcji.
+					Najmocniej akcentujemy edukację finansową: oszczędzanie, inwestowanie, bezpieczeństwo
+					finansowe i świadome poruszanie się po informacjach z internetu. Pokazujemy wiedzę
+					praktycznie, językiem zrozumiałym dla młodzieży i studentów.
 				</p>
 				<p>
-					Naszym celem jest prowadzenie działań społecznie użytecznych w obszarze edukacji, rozwoju osobistego i świadomości społecznej. Działamy z myślą o dzieciach, młodzieży, dorosłych, seniorach oraz grupach, które potrzebują dodatkowego wsparcia.
+					Współpracujemy z ekspertami, uczelniami i partnerami społecznymi, żeby dawać młodym
+					ludziom praktyczny dostęp do rzetelnej wiedzy oraz narzędzi potrzebnych w dorosłym życiu.
 				</p>
 			</div>
 
 			<!-- How We Work Cards -->
 			<div>
-				<h3 class="mb-8 font-headline text-2xl font-bold text-surface-bright">Jak działamy</h3>
+				<h3 class="mb-8 font-headline text-2xl font-bold text-brand-text">Jak działamy</h3>
 				<div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
 					{#each howWeWork as card (card.title)}
-						<div class="group rounded-2xl border border-outline-variant/5 bg-brand-dark/50 p-6 transition-all duration-300 hover:border-primary/30 hover:bg-brand-dark/80">
-							<span class="material-symbols-outlined mb-4 block text-3xl text-primary-fixed">
+						<div class="group rounded-2xl border border-outline-variant/30 bg-white p-6 transition-all duration-300 hover:border-primary/40 hover:shadow-md">
+							<span class="material-symbols-outlined mb-4 block text-3xl text-primary">
 								{card.icon}
 							</span>
-							<h4 class="mb-2 font-headline text-base font-bold text-surface-bright">
+							<h4 class="mb-2 font-headline text-base font-bold text-brand-text">
 								{card.title}
 							</h4>
 							<p class="text-sm leading-relaxed text-brand-muted">

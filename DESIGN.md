@@ -5,7 +5,7 @@
 **Creative North Star: "The Architectural Academic"**
 The design system for VIVIENA is built to bridge the gap between youthful energy and professional authority. We reject the "standard NGO" template in favor of a high-end editorial experience. By utilizing intentional asymmetry, expansive negative space, and a sophisticated layering system, we create a digital environment that feels curated and precise.
 
-The "Architectural Academic" approach treats the screen like a physical gallery—elements overlap, surfaces breathe, and typography is used as a structural element rather than just a vehicle for information. This reflects VIVIENA’s mission: a structured, professional foundation that empowers dynamic, youth-driven initiatives.
+The "Architectural Academic" approach treats the screen like a physical gallery-elements overlap, surfaces breathe, and typography is used as a structural element rather than just a vehicle for information. This reflects VIVIENA’s mission: a structured, professional foundation that empowers dynamic, youth-driven initiatives.
 
 ---
 
@@ -56,7 +56,7 @@ The hierarchy is intentional: headlines command attention, while body text provi
 Depth is a psychological cue for importance. We use "Tonal Layering" instead of heavy shadows.
 
 - **The Layering Principle:** Place `surface-container-lowest` cards on a `surface-container` background. The slight change in hex value creates a "Soft Lift" that feels high-end and intentional.
-- **Ambient Shadows:** For floating modals or navigation, use extra-diffused shadows: `box-shadow: 0 20px 40px rgba(44, 42, 81, 0.06)`. Note the use of the `on-surface` color (#2c2a51) for the shadow tint—never use pure black.
+- **Ambient Shadows:** For floating modals or navigation, use extra-diffused shadows: `box-shadow: 0 20px 40px rgba(44, 42, 81, 0.06)`. Note the use of the `on-surface` color (#2c2a51) for the shadow tint-never use pure black.
 - **The Ghost Border:** If a visual anchor is needed for accessibility, use the `outline-variant` (#aba8d7) at **15% opacity**. This provides a "suggestion" of a boundary without breaking the airy aesthetic.
 
 ---

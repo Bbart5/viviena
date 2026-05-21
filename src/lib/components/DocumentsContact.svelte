@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { asset } from '$app/paths';
 	import type { OurDocument } from '../../types';
 
 	interface Props {
@@ -8,27 +9,30 @@
 	let { documents }: Props = $props();
 </script>
 
-<section class="bg-[#1a1a1a] px-6 py-24 md:px-8">
+<section class="bg-surface-container-low px-6 py-24 md:px-8">
 	<div class="mx-auto grid max-w-360 grid-cols-1 gap-24 lg:grid-cols-2">
 		<!-- Documents -->
 		<div id="dokumenty">
 			<span
-				class="mb-4 block font-label text-sm font-semibold tracking-[0.2em] text-primary-fixed uppercase"
+				class="mb-4 block font-label text-sm font-semibold tracking-[0.2em] text-primary uppercase"
 			>
 				Transparentność
 			</span>
-			<h2 class="mb-6 font-headline text-4xl font-black text-surface-bright">Dokumenty</h2>
+			<h2 class="mb-6 font-headline text-4xl font-black text-brand-text">Dokumenty</h2>
 			<p class="mb-10 text-lg leading-relaxed text-brand-muted">
 				Stawiamy na przejrzystość i dostęp do podstawowych informacji o naszej działalności. W tej
 				sekcji znajdują się najważniejsze dokumenty związane z funkcjonowaniem stowarzyszenia.
 			</p>
 			<div class="space-y-4">
 				{#each documents as doc (doc.title)}
-					<button
-						class="group flex w-full items-center justify-between rounded-xl border border-outline-variant/10 bg-surface-container-low/5 p-6 text-left transition-all hover:bg-surface-container-low/10"
+					<a
+						href={asset(doc.href)}
+						target="_blank"
+						rel="noreferrer"
+						class="group flex w-full items-center justify-between rounded-xl border border-outline-variant/30 bg-white p-6 text-left transition-all hover:border-primary/40 hover:bg-surface-container-low"
 					>
 						<div class="flex items-center gap-4">
-							<span class="material-symbols-outlined text-primary-fixed">{doc.icon}</span>
+							<span class="material-symbols-outlined text-primary">{doc.icon}</span>
 							<div>
 								<span class="block font-medium text-brand-text">{doc.title}</span>
 								<span class="text-sm text-brand-muted">{doc.description}</span>
@@ -44,7 +48,7 @@
 						>
 							<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
 						</svg>
-					</button>
+					</a>
 				{/each}
 			</div>
 		</div>
@@ -52,11 +56,11 @@
 		<!-- Contact -->
 		<div id="kontakt">
 			<span
-				class="mb-4 block font-label text-sm font-semibold tracking-[0.2em] text-tertiary-fixed uppercase"
+				class="mb-4 block font-label text-sm font-semibold tracking-[0.2em] text-primary uppercase"
 			>
 				Bądźmy w kontakcie
 			</span>
-			<h2 class="mb-6 font-headline text-4xl font-black text-surface-bright">Kontakt</h2>
+			<h2 class="mb-6 font-headline text-4xl font-black text-brand-text">Kontakt</h2>
 			<p class="mb-10 text-lg leading-relaxed text-brand-muted">
 				Chcesz porozmawiać o współpracy, wydarzeniu, działaniach w szkole albo partnerstwie? Napisz
 				do nas lub odezwij się przez nasze media społecznościowe.
@@ -65,21 +69,45 @@
 			<!-- Contact Info -->
 			<div class="mb-10 space-y-4">
 				<div class="flex items-center gap-4 text-brand-muted">
-					<span class="material-symbols-outlined text-primary-fixed">email</span>
-					<a href="mailto:kontakt@viviena.org">kontakt@viviena.org</a>
+					<span class="material-symbols-outlined text-primary">email</span>
+					<a href="mailto:stowarzyszenieviviena@gmail.com">stowarzyszenieviviena@gmail.com</a>
 				</div>
 				<div class="flex items-center gap-4 text-brand-muted">
-					<span class="material-symbols-outlined text-primary-fixed">phone</span>
-					<span>Wkrótce</span>
+					<span class="material-symbols-outlined text-primary">phone</span>
+					<span>+48 500 865 201</span>
+				</div>
+				<div
+					class="rounded-xl border border-outline-variant/30 bg-white p-4 text-sm text-brand-muted"
+				>
+					<p><strong>Stowarzyszenie VIVIENA</strong></p>
+					<p>NIP: 7262717174</p>
+					<p>KRS: 0001209507</p>
+					<p>REGON: 543483854</p>
+					<p>Adres siedziby: ul. Łagiewnicka 80/98 / 152A, 91-456, Łódź</p>
 				</div>
 				<div class="flex gap-4">
-					<a href="#" target="_blank" class="flex items-center gap-2 text-sm text-brand-muted">
+					<a
+						href="https://www.instagram.com/viviena.pl/"
+						target="_blank"
+						rel="noreferrer"
+						class="flex items-center gap-2 text-sm text-brand-muted"
+					>
 						Instagram
 					</a>
-					<a href="#" target="_blank" class="flex items-center gap-2 text-sm text-brand-muted">
+					<a
+						href="https://www.facebook.com/profile.php?id=61572026964494&locale=pl_PL"
+						target="_blank"
+						rel="noreferrer"
+						class="flex items-center gap-2 text-sm text-brand-muted"
+					>
 						Facebook
 					</a>
-					<a href="#" target="_blank" class="flex items-center gap-2 text-sm text-brand-muted">
+					<a
+						href="https://www.linkedin.com/company/stowarzyszenie-viviena"
+						target="_blank"
+						rel="noreferrer"
+						class="flex items-center gap-2 text-sm text-brand-muted"
+					>
 						LinkedIn
 					</a>
 				</div>
@@ -91,7 +119,14 @@
 			</p>
 
 			<!-- Contact Form -->
-			<form class="space-y-6">
+			<form
+				class="space-y-6"
+				action="https://formsubmit.co/stowarzyszenieviviena@gmail.com"
+				method="POST"
+			>
+				<input type="hidden" name="_subject" value="Nowa wiadomość ze strony VIVIENA" />
+				<input type="hidden" name="_captcha" value="false" />
+				<input type="hidden" name="_template" value="table" />
 				<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div class="space-y-2">
 						<label
@@ -101,9 +136,10 @@
 						>
 						<input
 							id="contact-name"
+							name="name"
 							type="text"
 							placeholder="Twoje imię"
-							class="w-full rounded-lg border border-transparent bg-brand-dark/80 p-4 text-surface-bright transition-colors outline-none focus:border-surface-bright"
+							class="w-full rounded-lg border border-outline-variant/20 bg-white p-4 text-brand-text transition-colors outline-none focus:border-primary"
 						/>
 					</div>
 					<div class="space-y-2">
@@ -114,9 +150,10 @@
 						>
 						<input
 							id="contact-email"
+							name="email"
 							type="email"
 							placeholder="Twój email"
-							class="w-full rounded-lg border border-transparent bg-brand-dark/80 p-4 text-surface-bright transition-colors outline-none focus:border-surface-bright"
+							class="w-full rounded-lg border border-outline-variant/20 bg-white p-4 text-brand-text transition-colors outline-none focus:border-primary"
 						/>
 					</div>
 				</div>
@@ -128,14 +165,15 @@
 					>
 					<textarea
 						id="contact-message"
+						name="message"
 						placeholder="W czym możemy pomóc?"
 						rows="4"
-						class="w-full rounded-lg border border-transparent bg-brand-dark/80 p-4 text-surface-bright transition-colors outline-none focus:border-surface-bright"
+						class="w-full resize-none rounded-lg border border-outline-variant/20 bg-white p-4 text-brand-text transition-colors outline-none focus:border-primary"
 					></textarea>
 				</div>
 				<button
 					type="submit"
-					class="w-full rounded-full bg-linear-to-r from-primary to-primary-container py-3 font-headline text-base font-bold text-on-primary-container shadow-lg transition-all hover:shadow-primary/20 md:py-4 md:text-lg"
+					class="w-full rounded-full bg-linear-to-r from-primary to-primary-container py-3 font-headline text-base font-bold text-white shadow-lg transition-all hover:shadow-primary/20 md:py-4 md:text-lg"
 				>
 					Napisz do nas
 				</button>

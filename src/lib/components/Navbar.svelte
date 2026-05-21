@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { asset, resolve } from '$app/paths';
 
 	let mobileMenuOpen = $state(false);
 
@@ -20,18 +20,17 @@
 	}
 </script>
 
-<nav class="sticky top-0 z-50 bg-brand-surface/95 backdrop-blur-md">
+<nav class="sticky top-0 z-50 border-b border-outline-variant/30 bg-white/95 backdrop-blur-md">
 	<div class="mx-auto flex w-full max-w-360 items-center justify-between px-6 py-5 md:px-8">
-		<!-- Logo -->
 		<a href={resolve('/#start')} class="flex items-center gap-3" onclick={() => scrollTo('#start')}>
-			<img alt="VIVIENA Logo" class="h-9 w-auto" src="/logo.svg" />
+			<img alt="VIVIENA Logo" class="h-9 w-auto" src={asset("/brand/logo.svg")} />
 		</a>
 
 		<!-- Desktop Nav -->
 		<div class="hidden items-center gap-8 lg:flex">
 			{#each navLinks as { hash, label } (hash)}
 				<a
-					class="font-headline text-sm font-medium text-brand-text opacity-80 transition-all duration-300 hover:text-primary-fixed hover:opacity-100"
+					class="font-headline text-sm font-medium text-brand-text opacity-80 transition-all duration-300 hover:text-primary hover:opacity-100"
 					href={resolve(`/${hash}`)}
 					onclick={(e: MouseEvent) => {
 						e.preventDefault();
@@ -51,7 +50,7 @@
 					e.preventDefault();
 					scrollTo('#kontakt');
 				}}
-				class="hidden rounded-full bg-linear-to-br from-primary to-primary-container px-6 py-2.5 font-headline text-sm font-bold text-on-primary-container transition-transform hover:scale-105 sm:inline-block"
+				class="hidden rounded-full bg-linear-to-br from-primary to-primary-container px-6 py-2.5 font-headline text-sm font-bold text-white transition-transform hover:scale-105 sm:inline-block"
 			>
 				Napisz do nas
 			</a>
@@ -80,11 +79,11 @@
 
 	<!-- Mobile Menu -->
 	{#if mobileMenuOpen}
-		<div class="border-t border-[#2a2a2a] bg-brand-surface px-6 py-6 lg:hidden">
+		<div class="border-t border-outline-variant/30 bg-white px-6 py-6 lg:hidden">
 			<div class="flex flex-col gap-4">
 				{#each navLinks as { hash, label } (hash)}
 					<a
-						class="font-headline text-base font-medium text-brand-text transition-colors hover:text-primary-fixed"
+						class="font-headline text-base font-medium text-brand-text transition-colors hover:text-primary"
 						href={resolve(`/${hash}`)}
 						onclick={(e: MouseEvent) => {
 							e.preventDefault();
@@ -100,7 +99,7 @@
 						e.preventDefault();
 						scrollTo('#kontakt');
 					}}
-					class="mt-4 rounded-full bg-linear-to-br from-primary to-primary-container px-5 py-2.5 text-center font-headline text-sm font-bold text-on-primary-container"
+					class="mt-4 rounded-full bg-linear-to-br from-primary to-primary-container px-5 py-2.5 text-center font-headline text-sm font-bold text-white"
 				>
 					Napisz do nas
 				</a>

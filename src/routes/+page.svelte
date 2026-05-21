@@ -15,174 +15,153 @@
 	const howWeWork: HowWeWorkCard[] = [
 		{
 			title: 'Uważnie obserwujemy potrzeby',
-			description: 'Tworzymy działania odpowiadające na to, co naprawdę jest dziś ważne.',
+			description: 'Tworzymy działania odpowiadające na realne wyzwania młodych ludzi.',
 			icon: 'visibility'
 		},
 		{
-			title: 'Działamy konkretnie',
-			description: 'Pomysły przekładamy na warsztaty, wydarzenia i inicjatywy z realnym celem.',
+			title: 'Uczymy praktycznie',
+			description: 'Przekładamy teorię na konkret: decyzje, nawyki i codzienne wybory finansowe.',
 			icon: 'rocket_launch'
 		},
 		{
-			title: 'Łączymy energię z odpowiedzialnością',
-			description: 'Jesteśmy młodym zespołem, ale działamy profesjonalnie i świadomie.',
+			title: 'Budujemy świadome postawy',
+			description: 'Pokazujemy finanse i bezpieczeństwo bez uproszczeń oraz bez straszenia.',
 			icon: 'balance'
 		},
 		{
 			title: 'Budujemy współpracę',
-			description: 'Chcemy łączyć ludzi, środowiska i instytucje wokół wartościowych działań.',
+			description: 'Łączymy młodzież, ekspertów, uczelnie i instytucje wokół edukacji finansowej.',
 			icon: 'handshake'
 		}
 	];
 
 	const areas: Area[] = [
 		{
-			title: 'Edukacja i rozwój',
+			title: 'Edukacja finansowa',
 			description:
-				'Tworzymy warsztaty, spotkania i inicjatywy, które wspierają rozwój kompetencji, świadomości i samodzielności.',
+				'Tworzymy wydarzenia i materiały, które pomagają młodym ludziom lepiej rozumieć pieniądze, inwestowanie, bezpieczeństwo finansowe i codzienne decyzje ekonomiczne. Pokazujemy finanse w praktyczny, przystępny i ciekawy sposób.',
 			icon: 'school',
-			span: 2,
-			accentColor: 'primary'
+			span: 3
 		},
 		{
-			title: 'Bezpieczeństwo i świadomość',
+			title: 'Rynek kapitałowy i inwestycje',
 			description:
-				'Podejmujemy tematy związane z bezpieczeństwem osobistym, cyfrowym i społecznym.',
-			icon: 'shield',
-			span: 1,
-			accentColor: 'tertiary'
+				'Przybliżamy podstawy inwestowania, działanie rynku kapitałowego oraz różnice między bezpiecznymi i ryzykownymi instrumentami finansowymi. Chcemy, żeby młodzi ludzie podejmowali decyzje świadomie, a nie pod wpływem przypadkowych treści z internetu.',
+			icon: 'trending_up',
+			span: 1
 		},
 		{
-			title: 'Zdrowie i dobrostan',
+			title: 'Cyberbezpieczeństwo',
 			description:
-				'Promujemy wiedzę wspierającą zdrowie psychiczne, fizyczne i codzienne funkcjonowanie.',
-			icon: 'favorite',
-			span: 1,
-			accentColor: 'secondary-fixed'
+				'Edukujemy o bezpieczeństwie w sieci, ochronie danych i zagrożeniach cyfrowych, szczególnie w kontekście finansów, bankowości, płatności online i oszustw internetowych.',
+			icon: 'shield_lock',
+			span: 1
 		},
 		{
-			title: 'Społeczność i współpraca',
-			description: 'Budujemy działania, które łączą ludzi, środowiska i pokolenia.',
-			icon: 'diversity_3',
-			span: 1,
-			accentColor: 'primary'
-		},
-		{
-			title: 'Inicjatywy lokalne',
-			description: 'Wspieramy projekty odpowiadające na realne potrzeby społeczności lokalnych.',
-			icon: 'location_city',
-			span: 1,
-			accentColor: 'tertiary'
+			title: 'Oszczędzanie i budżet',
+			description:
+				'Pokazujemy, jak planować wydatki, budować dobre nawyki finansowe, rozumieć budżet osobisty i podejmować codzienne decyzje, które mają realny wpływ na przyszłość.',
+			icon: 'savings',
+			span: 1
 		}
 	];
 
+	// TODO - photo: dodaj plik /static/events/finance-academy-2026-cover.jpg
 	const actions: Action[] = [
 		{
-			title: 'Konferencja Finansowa Finance Academy',
-			date: '22 kwietnia',
-			tag: 'Edukacja',
-			tagColor: 'primary',
+			title: 'Finance Academy, VII edycja, 2026',
+			date: '22-24 kwietnia 2026',
+			tag: 'Zakończone',
+			tagColor: 'green',
+			ctaLabel: 'Zobacz relację',
+			showCta: false,
+			image: '/events/finance-academy-2026-cover.jpg',
 			description:
-				'Wydarzenie poświęcone edukacji finansowej i świadomemu podejmowaniu decyzji. Konferencja będzie przestrzenią do rozmowy o praktycznych aspektach zarządzania pieniędzmi, planowaniu, odpowiedzialności finansowej i kompetencjach potrzebnych młodym ludziom w codziennym życiu.',
+				'Finance Academy to konferencja edukacyjna dla licealistów i studentów, której celem jest pokazanie finansów w praktyczny, ciekawy i przystępny sposób. Wydarzenie łączy konferencję stacjonarną z webinarami online i odpowiada na realny problem: młodzi ludzie często znają ryzykowne aktywa z internetu, ale brakuje im rzetelnych podstaw dotyczących oszczędzania, inwestowania i bezpieczeństwa finansowego.',
 			details: [
-				'Miejsce: wkrótce',
-				'Dla kogo: młodzież, studenci, młodzi dorośli',
-				'Status: przygotowanie'
-			]
-		},
-		{
-			title: 'Program warsztatów w szkołach',
-			date: 'W przygotowaniu',
-			tag: 'Społeczność',
-			tagColor: 'tertiary',
-			description:
-				'Cykl zajęć edukacyjnych realizowanych w szkołach, odpowiadających na najważniejsze wyzwania współczesności. Program może obejmować tematy związane z edukacją finansową, bezpieczeństwem cyfrowym, zdrowiem psychicznym, świadomością społeczną i rozwojem kompetencji przyszłości.',
-			details: ['Zakres: edukacja, bezpieczeństwo, zdrowie', 'Status: rozwój programu']
-		},
-		{
-			title: 'Warsztaty dla seniorów',
-			date: 'Planowane',
-			tag: 'Wsparcie',
-			tagColor: 'primary',
-			description:
-				'Działania skierowane do osób starszych, wspierające aktywność, bezpieczeństwo i rozwój kompetencji przydatnych w codziennym życiu. Program może obejmować tematy związane z cyfrową codziennością, bezpieczeństwem, komunikacją, integracją i dobrostanem.',
-			details: ['Forma: warsztaty stacjonarne', 'Status: planowanie']
+				'Organizatorzy: Stowarzyszenie VIVIENA we współpracy z SKN Inwestor',
+				'Format: wydarzenie hybrydowe (konferencja stacjonarna + webinary online)',
+				'22 kwietnia: konferencja dla uczniów szkół średnich',
+				'23-24 kwietnia: webinary online, bardziej skierowane do studentów'
+			],
+			relation:
+				'Wydarzenie było odpowiedzią na wyniki ankiety: młodzież częściej deklarowała znajomość ryzykownych aktywów (krypto, CFD, Forex) niż podstaw takich jak ETF-y, obligacje, oszczędzanie i bezpieczeństwo finansowe.',
+			people: [
+				'Prof. Joanna Senyszyn',
+				'Emil Łobodziński',
+				'Hubert Świerczewski (Pankracy)',
+				'dr hab. prof. UŁ Artur Sajnóg',
+				'Agata Kobylińska',
+				'Jakub Petera (@k.b.a_p.t.r)',
+				'Mikołaj Światowy (@mikolaj_swiatowy)',
+				'Natalia Śliwka (@natalia.sliwka.180)',
+				'Młodzieżowa Rada Miasta',
+				'Młodzieżowy Sejmik Województwa Łódzkiego'
+			],
+			partners: ['PwC', 'PKOBP', 'MRM', 'Politechnika Łódzka', 'Uniwersytet Łódzki', 'inni partnerzy']
 		}
 	];
 
+	// TODO - photo: dodaj zdjęcia do /static/team/
 	const boardMembers: Member[] = [
 		{
-			name: 'Osoba 1',
-			role: 'Zarząd',
-			description: 'Odpowiada za rozwój organizacji i koordynację działań.',
-			img: 'https://placehold.co/600x600'
+			name: 'Aleksander Karol Sęk',
+			role: 'Prezes Zarządu (od 11 grudnia 2025 r.)',
+			img: '/team/aleksander-karol-sek.jpg'
 		},
 		{
-			name: 'Osoba 2',
-			role: 'Zarząd',
-			description: 'Wspiera współpracę z partnerami i organizację projektów.',
-			img: 'https://placehold.co/600x600'
+			name: 'Bartosz Tomasz Błaszczyk',
+			role: 'Wiceprezes Zarządu (od 11 grudnia 2025 r.)',
+			img: '/team/bartosz-tomasz-blaszczyk.jpg'
 		},
 		{
-			name: 'Osoba 3',
-			role: 'Zarząd',
-			description: 'Zajmuje się obszarem finansowym i sprawami organizacyjnymi.',
-			img: 'https://placehold.co/600x600'
+			name: 'Szymon Piotr Rudecki',
+			role: 'Skarbnik (od 11 grudnia 2025 r.)',
+			img: '/team/szymon-piotr-rudecki.jpg'
 		},
 		{
-			name: 'Osoba 4',
-			role: 'Zarząd',
-			description: 'Odpowiada za komunikację i zaplecze formalne działań.',
-			img: 'https://placehold.co/600x600'
+			name: 'Wiktor Trześniowski',
+			role: 'Sekretarz (od 11 grudnia 2025 r.)',
+			img: '/team/wiktor-trzesniowski.jpg'
 		}
 	];
 
 	const revisionMembers: Member[] = [
 		{
-			name: 'Osoba 1',
-			role: 'Komisja rewizyjna',
-			description: 'Wspiera przejrzystość działań i dba o ich zgodność z założeniami organizacji.',
-			img: 'https://placehold.co/600x600'
+			name: 'Filip Paweł Rolczak',
+			role: 'Komisja Rewizyjna (od 11 grudnia 2025 r.)',
+			img: '/team/filip-pawel-rolczak.jpg'
 		},
 		{
-			name: 'Osoba 2',
-			role: 'Komisja rewizyjna',
-			description: 'Czuwa nad porządkiem organizacyjnym i jakością działań stowarzyszenia.',
-			img: 'https://placehold.co/600x600'
+			name: 'Maciej Grzegorz Maj',
+			role: 'Komisja Rewizyjna (od 11 grudnia 2025 r.)',
+			img: '/team/maciej-grzegorz-maj.jpg'
 		},
 		{
-			name: 'Osoba 3',
-			role: 'Komisja rewizyjna',
-			description: 'Wspiera kontrolę wewnętrzną i rozwój odpowiedzialnych standardów działania.',
-			img: 'https://placehold.co/600x600'
+			name: 'Sebastian Waldemar Matusiak',
+			role: 'Komisja Rewizyjna (od 11 grudnia 2025 r.)',
+			img: '/team/sebastian-waldemar-matusiak.jpg'
 		}
 	];
 
 	const documents: OurDocument[] = [
 		{
-			title: 'Statut',
-			description:
-				'Podstawowy dokument określający cele, zasady działania i strukturę stowarzyszenia.',
-			buttonLabel: 'Otwórz dokument',
-			icon: 'gavel'
-		},
-		{
 			title: 'Polityka prywatności',
 			description:
-				'Informacje dotyczące zasad przetwarzania danych oraz korzystania ze strony internetowej.',
-			buttonLabel: 'Otwórz dokument',
+				'Informacje dotyczące zasad przetwarzania danych, cookies oraz analityki strony internetowej.',
+			href: '/documents/polityka-prywatnosci.html',
 			icon: 'privacy_tip'
 		},
 		{
 			title: 'Regulamin strony',
 			description: 'Zasady korzystania ze strony internetowej Stowarzyszenia VIVIENA.',
-			buttonLabel: 'Otwórz dokument',
+			href: '/documents/regulamin-strony.html',
 			icon: 'description'
 		},
 		{
 			title: 'Dane organizacyjne',
 			description: 'Podstawowe dane formalne i kontaktowe stowarzyszenia.',
-			buttonLabel: 'Zobacz dane',
+			href: '/documents/dane-organizacyjne.html',
 			icon: 'business'
 		}
 	];
