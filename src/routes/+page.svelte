@@ -11,6 +11,7 @@
 		Footer
 	} from '$lib';
 	import type { Action, Area, HowWeWorkCard, Member, OurDocument } from '../types';
+	import { asset } from '$app/paths';
 
 	const howWeWork: HowWeWorkCard[] = [
 		{
@@ -66,7 +67,6 @@
 		}
 	];
 
-	// TODO - photo: dodaj plik /static/events/finance-academy-2026-cover.jpg
 	const actions: Action[] = [
 		{
 			title: 'Finance Academy, VII edycja, 2026',
@@ -75,7 +75,7 @@
 			tagColor: 'green',
 			ctaLabel: 'Zobacz relację',
 			showCta: false,
-			image: '/events/finance-academy-2026-cover.jpg',
+			image: asset('/events/finance-academy-2026-cover.jpg'),
 			description:
 				'Finance Academy to konferencja edukacyjna dla licealistów i studentów, której celem jest pokazanie finansów w praktyczny, ciekawy i przystępny sposób. Wydarzenie łączy konferencję stacjonarną z webinarami online i odpowiada na realny problem: młodzi ludzie często znają ryzykowne aktywa z internetu, ale brakuje im rzetelnych podstaw dotyczących oszczędzania, inwestowania i bezpieczeństwa finansowego.',
 			details: [
