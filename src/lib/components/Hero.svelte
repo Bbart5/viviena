@@ -13,7 +13,7 @@
 	<div class="relative w-full lg:hidden">
 		<div class="aspect-21/9 w-full overflow-hidden">
 			<img
-				src={asset("/hero/hero.png")}
+				src={asset("/hero/hero.jpg")}
 				alt="VIVIENA"
 				class="h-full w-full object-cover"
 			/>
@@ -61,7 +61,7 @@
 			<div class="absolute inset-0 rounded-full bg-linear-to-tr from-primary/15 to-primary-container/20 blur-3xl"></div>
 			<div class="relative w-full overflow-hidden rounded-2xl">
 				<img
-					src={asset("/hero/hero.png")}
+					src={asset("/hero/hero.jpg")}
 					alt="VIVIENA"
 					class="h-auto w-full rounded-2xl border border-outline-variant/25 transition-all duration-700 hover:opacity-100"
 				/>
