@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { asset } from '$app/paths';
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href={asset('./favicon.svg')} />
 	<link
 		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
 		rel="stylesheet"
