@@ -7,6 +7,39 @@
 	}
 
 	let { documents }: Props = $props();
+
+	async function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
+
+		const form = event.currentTarget as HTMLFormElement;
+		const formData = new FormData(form);
+
+		const name = formData.get('name') as string;
+		const email = formData.get('email') as string;
+		const message = formData.get('message') as string;
+
+		const requestData = {
+			name,
+			email,
+			message
+		};
+
+		const response = await fetch('/api/contact', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(requestData)
+		});
+
+		const responseData = await response.json();
+
+		if (responseData.success) {
+			alert('Wiadomość została wysłana.');
+		} else {
+			alert(responseData.message);
+		}
+	}
 </script>
 
 <section class="bg-surface-container-low px-6 py-24 md:px-8">
@@ -119,11 +152,7 @@
 			</p>
 
 			<!-- Contact Form -->
-			<form
-				class="space-y-6"
-				action="https://formsubmit.co/stowarzyszenieviviena@gmail.com"
-				method="POST"
-			>
+			<form class="space-y-6" onsubmit={handleSubmit}>
 				<input type="hidden" name="_subject" value="Nowa wiadomość ze strony VIVIENA" />
 				<input type="hidden" name="_captcha" value="false" />
 				<input type="hidden" name="_template" value="table" />
