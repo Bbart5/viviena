@@ -7,7 +7,7 @@
 		AreasGrid,
 		ActionsSection,
 		TeamSection,
-		DocumentsContact,
+		Documents,
 		Footer
 	} from '$lib';
 	import type { Action, Area, HowWeWorkCard, Member, OurDocument } from '../types';
@@ -206,7 +206,7 @@
 	<AreasGrid {areas} />
 	<ActionsSection {actions} />
 	<TeamSection {boardMembers} {revisionMembers} />
-	<DocumentsContact {documents} />
+	<Documents {documents} />
 </main>
 
 <Footer />
