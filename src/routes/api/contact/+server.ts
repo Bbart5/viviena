@@ -46,7 +46,6 @@ export async function POST({ request }: RequestEvent) {
 		await transporter.sendMail({
 			from: GMAIL_USER,
 			to: GMAIL_USER,
-			cc: ['hunterqe999.pl@gmail.com'],
 			replyTo: contactDto.email,
 			subject: `Nowa wiadomość od ${contactDto.name}`,
 			html: await renderContactEmail(contactDto)
