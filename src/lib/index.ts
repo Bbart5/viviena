@@ -5,5 +5,6 @@ export { default as About } from './components/About.svelte';
 export { default as AreasGrid } from './components/AreasGrid.svelte';
 export { default as ActionsSection } from './components/ActionsSection.svelte';
 export { default as TeamSection } from './components/TeamSection.svelte';
-export { default as DocumentsContact } from './components/DocumentsContact.svelte';
+export { default as Documents } from './components/Documents.svelte';
+export { default as Contact } from './components/Contact.svelte';
 export { default as Footer } from './components/Footer.svelte';
