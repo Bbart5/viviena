@@ -6,6 +6,36 @@ import type { RequestHandler } from './$types';
 
 const MAX_SIZE_BYTES = 10 * 1000 * 1000; // 10 MB
 
+export const DELETE: RequestHandler = async () => {
+	try {
+		const hero = await prisma.hero.findFirstOrThrow();
+
+		if (hero.imageMediaId) {
+			const existing = await prisma.media.findUnique({ where: { id: hero.imageMediaId } });
+
+			await prisma.hero.update({ where: { id: hero.id }, data: { imageMediaId: null } });
+
+			if (existing) {
+				await MediaService.getInstance().remove(existing.id);
+			}
+		}
+
+		return json({ success: true });
+	} catch (error) {
+		console.error(error);
+
+		return json(
+			{
+				success: false,
+				message: 'Nie udało się usunąć obrazu.'
+			},
+			{
+				status: 500
+			}
+		);
+	}
+};
+
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const formData = await request.formData();

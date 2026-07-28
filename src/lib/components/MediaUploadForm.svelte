@@ -14,8 +14,11 @@
 		/** Existing media shown as the preview until a new file is staged. */
 		previewUrl?: string | null;
 		previewKind?: 'image' | 'video' | 'audio';
+		/** Endpoint receiving DELETE for the existing media; enables the delete button. */
+		deleteAction?: string | null;
 		class?: string;
 		onuploaded?: (response: unknown) => void;
+		ondeleted?: () => void;
 		onerror?: (message: string) => void;
 	}
 
@@ -30,8 +33,10 @@
 		submitLabel = 'Prześlij',
 		previewUrl = null,
 		previewKind = 'image',
+		deleteAction = null,
 		class: className = '',
 		onuploaded,
+		ondeleted,
 		onerror
 	}: Props = $props();
 
@@ -42,6 +47,32 @@
 	function handleFileError(message: string) {
 		errorMessage = message;
 		onerror?.(message);
+	}
+
+	async function handleDelete() {
+		if (busy || !deleteAction) {
+			return;
+		}
+
+		busy = true;
+		errorMessage = null;
+
+		try {
+			const response = await fetch(deleteAction, { method: 'DELETE' });
+			const body = await response.json();
+
+			if (!response.ok || !body.success) {
+				throw new Error(body.message ?? 'Nie udało się usunąć pliku.');
+			}
+
+			ondeleted?.();
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Nie udało się usunąć pliku.';
+			errorMessage = message;
+			onerror?.(message);
+		} finally {
+			busy = false;
+		}
 	}
 
 	async function handleSubmit(event: SubmitEvent) {
@@ -92,6 +123,7 @@
 		disabled={busy}
 		onselect={() => (errorMessage = null)}
 		onerror={handleFileError}
+		ondeleterequest={deleteAction ? handleDelete : undefined}
 	/>
 
 	{#if errorMessage}

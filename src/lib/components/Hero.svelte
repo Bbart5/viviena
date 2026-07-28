@@ -12,11 +12,17 @@
 
 	let { scrollTo, hero, admin = false }: Props = $props();
 
-	let uploadedImageUrl = $state<string | null>(null);
-	const displayedImageUrl = $derived(uploadedImageUrl ?? hero.imageUrl ?? PLACEHOLDER_IMAGE_URL);
+	// undefined = no local change yet, null = deleted, string = freshly uploaded
+	let imageOverride = $state<string | null | undefined>(undefined);
+	const currentImageUrl = $derived(imageOverride !== undefined ? imageOverride : hero.imageUrl);
+	const displayedImageUrl = $derived(currentImageUrl ?? PLACEHOLDER_IMAGE_URL);
 
 	function handleImageUploaded(response: unknown) {
-		uploadedImageUrl = (response as { media: { url: string } }).media.url;
+		imageOverride = (response as { media: { url: string } }).media.url;
+	}
+
+	function handleImageDeleted() {
+		imageOverride = null;
 	}
 
 	let editing = $state(false);
@@ -98,7 +104,9 @@
 						submitLabel="Zapisz obraz"
 						previewUrl={displayedImageUrl}
 						previewKind="image"
+						deleteAction={currentImageUrl ? '/api/admin/hero/image' : null}
 						onuploaded={handleImageUploaded}
+						ondeleted={handleImageDeleted}
 					/>
 				</div>
 			</div>
@@ -235,7 +243,9 @@
 						submitLabel="Zapisz obraz"
 						previewUrl={displayedImageUrl}
 						previewKind="image"
+						deleteAction={currentImageUrl ? '/api/admin/hero/image' : null}
 						onuploaded={handleImageUploaded}
+						ondeleted={handleImageDeleted}
 					/>
 				</div>
 			{:else}

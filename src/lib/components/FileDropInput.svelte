@@ -14,6 +14,8 @@
 		class?: string;
 		onselect?: (files: File[]) => void;
 		onerror?: (message: string) => void;
+		/** When provided, the existing preview gets a delete button calling this. */
+		ondeleterequest?: () => void;
 	}
 
 	let {
@@ -28,7 +30,8 @@
 		previewKind = 'image',
 		class: className = '',
 		onselect,
-		onerror
+		onerror,
+		ondeleterequest
 	}: Props = $props();
 
 	interface StagedPreview {
@@ -202,7 +205,7 @@
 			{/each}
 		</ul>
 	{:else if previewUrl}
-		<div class="mb-4 overflow-hidden rounded-2xl border border-outline-variant/30">
+		<div class="relative mb-4 overflow-hidden rounded-2xl border border-outline-variant/30">
 			{#if previewKind === 'image'}
 				<img src={previewUrl} alt="Podgląd" class="h-auto w-full" />
 			{:else if previewKind === 'video'}
@@ -210,6 +213,17 @@
 				<video src={previewUrl} controls class="w-full bg-black"></video>
 			{:else}
 				<audio src={previewUrl} controls class="w-full p-3"></audio>
+			{/if}
+			{#if ondeleterequest}
+				<button
+					type="button"
+					onclick={ondeleterequest}
+					{disabled}
+					aria-label="Usuń obecny plik"
+					class="absolute top-2 right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-brand-muted shadow-md transition hover:bg-error/10 hover:text-error disabled:opacity-50"
+				>
+					<span class="material-symbols-outlined text-base">delete</span>
+				</button>
 			{/if}
 		</div>
 	{/if}
