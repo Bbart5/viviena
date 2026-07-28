@@ -11,6 +11,7 @@ MailTransport.getInstance();
 const PROTECTED_PREFIXES = [resolve('/admin'), resolve('/api/admin')] as const;
 const PUBLIC_PATHS = [resolve('/admin/login'), resolve('/admin/logout')] as const;
 const API_PREFIX = resolve('/api');
+const LOGIN_PATH = resolve('/admin/login');
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const jwtToken = event.cookies.get(SESSION_TOKEN_COOKIE_NAME);
@@ -32,7 +33,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return json({ success: false, message: 'Brak autoryzacji.' }, { status: 401 });
 		}
 
-		throw redirect(303, '/');
+		throw redirect(303, LOGIN_PATH);
 	}
 
 	return resolve(event);

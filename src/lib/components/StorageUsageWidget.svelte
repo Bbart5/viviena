@@ -113,22 +113,20 @@
 	);
 </script>
 
-<div class="rounded-2xl border border-outline-variant/30 bg-white p-6 {className}">
-	<div class="mb-6 flex items-center justify-between gap-4">
-		<div class="flex items-center gap-3">
-			<span class="material-symbols-outlined text-primary">database</span>
-			<h2 class="font-headline text-lg font-bold text-brand-text">Wykorzystanie magazynu</h2>
+<div class="rounded-2xl border border-outline-variant/30 bg-white p-4 {className}">
+	<div class="mb-3 flex items-center justify-between gap-4">
+		<div class="flex items-center gap-2">
+			<span class="material-symbols-outlined text-xl text-primary">database</span>
+			<h2 class="font-headline text-base font-bold text-brand-text">Wykorzystanie magazynu</h2>
 		</div>
 		<button
 			type="button"
 			onclick={() => loadUsage(true)}
 			disabled={loading}
 			aria-label="Odśwież statystyki"
-			class="flex cursor-pointer items-center gap-1 rounded-lg border border-outline-variant/30 px-3 py-1.5 text-sm font-semibold text-brand-muted transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
+			class="flex cursor-pointer items-center gap-1 rounded-lg border border-outline-variant/30 px-2.5 py-1 text-xs font-semibold text-brand-muted transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
 		>
-			<span class="material-symbols-outlined text-base {loading ? 'animate-spin' : ''}"
-				>refresh</span
-			>
+			<span class="material-symbols-outlined text-sm {loading ? 'animate-spin' : ''}">refresh</span>
 			Odśwież
 		</button>
 	</div>
@@ -138,29 +136,27 @@
 	{:else if errorMessage}
 		<p class="text-sm text-error">{errorMessage}</p>
 	{:else if usage}
-		<div class="space-y-5">
+		<div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
 			{#each rows as row (row.label)}
-				<div>
-					<div class="mb-1.5 flex flex-wrap items-center justify-between gap-2 text-sm">
-						<span class="flex items-center gap-2 font-semibold text-brand-text">
-							<span class="material-symbols-outlined text-base text-brand-muted">{row.icon}</span>
+				<div
+					class="rounded-lg border border-outline-variant/20 bg-surface-container-low/60 px-3 py-2"
+				>
+					<div class="flex items-start justify-between gap-2">
+						<span class="flex items-center gap-1.5 text-xs font-semibold text-brand-text">
+							<span class="material-symbols-outlined text-sm text-brand-muted">{row.icon}</span>
 							{row.label}
 						</span>
-						{#if row.used === null}
-							<span class="text-brand-muted">Niedostępne w trybie deweloperskim</span>
-						{:else}
-							<span class="text-brand-muted">
-								{row.usedLabel} / {row.limitLabel}
-								<span class="font-semibold text-brand-text">
-									({formatPercentage(row.used, row.limit)})
-								</span>
+						{#if row.used !== null}
+							<span class="text-xs font-bold text-brand-text">
+								{formatPercentage(row.used, row.limit)}
 							</span>
 						{/if}
 					</div>
 					{#if row.used === null}
-						<div class="h-2 rounded-full bg-surface-container-highest opacity-50"></div>
+						<div class="mt-2 h-1.5 rounded-full bg-surface-container-highest opacity-50"></div>
+						<p class="mt-1.5 text-xs text-brand-muted">Brak danych (dev)</p>
 					{:else}
-						<div class="h-2 overflow-hidden rounded-full bg-surface-container-highest">
+						<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-container-highest">
 							<div
 								class="h-full rounded-full transition-all duration-500 {barColor(
 									percentage(row.used, row.limit)
@@ -168,6 +164,7 @@
 								style="width: {Math.min(percentage(row.used, row.limit), 100)}%"
 							></div>
 						</div>
+						<p class="mt-1.5 text-xs text-brand-muted">{row.usedLabel} / {row.limitLabel}</p>
 					{/if}
 				</div>
 			{/each}

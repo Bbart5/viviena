@@ -3,6 +3,8 @@
 	import { resolve } from '$app/paths';
 	import type { LoginRequestDto } from './+server';
 
+	let showPassword = $state(false);
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
@@ -53,13 +55,25 @@
 					Hasło
 				</label>
 
-				<input
-					id="password"
-					name="password"
-					type="password"
-					placeholder="Podaj hasło"
-					class="w-full rounded-lg border border-outline-variant/20 p-4 transition-colors outline-none focus:border-primary"
-				/>
+				<div class="relative">
+					<input
+						id="password"
+						name="password"
+						type={showPassword ? 'text' : 'password'}
+						placeholder="Podaj hasło"
+						class="w-full rounded-lg border border-outline-variant/20 p-4 pr-12 transition-colors outline-none focus:border-primary"
+					/>
+					<button
+						type="button"
+						onclick={() => (showPassword = !showPassword)}
+						aria-label={showPassword ? 'Ukryj hasło' : 'Pokaż hasło'}
+						class="absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full p-1 text-on-surface-variant transition hover:text-primary"
+					>
+						<span class="material-symbols-outlined">
+							{showPassword ? 'visibility_off' : 'visibility'}
+						</span>
+					</button>
+				</div>
 			</div>
 
 			<button
