@@ -83,5 +83,13 @@
 				Zaloguj
 			</button>
 		</form>
+
+		<a
+			href={resolve('/')}
+			class="mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-brand-muted transition hover:text-primary"
+		>
+			<span class="material-symbols-outlined text-base">arrow_back</span>
+			Wróć na stronę główną
+		</a>
 	</div>
 </div>
