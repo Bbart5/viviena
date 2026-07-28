@@ -1,11 +1,93 @@
 <script lang="ts">
-	import type { Area } from "../../types";
+	import type { Areas } from '../../../generated/prisma/client';
 
 	interface Props {
-		areas: Area[];
+		areas: Areas;
+		admin?: boolean;
 	}
 
-	let { areas }: Props = $props();
+	let { areas, admin }: Props = $props();
+
+	let editing = $state(false);
+
+	let editedAreas = $state({
+		id: areas.id,
+		title: areas.title,
+		header1: areas.header1,
+		paragraph1: areas.paragraph1,
+		header2: areas.header2,
+		paragraph2: areas.paragraph2,
+		header3: areas.header3,
+		paragraph3: areas.paragraph3,
+		header4: areas.header4,
+		paragraph4: areas.paragraph4,
+		header5: areas.header5,
+		paragraph5: areas.paragraph5
+	});
+
+	function startEditing() {
+		editedAreas = {
+			id: areas.id,
+			title: areas.title,
+			header1: areas.header1,
+			paragraph1: areas.paragraph1,
+			header2: areas.header2,
+			paragraph2: areas.paragraph2,
+			header3: areas.header3,
+			paragraph3: areas.paragraph3,
+			header4: areas.header4,
+			paragraph4: areas.paragraph4,
+			header5: areas.header5,
+			paragraph5: areas.paragraph5
+		};
+
+		editing = true;
+	}
+
+	function cancelEditing() {
+		editedAreas = {
+			id: areas.id,
+			title: areas.title,
+			header1: areas.header1,
+			paragraph1: areas.paragraph1,
+			header2: areas.header2,
+			paragraph2: areas.paragraph2,
+			header3: areas.header3,
+			paragraph3: areas.paragraph3,
+			header4: areas.header4,
+			paragraph4: areas.paragraph4,
+			header5: areas.header5,
+			paragraph5: areas.paragraph5
+		};
+
+		editing = false;
+	}
+
+	async function saveEditing() {
+		try {
+			const response = await fetch('/api/admin/areas', {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(editedAreas)
+			});
+
+			const result = await response.json();
+
+			if (!result.success) {
+				alert(result.message);
+				return;
+			}
+
+			Object.assign(areas, editedAreas);
+
+			editing = false;
+		} catch (error) {
+			console.error(error);
+			alert('Wystąpił błąd podczas zapisywania.');
+		}
+	}
 </script>
 
 <section id="obszary" class="px-6 py-24 md:px-8">
@@ -15,50 +97,192 @@
 			<span
 				class="mb-4 block font-label text-sm font-semibold tracking-[0.2em] text-primary uppercase"
 			>
-				Kierunek działań
+				{#if admin && editing}
+					<input
+						bind:value={editedAreas.title}
+						class="w-full rounded-xl border border-outline bg-white px-4 py-2 text-sm font-semibold"
+					/>
+				{:else}
+					{areas.title}
+				{/if}
 			</span>
+
 			<h2 class="mb-6 font-headline text-4xl font-black text-brand-text md:text-5xl">
-				Obszary działań
+				{#if admin && editing}
+					<input
+						bind:value={editedAreas.header1}
+						class="w-full rounded-xl border border-outline bg-white px-4 py-2 text-sm font-semibold"
+					/>
+				{:else}
+					{areas.header1}
+				{/if}
 			</h2>
+
 			<p class="max-w-2xl text-lg leading-relaxed text-brand-muted">
-				Najmocniej rozwijamy edukację finansową, jednocześnie pokazując jej praktyczne połączenia z
-				bezpieczeństwem cyfrowym, inwestowaniem i codziennym zarządzaniem budżetem.
+				{#if admin && editing}
+					<textarea
+						bind:value={editedAreas.paragraph1}
+						rows="4"
+						class="w-full resize-none rounded-xl border border-outline bg-white p-4"
+					></textarea>
+				{:else}
+					{areas.paragraph1}
+				{/if}
 			</p>
 		</div>
 
 		<!-- Bento Grid -->
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-			{#each areas as area (area.title)}
+			<!-- Karta 1 -->
+			<div
+				class="group relative overflow-hidden rounded-2xl border border-outline-variant/30 bg-white p-10 transition-all duration-500 hover:border-primary/40 hover:shadow-md md:col-span-3 md:p-12"
+			>
 				<div
-					class="group relative overflow-hidden rounded-2xl border border-outline-variant/30 bg-white p-10 transition-all duration-500 hover:border-primary/40 hover:shadow-md md:p-12 {area.span ===
-					3
-						? 'md:col-span-3'
-						: ''}"
-				>
-					{#if area.span === 3}
-						<div
-							class="absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl transition-all group-hover:bg-primary/20"
-						></div>
+					class="absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl transition-all group-hover:bg-primary/20"
+				></div>
+
+				<span class="material-symbols-outlined mb-8 text-5xl text-primary"> school </span>
+
+				<h3 class="mb-4 font-headline text-3xl font-bold text-brand-text">
+					{#if admin && editing}
+						<input
+							bind:value={editedAreas.header2}
+							class="w-full rounded-xl border border-outline bg-white px-3 py-2"
+						/>
+					{:else}
+						{areas.header2}
 					{/if}
-					<span class="material-symbols-outlined mb-8 text-5xl text-primary">
-						{area.icon}
-					</span>
-					<h3
-						class="mb-4 font-headline font-bold text-brand-text {area.span === 3
-							? 'text-3xl'
-							: 'text-2xl'}"
-					>
-						{area.title}
-					</h3>
-					<p
-						class="max-w-md leading-relaxed text-brand-muted {area.span === 3
-							? 'text-lg'
-							: 'text-base'}"
-					>
-						{area.description}
-					</p>
-				</div>
-			{/each}
+				</h3>
+
+				<p class="max-w-md text-lg leading-relaxed text-brand-muted">
+					{#if admin && editing}
+						<textarea
+							bind:value={editedAreas.paragraph2}
+							rows="4"
+							class="w-full resize-none rounded-xl border border-outline bg-white p-3"
+						></textarea>
+					{:else}
+						{areas.paragraph2}
+					{/if}
+				</p>
+			</div>
+
+			<!-- Karta 2 -->
+			<div
+				class="group relative overflow-hidden rounded-2xl border border-outline-variant/30 bg-white p-10 transition-all duration-500 hover:border-primary/40 hover:shadow-md md:p-12"
+			>
+				<span class="material-symbols-outlined mb-8 text-5xl text-primary"> trending_up </span>
+
+				<h3 class="mb-4 font-headline text-2xl font-bold text-brand-text">
+					{#if admin && editing}
+						<input
+							bind:value={editedAreas.header3}
+							class="w-full rounded-xl border border-outline bg-white px-3 py-2"
+						/>
+					{:else}
+						{areas.header3}
+					{/if}
+				</h3>
+
+				<p class="leading-relaxed text-brand-muted">
+					{#if admin && editing}
+						<textarea
+							bind:value={editedAreas.paragraph3}
+							rows="4"
+							class="w-full resize-none rounded-xl border border-outline bg-white p-3"
+						></textarea>
+					{:else}
+						{areas.paragraph3}
+					{/if}
+				</p>
+			</div>
+
+			<!-- Karta 3 -->
+			<div
+				class="group relative overflow-hidden rounded-2xl border border-outline-variant/30 bg-white p-10 transition-all duration-500 hover:border-primary/40 hover:shadow-md md:p-12"
+			>
+				<span class="material-symbols-outlined mb-8 text-5xl text-primary"> shield_lock </span>
+
+				<h3 class="mb-4 font-headline text-2xl font-bold text-brand-text">
+					{#if admin && editing}
+						<input
+							bind:value={editedAreas.header4}
+							class="w-full rounded-xl border border-outline bg-white px-3 py-2"
+						/>
+					{:else}
+						{areas.header4}
+					{/if}
+				</h3>
+
+				<p class="leading-relaxed text-brand-muted">
+					{#if admin && editing}
+						<textarea
+							bind:value={editedAreas.paragraph4}
+							rows="4"
+							class="w-full resize-none rounded-xl border border-outline bg-white p-3"
+						></textarea>
+					{:else}
+						{areas.paragraph4}
+					{/if}
+				</p>
+			</div>
+
+			<!-- Karta 4 -->
+			<div
+				class="group relative overflow-hidden rounded-2xl border border-outline-variant/30 bg-white p-10 transition-all duration-500 hover:border-primary/40 hover:shadow-md md:p-12"
+			>
+				<span class="material-symbols-outlined mb-8 text-5xl text-primary"> savings </span>
+
+				<h3 class="mb-4 font-headline text-2xl font-bold text-brand-text">
+					{#if admin && editing}
+						<input
+							bind:value={editedAreas.header5}
+							class="w-full rounded-xl border border-outline bg-white px-3 py-2"
+						/>
+					{:else}
+						{areas.header5}
+					{/if}
+				</h3>
+
+				<p class="leading-relaxed text-brand-muted">
+					{#if admin && editing}
+						<textarea
+							bind:value={editedAreas.paragraph5}
+							rows="4"
+							class="w-full resize-none rounded-xl border border-outline bg-white p-3"
+						></textarea>
+					{:else}
+						{areas.paragraph5}
+					{/if}
+				</p>
+			</div>
 		</div>
+
+		{#if admin}
+			<div class="mt-8 flex gap-3">
+				{#if admin && editing}
+					<button
+						onclick={saveEditing}
+						class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
+					>
+						Zapisz
+					</button>
+
+					<button
+						onclick={cancelEditing}
+						class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
+					>
+						Anuluj
+					</button>
+				{:else}
+					<button
+						onclick={startEditing}
+						class="rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90"
+					>
+						Edytuj
+					</button>
+				{/if}
+			</div>
+		{/if}
 	</div>
 </section>

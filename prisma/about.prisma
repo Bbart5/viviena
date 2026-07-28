@@ -1,0 +1,21 @@
+model About {
+  id Int @id @default(autoincrement())
+
+  title      String
+  header     String
+  paragraph1 String
+  paragraph2 String
+  paragraph3 String
+
+  card1Title       String
+  card1Description String
+
+  card2Title       String
+  card2Description String
+
+  card3Title       String
+  card3Description String
+
+  card4Title       String
+  card4Description String
+}

@@ -1,0 +1,19 @@
+model Areas {
+  id Int @id @default(autoincrement())
+
+  title      String
+  header1    String
+  paragraph1 String
+
+  header2    String
+  paragraph2 String
+
+  header3    String
+  paragraph3 String
+
+  header4    String
+  paragraph4 String
+
+  header5    String
+  paragraph5 String
+}
