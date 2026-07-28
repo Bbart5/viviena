@@ -1,7 +1,7 @@
-import "dotenv/config";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../../../generated/prisma/client";
-import { DATABASE_URL } from "$env/static/private";
+import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../../../generated/prisma/client';
+import { DATABASE_URL } from '$env/static/private';
 
 const connectionString = DATABASE_URL;
 

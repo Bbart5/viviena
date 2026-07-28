@@ -3,7 +3,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { plainToInstance } from 'class-transformer';
 import { IsNotEmpty, IsString, validate } from 'class-validator';
 import bcrypt from 'bcrypt';
-import jwt, { type JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { ENVIRONMENT, JWT_SECRET } from '$env/static/private';
 import type { JwtSessionPayload } from '$lib/types/jwt.payload';
 import { SESSION_TOKEN_COOKIE_NAME, SESSION_TOKEN_COOKIE_PATH } from '$lib/consts/auth';

@@ -58,16 +58,14 @@ async function main() {
 				'Przybliżamy podstawy inwestowania, działanie rynku kapitałowego oraz różnice między bezpiecznymi i ryzykownymi instrumentami finansowymi. Chcemy, żeby młodzi ludzie podejmowali decyzje świadomie, a nie pod wpływem przypadkowych treści z internetu.',
 
 			card1Title: 'Uważnie obserwujemy potrzeby',
-			card1Description:
-				'Tworzymy działania odpowiadające na realne wyzwania młodych ludzi.',
+			card1Description: 'Tworzymy działania odpowiadające na realne wyzwania młodych ludzi.',
 
 			card2Title: 'Uczymy praktycznie',
 			card2Description:
 				'Przekładamy teorię na konkret: decyzje, nawyki i codzienne wybory finansowe.',
 
 			card3Title: 'Budujemy świadome postawy',
-			card3Description:
-				'Pokazujemy finanse i bezpieczeństwo bez uproszczeń oraz bez straszenia.',
+			card3Description: 'Pokazujemy finanse i bezpieczeństwo bez uproszczeń oraz bez straszenia.',
 
 			card4Title: 'Budujemy współpracę',
 			card4Description:
