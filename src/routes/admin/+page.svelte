@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
+	import { asset } from '$app/paths';
+	import LogoutButton from '$lib/components/LogoutButton.svelte';
 	import {
 		Navbar,
 		Hero,
@@ -11,64 +13,9 @@
 		Documents,
 		Footer
 	} from '$lib';
-	import type { Action, Area, HowWeWorkCard, Member, OurDocument } from '../types';
-	import { asset } from '$app/paths';
+	import type { Action, Area, HowWeWorkCard, Member, OurDocument } from '../../types';
 
 	let { data }: { data: PageData } = $props();
-
-	// const howWeWork: HowWeWorkCard[] = [
-	// 	{
-	// 		title: 'Uważnie obserwujemy potrzeby',
-	// 		description: 'Tworzymy działania odpowiadające na realne wyzwania młodych ludzi.',
-	// 		icon: 'visibility'
-	// 	},
-	// 	{
-	// 		title: 'Uczymy praktycznie',
-	// 		description: 'Przekładamy teorię na konkret: decyzje, nawyki i codzienne wybory finansowe.',
-	// 		icon: 'rocket_launch'
-	// 	},
-	// 	{
-	// 		title: 'Budujemy świadome postawy',
-	// 		description: 'Pokazujemy finanse i bezpieczeństwo bez uproszczeń oraz bez straszenia.',
-	// 		icon: 'balance'
-	// 	},
-	// 	{
-	// 		title: 'Budujemy współpracę',
-	// 		description: 'Łączymy młodzież, ekspertów, uczelnie i instytucje wokół edukacji finansowej.',
-	// 		icon: 'handshake'
-	// 	}
-	// ];
-
-	// const areas: Area[] = [
-	// 	{
-	// 		title: 'Edukacja finansowa',
-	// 		description:
-	// 			'Tworzymy wydarzenia i materiały, które pomagają młodym ludziom lepiej rozumieć pieniądze, inwestowanie, bezpieczeństwo finansowe i codzienne decyzje ekonomiczne. Pokazujemy finanse w praktyczny, przystępny i ciekawy sposób.',
-	// 		icon: 'school',
-	// 		span: 3
-	// 	},
-	// 	{
-	// 		title: 'Rynek kapitałowy i inwestycje',
-	// 		description:
-	// 			'Przybliżamy podstawy inwestowania, działanie rynku kapitałowego oraz różnice między bezpiecznymi i ryzykownymi instrumentami finansowymi. Chcemy, żeby młodzi ludzie podejmowali decyzje świadomie, a nie pod wpływem przypadkowych treści z internetu.',
-	// 		icon: 'trending_up',
-	// 		span: 1
-	// 	},
-	// 	{
-	// 		title: 'Cyberbezpieczeństwo',
-	// 		description:
-	// 			'Edukujemy o bezpieczeństwie w sieci, ochronie danych i zagrożeniach cyfrowych, szczególnie w kontekście finansów, bankowości, płatności online i oszustw internetowych.',
-	// 		icon: 'shield_lock',
-	// 		span: 1
-	// 	},
-	// 	{
-	// 		title: 'Oszczędzanie i budżet',
-	// 		description:
-	// 			'Pokazujemy, jak planować wydatki, budować dobre nawyki finansowe, rozumieć budżet osobisty i podejmować codzienne decyzje, które mają realny wpływ na przyszłość.',
-	// 		icon: 'savings',
-	// 		span: 1
-	// 	}
-	// ];
 
 	const actions: Action[] = [
 		{
@@ -208,12 +155,14 @@
 	});
 </script>
 
+<LogoutButton />
+
 <Navbar />
 
 <main>
-	<Hero {scrollTo} hero={data.hero} />
-	<About about={data.about} />
-	<AreasGrid areas={data.areas} />
+	<Hero hero={data.hero} {scrollTo} admin={true} />
+	<About about={data.about} admin={true} />
+	<AreasGrid areas={data.areas} admin={true} />
 	<ActionsSection {actions} />
 	<TeamSection {boardMembers} {revisionMembers} />
 	<Documents {documents} />

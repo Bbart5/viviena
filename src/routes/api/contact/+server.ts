@@ -41,6 +41,7 @@ export async function POST({ request }: RequestEvent) {
 				{ status: 400 }
 			);
 		}
+		
 		const transporter = MailTransport.getInstance();
 
 		await transporter.sendMail({

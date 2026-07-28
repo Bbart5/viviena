@@ -1,0 +1,17 @@
+services: 
+  postgres: 
+    image: postgres:latest
+    container_name: viviena-postgres
+    restart: unless-stopped
+    environment: 
+      POSTGRES_USER: viviena
+      POSTGRES_PASSWORD: viviena
+      POSTGRES_DB: viviena
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/
+
+volumes:
+  postgres_data:
+  
