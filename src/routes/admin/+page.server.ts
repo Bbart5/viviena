@@ -11,8 +11,7 @@ export const load: PageServerLoad = async () => {
 		: null;
 
 	return {
-		hero,
-		heroImageUrl: heroImage?.url ?? null,
+		hero: { ...hero, imageUrl: heroImage?.url ?? null },
 		about,
 		areas
 	};

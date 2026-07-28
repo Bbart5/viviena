@@ -6,15 +6,14 @@
 
 	interface Props {
 		scrollTo: (href: string) => void;
-		hero: Hero;
-		imageUrl?: string | null;
+		hero: Hero & { imageUrl: string | null };
 		admin?: boolean;
 	}
 
-	let { scrollTo, hero, imageUrl = null, admin = false }: Props = $props();
+	let { scrollTo, hero, admin = false }: Props = $props();
 
 	let uploadedImageUrl = $state<string | null>(null);
-	const displayedImageUrl = $derived(uploadedImageUrl ?? imageUrl ?? PLACEHOLDER_IMAGE_URL);
+	const displayedImageUrl = $derived(uploadedImageUrl ?? hero.imageUrl ?? PLACEHOLDER_IMAGE_URL);
 
 	function handleImageUploaded(response: unknown) {
 		uploadedImageUrl = (response as { media: { url: string } }).media.url;
