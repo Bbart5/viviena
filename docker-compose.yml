@@ -1,9 +1,9 @@
-services: 
-  postgres: 
+services:
+  postgres:
     image: postgres:latest
     container_name: viviena-postgres
     restart: unless-stopped
-    environment: 
+    environment:
       POSTGRES_USER: viviena
       POSTGRES_PASSWORD: viviena
       POSTGRES_DB: viviena
@@ -12,6 +12,34 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/
 
+  minio:
+    image: minio/minio:latest
+    container_name: viviena-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: viviena
+      MINIO_ROOT_PASSWORD: viviena-dev
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/data
+
+  # One-shot: creates the media bucket and allows anonymous downloads, then exits.
+  minio-init:
+    image: minio/mc:latest
+    container_name: viviena-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 viviena viviena-dev; do sleep 1; done;
+      mc mb --ignore-existing local/viviena-media;
+      mc anonymous set download local/viviena-media;
+      exit 0;
+      "
+
 volumes:
   postgres_data:
-  
+  minio_data:
