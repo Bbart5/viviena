@@ -64,7 +64,7 @@
 
 			<button
 				type="submit"
-				class="w-full rounded-full bg-primary py-3 font-semibold text-white transition hover:opacity-90"
+				class="w-full cursor-pointer rounded-full bg-primary py-3 font-semibold text-white transition hover:opacity-90"
 			>
 				Zaloguj
 			</button>

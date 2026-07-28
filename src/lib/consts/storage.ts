@@ -5,4 +5,9 @@ export const R2_FREE_TIER_LIMITS = {
 	classBOps: 10_000_000
 } as const;
 
+// Prisma Postgres free tier limit.
+export const PRISMA_POSTGRES_FREE_TIER_LIMITS = {
+	databaseBytes: 5 * 1000 ** 3 // 5 GB
+} as const;
+
 export const STORAGE_USAGE_ENDPOINT = '/api/admin/storage/usage' as const;

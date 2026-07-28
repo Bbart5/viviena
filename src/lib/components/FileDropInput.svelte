@@ -218,7 +218,7 @@
 							type="button"
 							onclick={() => removeFile(index)}
 							aria-label="Usuń plik {preview.file.name}"
-							class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-brand-muted transition hover:bg-error/10 hover:text-error"
+							class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-brand-muted transition hover:bg-error/10 hover:text-error"
 						>
 							<span class="material-symbols-outlined text-base">close</span>
 						</button>

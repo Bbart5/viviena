@@ -125,7 +125,7 @@
 					type="button"
 					onclick={() => (status = null)}
 					aria-label="Zamknij"
-					class="-m-1 flex shrink-0 items-center p-1 opacity-70 transition-opacity hover:opacity-100"
+					class="-m-1 flex shrink-0 cursor-pointer items-center p-1 opacity-70 transition-opacity hover:opacity-100"
 				>
 					<span class="material-symbols-outlined text-lg leading-none">close</span>
 				</button>
@@ -211,7 +211,7 @@
 		<button
 			type="submit"
 			disabled={$submitting}
-			class="w-full rounded-full bg-linear-to-r from-primary to-primary-container py-3 font-headline text-base font-bold text-white shadow-lg transition-all hover:shadow-primary/20 disabled:cursor-not-allowed disabled:opacity-70 md:py-4 md:text-lg"
+			class="w-full cursor-pointer rounded-full bg-linear-to-r from-primary to-primary-container py-3 font-headline text-base font-bold text-white shadow-lg transition-all hover:shadow-primary/20 disabled:cursor-not-allowed disabled:opacity-70 md:py-4 md:text-lg"
 		>
 			{$submitting ? 'Wysyłanie...' : 'Napisz do nas'}
 		</button>

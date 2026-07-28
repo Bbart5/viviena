@@ -88,7 +88,7 @@
 	<button
 		type="submit"
 		disabled={busy || files.length === 0}
-		class="mt-4 rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		class="mt-4 cursor-pointer rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 	>
 		{busy ? 'Przesyłanie...' : submitLabel}
 	</button>

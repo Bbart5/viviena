@@ -1,10 +1,10 @@
-import { getStorageUsage } from '$lib/server/storage/stats';
+import { getResourceUsage } from '$lib/server/storage/stats';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
-		const usage = await getStorageUsage(url.searchParams.has('fresh'));
+		const usage = await getResourceUsage(url.searchParams.has('fresh'));
 
 		return json({
 			success: true,

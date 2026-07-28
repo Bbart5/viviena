@@ -123,7 +123,7 @@
 						<div class="mt-auto">
 							{#if action.showCta}
 								<button
-									class="flex items-center gap-2 text-xs font-bold tracking-widest text-brand-text uppercase transition-transform group-hover:translate-x-2"
+									class="flex cursor-pointer items-center gap-2 text-xs font-bold tracking-widest text-brand-text uppercase transition-transform group-hover:translate-x-2"
 								>
 									{action.ctaLabel}
 									<svg

@@ -1,8 +1,13 @@
 <script lang="ts">
-	import { R2_FREE_TIER_LIMITS, STORAGE_USAGE_ENDPOINT } from '$lib/consts/storage';
+	import {
+		PRISMA_POSTGRES_FREE_TIER_LIMITS,
+		R2_FREE_TIER_LIMITS,
+		STORAGE_USAGE_ENDPOINT
+	} from '$lib/consts/storage';
 
-	interface StorageUsage {
+	interface ResourceUsage {
 		storageBytes: number;
+		databaseBytes: number;
 		classAOps: number | null;
 		classBOps: number | null;
 	}
@@ -13,7 +18,7 @@
 
 	let { class: className = '' }: Props = $props();
 
-	let usage = $state<StorageUsage | null>(null);
+	let usage = $state<ResourceUsage | null>(null);
 	let loading = $state(true);
 	let errorMessage = $state<string | null>(null);
 
@@ -72,7 +77,7 @@
 		usage
 			? [
 					{
-						label: 'Pamięć',
+						label: 'Pamięć (R2)',
 						icon: 'hard_drive',
 						used: usage.storageBytes as number | null,
 						limit: R2_FREE_TIER_LIMITS.storageBytes as number,
@@ -80,7 +85,7 @@
 						limitLabel: formatBytes(R2_FREE_TIER_LIMITS.storageBytes)
 					},
 					{
-						label: 'Operacje klasy A',
+						label: 'Operacje klasy A (R2)',
 						icon: 'upload',
 						used: usage.classAOps,
 						limit: R2_FREE_TIER_LIMITS.classAOps as number,
@@ -88,12 +93,20 @@
 						limitLabel: R2_FREE_TIER_LIMITS.classAOps.toLocaleString('pl-PL')
 					},
 					{
-						label: 'Operacje klasy B',
+						label: 'Operacje klasy B (R2)',
 						icon: 'download',
 						used: usage.classBOps,
 						limit: R2_FREE_TIER_LIMITS.classBOps as number,
 						usedLabel: usage.classBOps?.toLocaleString('pl-PL') ?? '',
 						limitLabel: R2_FREE_TIER_LIMITS.classBOps.toLocaleString('pl-PL')
+					},
+					{
+						label: 'Baza danych (Postgres)',
+						icon: 'database',
+						used: usage.databaseBytes as number | null,
+						limit: PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes as number,
+						usedLabel: formatBytes(usage.databaseBytes),
+						limitLabel: formatBytes(PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes)
 					}
 				]
 			: []
@@ -104,14 +117,14 @@
 	<div class="mb-6 flex items-center justify-between gap-4">
 		<div class="flex items-center gap-3">
 			<span class="material-symbols-outlined text-primary">database</span>
-			<h2 class="font-headline text-lg font-bold text-brand-text">Wykorzystanie magazynu (R2)</h2>
+			<h2 class="font-headline text-lg font-bold text-brand-text">Wykorzystanie magazynu</h2>
 		</div>
 		<button
 			type="button"
 			onclick={() => loadUsage(true)}
 			disabled={loading}
 			aria-label="Odśwież statystyki"
-			class="flex items-center gap-1 rounded-lg border border-outline-variant/30 px-3 py-1.5 text-sm font-semibold text-brand-muted transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
+			class="flex cursor-pointer items-center gap-1 rounded-lg border border-outline-variant/30 px-3 py-1.5 text-sm font-semibold text-brand-muted transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
 		>
 			<span class="material-symbols-outlined text-base {loading ? 'animate-spin' : ''}"
 				>refresh</span
