@@ -117,7 +117,7 @@
 	<div class="mb-3 flex items-center justify-between gap-4">
 		<div class="flex items-center gap-2">
 			<span class="material-symbols-outlined text-xl text-primary">database</span>
-			<h2 class="font-headline text-base font-bold text-brand-text">Wykorzystanie magazynu</h2>
+			<h2 class="font-headline text-base font-bold text-brand-text">Wykorzystanie serwisów</h2>
 		</div>
 		<button
 			type="button"
