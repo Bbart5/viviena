@@ -22,3 +22,21 @@ export const ACCEPTED_IMAGE_MIME_TYPES = [
 	'image/svg+xml',
 	'image/gif'
 ] as const;
+
+export const ACCEPTED_VIDEO_MIME_TYPES = [
+	'video/mp4',
+	'video/webm',
+	'video/ogg',
+	'video/quicktime',
+	'video/x-matroska'
+] as const;
+
+export const ACCEPTED_AUDIO_MIME_TYPES = [
+	'audio/mpeg',
+	'audio/mp4',
+	'audio/aac',
+	'audio/wav',
+	'audio/ogg',
+	'audio/webm',
+	'audio/flac'
+] as const;
