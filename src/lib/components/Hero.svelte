@@ -1,14 +1,24 @@
 <script lang="ts">
-	import { asset } from '$app/paths';
+	import { PLACEHOLDER_IMAGE_URL } from '$lib/consts/placeholder-image-url';
+	import { ACCEPTED_IMAGE_MIME_TYPES } from '$lib/consts/storage';
+	import MediaUploadForm from './MediaUploadForm.svelte';
 	import type { Hero } from '../../../generated/prisma/client';
 
 	interface Props {
 		scrollTo: (href: string) => void;
 		hero: Hero;
+		imageUrl?: string | null;
 		admin?: boolean;
 	}
 
-	let { scrollTo, hero, admin = false }: Props = $props();
+	let { scrollTo, hero, imageUrl = null, admin = false }: Props = $props();
+
+	let uploadedImageUrl = $state<string | null>(null);
+	const displayedImageUrl = $derived(uploadedImageUrl ?? imageUrl ?? PLACEHOLDER_IMAGE_URL);
+
+	function handleImageUploaded(response: unknown) {
+		uploadedImageUrl = (response as { media: { url: string } }).media.url;
+	}
 
 	let editing = $state(false);
 
@@ -77,10 +87,28 @@
 <section id="start" class="relative flex flex-col overflow-hidden lg:flex-row lg:items-center">
 	<!-- Mobile Hero Image (top, 21:9, edge-to-edge) -->
 	<div class="relative w-full lg:hidden">
-		<div class="aspect-21/9 w-full overflow-hidden">
-			<img src={asset('/hero/hero.jpg')} alt="VIVIENA" class="h-full w-full object-cover" />
-		</div>
-		<div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-white"></div>
+		{#if admin && editing}
+			<div class="px-6 pt-6">
+				<div class="rounded-2xl border border-outline-variant/25 bg-white p-4">
+					<MediaUploadForm
+						action="/api/admin/hero/image"
+						accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
+						maxSizeMb={10}
+						label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
+						hint="AVIF, PNG, JPEG, WebP, SVG lub GIF (maks. 10 MB)"
+						submitLabel="Zapisz obraz"
+						previewUrl={displayedImageUrl}
+						previewKind="image"
+						onuploaded={handleImageUploaded}
+					/>
+				</div>
+			</div>
+		{:else}
+			<div class="aspect-21/9 w-full overflow-hidden">
+				<img src={displayedImageUrl} alt="VIVIENA" class="h-full w-full object-cover" />
+			</div>
+			<div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-white"></div>
+		{/if}
 	</div>
 
 	<div
@@ -197,13 +225,29 @@
 			<div
 				class="absolute inset-0 rounded-full bg-linear-to-tr from-primary/15 to-primary-container/20 blur-3xl"
 			></div>
-			<div class="relative w-full overflow-hidden rounded-2xl">
-				<img
-					src={asset('/hero/hero.jpg')}
-					alt="VIVIENA"
-					class="h-auto w-full rounded-2xl border border-outline-variant/25 transition-all duration-700 hover:opacity-100"
-				/>
-			</div>
+			{#if admin && editing}
+				<div class="relative w-full rounded-2xl border border-outline-variant/25 bg-white p-4">
+					<MediaUploadForm
+						action="/api/admin/hero/image"
+						accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
+						maxSizeMb={10}
+						label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
+						hint="AVIF, PNG, JPEG, WebP, SVG lub GIF (maks. 10 MB)"
+						submitLabel="Zapisz obraz"
+						previewUrl={displayedImageUrl}
+						previewKind="image"
+						onuploaded={handleImageUploaded}
+					/>
+				</div>
+			{:else}
+				<div class="relative w-full overflow-hidden rounded-2xl">
+					<img
+						src={displayedImageUrl}
+						alt="VIVIENA"
+						class="h-auto w-full rounded-2xl border border-outline-variant/25 transition-all duration-700 hover:opacity-100"
+					/>
+				</div>
+			{/if}
 		</div>
 	</div>
 </section>

@@ -8,6 +8,9 @@
 		label?: string;
 		hint?: string;
 		disabled?: boolean;
+		/** Existing media shown as the preview until a new file is staged. */
+		previewUrl?: string | null;
+		previewKind?: 'image' | 'video' | 'audio';
 		class?: string;
 		onselect?: (files: File[]) => void;
 		onerror?: (message: string) => void;
@@ -21,6 +24,8 @@
 		label = 'Przeciągnij i upuść plik lub kliknij, aby wybrać',
 		hint = '',
 		disabled = false,
+		previewUrl = null,
+		previewKind = 'image',
 		class: className = '',
 		onselect,
 		onerror
@@ -151,6 +156,64 @@
 		class="hidden"
 	/>
 
+	{#if staged.length}
+		<ul class="mb-4 grid gap-4 {multiple ? 'sm:grid-cols-2' : ''}">
+			{#each staged as preview, index (preview.previewUrl)}
+				<li class="rounded-2xl border border-outline-variant/30 bg-white p-3">
+					{#if preview.kind === 'image'}
+						<img
+							src={preview.previewUrl}
+							alt={preview.file.name}
+							class="w-full rounded-lg {multiple ? 'h-32 object-cover' : 'h-auto'}"
+						/>
+					{:else if preview.kind === 'video'}
+						<!-- svelte-ignore a11y_media_has_caption -->
+						<video
+							src={preview.previewUrl}
+							controls
+							class="w-full rounded-lg bg-black {multiple ? 'h-32' : 'h-auto'}"
+						></video>
+					{:else if preview.kind === 'audio'}
+						<audio src={preview.previewUrl} controls class="w-full"></audio>
+					{:else}
+						<div
+							class="flex h-32 items-center justify-center rounded-lg bg-surface-container-low text-brand-muted"
+						>
+							<span class="material-symbols-outlined text-4xl">draft</span>
+						</div>
+					{/if}
+					<div class="mt-2 flex items-center justify-between gap-2">
+						<div class="min-w-0">
+							<p class="truncate text-sm font-semibold text-brand-text" title={preview.file.name}>
+								{preview.file.name}
+							</p>
+							<p class="text-xs text-brand-muted">{formatBytes(preview.file.size)}</p>
+						</div>
+						<button
+							type="button"
+							onclick={() => removeFile(index)}
+							aria-label="Usuń plik {preview.file.name}"
+							class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-brand-muted transition hover:bg-error/10 hover:text-error"
+						>
+							<span class="material-symbols-outlined text-base">close</span>
+						</button>
+					</div>
+				</li>
+			{/each}
+		</ul>
+	{:else if previewUrl}
+		<div class="mb-4 overflow-hidden rounded-2xl border border-outline-variant/30">
+			{#if previewKind === 'image'}
+				<img src={previewUrl} alt="Podgląd" class="h-auto w-full" />
+			{:else if previewKind === 'video'}
+				<!-- svelte-ignore a11y_media_has_caption -->
+				<video src={previewUrl} controls class="w-full bg-black"></video>
+			{:else}
+				<audio src={previewUrl} controls class="w-full p-3"></audio>
+			{/if}
+		</div>
+	{/if}
+
 	<div
 		role="button"
 		tabindex={disabled ? -1 : 0}
@@ -183,48 +246,4 @@
 			<p class="text-xs text-brand-muted">{hint}</p>
 		{/if}
 	</div>
-
-	{#if staged.length}
-		<ul class="mt-4 grid gap-4 sm:grid-cols-2">
-			{#each staged as preview, index (preview.previewUrl)}
-				<li class="rounded-2xl border border-outline-variant/30 bg-white p-3">
-					{#if preview.kind === 'image'}
-						<img
-							src={preview.previewUrl}
-							alt={preview.file.name}
-							class="h-32 w-full rounded-lg object-cover"
-						/>
-					{:else if preview.kind === 'video'}
-						<!-- svelte-ignore a11y_media_has_caption -->
-						<video src={preview.previewUrl} controls class="h-32 w-full rounded-lg bg-black"
-						></video>
-					{:else if preview.kind === 'audio'}
-						<audio src={preview.previewUrl} controls class="w-full"></audio>
-					{:else}
-						<div
-							class="flex h-32 items-center justify-center rounded-lg bg-surface-container-low text-brand-muted"
-						>
-							<span class="material-symbols-outlined text-4xl">draft</span>
-						</div>
-					{/if}
-					<div class="mt-2 flex items-center justify-between gap-2">
-						<div class="min-w-0">
-							<p class="truncate text-sm font-semibold text-brand-text" title={preview.file.name}>
-								{preview.file.name}
-							</p>
-							<p class="text-xs text-brand-muted">{formatBytes(preview.file.size)}</p>
-						</div>
-						<button
-							type="button"
-							onclick={() => removeFile(index)}
-							aria-label="Usuń plik {preview.file.name}"
-							class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-brand-muted transition hover:bg-error/10 hover:text-error"
-						>
-							<span class="material-symbols-outlined text-base">close</span>
-						</button>
-					</div>
-				</li>
-			{/each}
-		</ul>
-	{/if}
 </div>

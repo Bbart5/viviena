@@ -211,7 +211,7 @@
 <Navbar />
 
 <main>
-	<Hero {scrollTo} hero={data.hero} />
+	<Hero {scrollTo} hero={data.hero} imageUrl={data.heroImageUrl} />
 	<About about={data.about} />
 	<AreasGrid areas={data.areas} />
 	<ActionsSection {actions} />

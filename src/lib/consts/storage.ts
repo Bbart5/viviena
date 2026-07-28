@@ -11,3 +11,14 @@ export const PRISMA_POSTGRES_FREE_TIER_LIMITS = {
 } as const;
 
 export const STORAGE_USAGE_ENDPOINT = '/api/admin/storage/usage' as const;
+
+// Image formats accepted for image uploads (used by the form `accept` prop and
+// mirrored by server-side validation).
+export const ACCEPTED_IMAGE_MIME_TYPES = [
+	'image/avif',
+	'image/png',
+	'image/jpeg',
+	'image/webp',
+	'image/svg+xml',
+	'image/gif'
+] as const;

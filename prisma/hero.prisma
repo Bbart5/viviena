@@ -6,4 +6,6 @@ model Hero {
   header2 String
   header3 String
   description String
+
+  imageMediaId String? @db.Uuid
 }

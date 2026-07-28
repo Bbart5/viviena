@@ -11,6 +11,9 @@
 		label?: string;
 		hint?: string;
 		submitLabel?: string;
+		/** Existing media shown as the preview until a new file is staged. */
+		previewUrl?: string | null;
+		previewKind?: 'image' | 'video' | 'audio';
 		class?: string;
 		onuploaded?: (response: unknown) => void;
 		onerror?: (message: string) => void;
@@ -25,6 +28,8 @@
 		label = 'Przeciągnij i upuść plik lub kliknij, aby wybrać',
 		hint = '',
 		submitLabel = 'Prześlij',
+		previewUrl = null,
+		previewKind = 'image',
 		class: className = '',
 		onuploaded,
 		onerror
@@ -33,6 +38,11 @@
 	let files = $state<File[]>([]);
 	let busy = $state(false);
 	let errorMessage = $state<string | null>(null);
+
+	function handleFileError(message: string) {
+		errorMessage = message;
+		onerror?.(message);
+	}
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
@@ -77,8 +87,11 @@
 		{maxSizeMb}
 		{label}
 		{hint}
+		{previewUrl}
+		{previewKind}
 		disabled={busy}
-		{onerror}
+		onselect={() => (errorMessage = null)}
+		onerror={handleFileError}
 	/>
 
 	{#if errorMessage}

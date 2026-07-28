@@ -164,7 +164,7 @@
 	<section class="mx-auto max-w-360 px-6 pt-28 pb-4 md:px-8">
 		<StorageUsageWidget />
 	</section>
-	<Hero hero={data.hero} {scrollTo} admin={true} />
+	<Hero hero={data.hero} {scrollTo} imageUrl={data.heroImageUrl} admin={true} />
 	<About about={data.about} admin={true} />
 	<AreasGrid areas={data.areas} admin={true} />
 	<ActionsSection {actions} />
