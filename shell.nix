@@ -19,8 +19,8 @@ pkgs.mkShell {
 
     # [node]:
     nodejs_24
-    # prisma-engines_7
-    # prisma_7
+    prisma-engines_7
+    prisma_7
 
     # [golang]:
     # go
@@ -38,11 +38,11 @@ pkgs.mkShell {
     # export NIX_ENFORCE_PURITY=0
 
     # [node:prisma]:
-    # export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig"
-    # export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines}/bin/schema-engine"
-    # export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines}/bin/query-engine"
-    # export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines}/lib/libquery_engine.node"
-    # export PRISMA_FMT_BINARY="${pkgs.prisma-engines}/bin/prisma-fmt"
+    export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig"
+    export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines}/bin/schema-engine"
+    export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines}/bin/query-engine"
+    export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines}/lib/libquery_engine.node"
+    export PRISMA_FMT_BINARY="${pkgs.prisma-engines}/bin/prisma-fmt"
 
     # zsh terminal forwarding:
     export SHELL=${pkgs.zsh}/bin/zsh
