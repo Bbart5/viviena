@@ -1,12 +1,19 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { requestJson } from '$lib/utils/api';
 	import type { LoginRequestDto } from './+server';
 
 	let showPassword = $state(false);
+	let busy = $state(false);
+	let errorMessage = $state<string | null>(null);
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
+
+		if (busy) {
+			return;
+		}
 
 		const form = event.currentTarget as HTMLFormElement;
 		const formData = new FormData(form);
@@ -14,13 +21,20 @@
 		const username = formData.get('username') as string;
 		const password = formData.get('password') as string;
 
-		const response = await fetch(resolve('/admin/login'), {
-			method: 'POST',
-			body: JSON.stringify({ username, password } satisfies LoginRequestDto)
-		});
+		busy = true;
+		errorMessage = null;
 
-		if (response.ok) {
-			goto(resolve('/admin'));
+		try {
+			await requestJson(resolve('/admin/login'), 'Wystąpił błąd. Spróbuj ponownie później.', {
+				method: 'POST',
+				body: JSON.stringify({ username, password } satisfies LoginRequestDto)
+			});
+
+			await goto(resolve('/admin'));
+		} catch (error) {
+			errorMessage = (error as Error).message;
+		} finally {
+			busy = false;
 		}
 	}
 </script>
@@ -76,11 +90,16 @@
 				</div>
 			</div>
 
+			{#if errorMessage}
+				<p role="alert" class="text-sm font-semibold text-error">{errorMessage}</p>
+			{/if}
+
 			<button
 				type="submit"
-				class="w-full cursor-pointer rounded-full bg-primary py-3 font-semibold text-white transition hover:opacity-90"
+				disabled={busy}
+				class="w-full cursor-pointer rounded-full bg-primary py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				Zaloguj
+				{busy ? 'Logowanie...' : 'Zaloguj'}
 			</button>
 		</form>
 

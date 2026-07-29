@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { formatBytes } from '$lib/utils/format-bytes';
+
 	interface Props {
-		/** Staged files — bind with `bind:files` to consume them from outside. */
-		files?: File[];
+		/** Staged file — bind with `bind:file` to consume it from outside. */
+		file?: File | null;
 		accept?: string;
-		multiple?: boolean;
 		maxSizeMb?: number;
 		label?: string;
 		hint?: string;
@@ -12,16 +13,15 @@
 		previewUrl?: string | null;
 		previewKind?: 'image' | 'video' | 'audio';
 		class?: string;
-		onselect?: (files: File[]) => void;
+		onselect?: (file: File) => void;
 		onerror?: (message: string) => void;
 		/** When provided, the existing preview gets a delete button calling this. */
 		ondeleterequest?: () => void;
 	}
 
 	let {
-		files = $bindable([]),
+		file = $bindable(null),
 		accept = 'image/*,video/*,audio/*',
-		multiple = false,
 		maxSizeMb = 100,
 		label = 'Przeciągnij i upuść plik lub kliknij, aby wybrać',
 		hint = '',
@@ -42,33 +42,28 @@
 
 	let inputEl: HTMLInputElement;
 	let dragActive = $state(false);
-	let staged = $state<StagedPreview[]>([]);
+	let staged = $state<StagedPreview | null>(null);
 
-	// Previews for staged files; the cleanup revokes the object URLs both when the
-	// selection changes and when the component is destroyed.
+	function kindOf(file: File): StagedPreview['kind'] {
+		if (file.type.startsWith('image/')) return 'image';
+		if (file.type.startsWith('video/')) return 'video';
+		if (file.type.startsWith('audio/')) return 'audio';
+		return 'other';
+	}
+
 	$effect(() => {
-		const next = files.map((file) => ({
-			file,
-			previewUrl: URL.createObjectURL(file),
-			kind: file.type.startsWith('image/')
-				? ('image' as const)
-				: file.type.startsWith('video/')
-					? ('video' as const)
-					: file.type.startsWith('audio/')
-						? ('audio' as const)
-						: ('other' as const)
-		}));
+		if (!file) {
+			staged = null;
+			return;
+		}
 
-		staged = next;
+		const preview = { file, previewUrl: URL.createObjectURL(file), kind: kindOf(file) };
+		staged = preview;
 
-		return () => {
-			for (const preview of next) {
-				URL.revokeObjectURL(preview.previewUrl);
-			}
-		};
+		return () => URL.revokeObjectURL(preview.previewUrl);
 	});
 
-	function matchesAccept(file: File): boolean {
+	function matchesAccept(candidate: File): boolean {
 		const patterns = accept
 			.split(',')
 			.map((pattern) => pattern.trim())
@@ -80,43 +75,34 @@
 
 		return patterns.some((pattern) => {
 			if (pattern.startsWith('.')) {
-				return file.name.toLowerCase().endsWith(pattern.toLowerCase());
+				return candidate.name.toLowerCase().endsWith(pattern.toLowerCase());
 			}
 			if (pattern.endsWith('/*')) {
-				return file.type.startsWith(pattern.slice(0, -1));
+				return candidate.type.startsWith(pattern.slice(0, -1));
 			}
-			return file.type === pattern;
+			return candidate.type === pattern;
 		});
 	}
 
-	function addFiles(incoming: FileList | null | undefined) {
+	function stageFile(incoming: FileList | null | undefined) {
 		if (disabled || !incoming?.length) {
 			return;
 		}
 
-		const accepted: File[] = [];
-		for (const file of incoming) {
-			if (!matchesAccept(file)) {
-				onerror?.(`Nieobsługiwany typ pliku: ${file.name}.`);
+		for (const candidate of incoming) {
+			if (!matchesAccept(candidate)) {
+				onerror?.(`Nieobsługiwany typ pliku: ${candidate.name}.`);
 				continue;
 			}
-			if (file.size > maxSizeMb * 1000 * 1000) {
-				onerror?.(`Plik ${file.name} jest zbyt duży (maks. ${maxSizeMb} MB).`);
+			if (candidate.size > maxSizeMb * 1000 * 1000) {
+				onerror?.(`Plik ${candidate.name} jest zbyt duży (maks. ${maxSizeMb} MB).`);
 				continue;
 			}
-			accepted.push(file);
-		}
 
-		if (!accepted.length) {
+			file = candidate;
+			onselect?.(candidate);
 			return;
 		}
-
-		files = multiple ? [...files, ...accepted] : accepted.slice(0, 1);
-		onselect?.(files);
-	}
-
-	function removeFile(index: number) {
-		files = files.filter((_, i) => i !== index);
 	}
 
 	function openPicker() {
@@ -127,83 +113,53 @@
 
 	function handlePick(event: Event) {
 		const input = event.currentTarget as HTMLInputElement;
-		addFiles(input.files);
+		stageFile(input.files);
 		input.value = '';
 	}
 
 	function handleDrop(event: DragEvent) {
 		event.preventDefault();
 		dragActive = false;
-		addFiles(event.dataTransfer?.files);
-	}
-
-	function formatBytes(bytes: number): string {
-		if (bytes >= 1000 ** 2) {
-			return `${(bytes / 1000 ** 2).toLocaleString('pl-PL', { maximumFractionDigits: 1 })} MB`;
-		}
-		if (bytes >= 1000) {
-			return `${(bytes / 1000).toLocaleString('pl-PL', { maximumFractionDigits: 1 })} kB`;
-		}
-		return `${bytes} B`;
+		stageFile(event.dataTransfer?.files);
 	}
 </script>
 
 <div class={className}>
-	<input
-		bind:this={inputEl}
-		type="file"
-		{accept}
-		{multiple}
-		{disabled}
-		onchange={handlePick}
-		class="hidden"
-	/>
+	<input bind:this={inputEl} type="file" {accept} {disabled} onchange={handlePick} class="hidden" />
 
-	{#if staged.length}
-		<ul class="mb-4 grid gap-4 {multiple ? 'sm:grid-cols-2' : ''}">
-			{#each staged as preview, index (preview.previewUrl)}
-				<li class="rounded-2xl border border-outline-variant/30 bg-white p-3">
-					{#if preview.kind === 'image'}
-						<img
-							src={preview.previewUrl}
-							alt={preview.file.name}
-							class="w-full rounded-lg {multiple ? 'h-32 object-cover' : 'h-auto'}"
-						/>
-					{:else if preview.kind === 'video'}
-						<!-- svelte-ignore a11y_media_has_caption -->
-						<video
-							src={preview.previewUrl}
-							controls
-							class="w-full rounded-lg bg-black {multiple ? 'h-32' : 'h-auto'}"
-						></video>
-					{:else if preview.kind === 'audio'}
-						<audio src={preview.previewUrl} controls class="w-full"></audio>
-					{:else}
-						<div
-							class="flex h-32 items-center justify-center rounded-lg bg-surface-container-low text-brand-muted"
-						>
-							<span class="material-symbols-outlined text-4xl">draft</span>
-						</div>
-					{/if}
-					<div class="mt-2 flex items-center justify-between gap-2">
-						<div class="min-w-0">
-							<p class="truncate text-sm font-semibold text-brand-text" title={preview.file.name}>
-								{preview.file.name}
-							</p>
-							<p class="text-xs text-brand-muted">{formatBytes(preview.file.size)}</p>
-						</div>
-						<button
-							type="button"
-							onclick={() => removeFile(index)}
-							aria-label="Usuń plik {preview.file.name}"
-							class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-brand-muted transition hover:bg-error/10 hover:text-error"
-						>
-							<span class="material-symbols-outlined text-base">close</span>
-						</button>
-					</div>
-				</li>
-			{/each}
-		</ul>
+	{#if staged}
+		<div class="mb-4 rounded-2xl border border-outline-variant/30 bg-white p-3">
+			{#if staged.kind === 'image'}
+				<img src={staged.previewUrl} alt={staged.file.name} class="h-auto w-full rounded-lg" />
+			{:else if staged.kind === 'video'}
+				<!-- svelte-ignore a11y_media_has_caption -->
+				<video src={staged.previewUrl} controls class="h-auto w-full rounded-lg bg-black"></video>
+			{:else if staged.kind === 'audio'}
+				<audio src={staged.previewUrl} controls class="w-full"></audio>
+			{:else}
+				<div
+					class="flex h-32 items-center justify-center rounded-lg bg-surface-container-low text-brand-muted"
+				>
+					<span class="material-symbols-outlined text-4xl">draft</span>
+				</div>
+			{/if}
+			<div class="mt-2 flex items-center justify-between gap-2">
+				<div class="min-w-0">
+					<p class="truncate text-sm font-semibold text-brand-text" title={staged.file.name}>
+						{staged.file.name}
+					</p>
+					<p class="text-xs text-brand-muted">{formatBytes(staged.file.size)}</p>
+				</div>
+				<button
+					type="button"
+					onclick={() => (file = null)}
+					aria-label="Usuń plik {staged.file.name}"
+					class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-brand-muted transition hover:bg-error/10 hover:text-error"
+				>
+					<span class="material-symbols-outlined text-base">close</span>
+				</button>
+			</div>
+		</div>
 	{:else if previewUrl}
 		<div class="relative mb-4 overflow-hidden rounded-2xl border border-outline-variant/30">
 			{#if previewKind === 'image'}

@@ -4,12 +4,23 @@
 		R2_FREE_TIER_LIMITS,
 		STORAGE_USAGE_ENDPOINT
 	} from '$lib/consts/storage';
+	import { requestJson } from '$lib/utils/api';
+	import { formatBytes } from '$lib/utils/format-bytes';
 
 	interface ResourceUsage {
 		storageBytes: number;
 		databaseBytes: number;
 		classAOps: number | null;
 		classBOps: number | null;
+	}
+
+	interface UsageRow {
+		label: string;
+		icon: string;
+		used: number | null;
+		limit: number;
+		usedLabel: string;
+		limitLabel: string;
 	}
 
 	interface Props {
@@ -27,16 +38,14 @@
 		errorMessage = null;
 
 		try {
-			const response = await fetch(`${STORAGE_USAGE_ENDPOINT}${fresh ? '?fresh=1' : ''}`);
-			const body = await response.json();
-
-			if (!body.success) {
-				throw new Error(body.message);
-			}
+			const body = await requestJson<{ usage: ResourceUsage }>(
+				`${STORAGE_USAGE_ENDPOINT}${fresh ? '?fresh=1' : ''}`,
+				'Nie udało się pobrać statystyk magazynu.'
+			);
 
 			usage = body.usage;
-		} catch {
-			errorMessage = 'Nie udało się pobrać statystyk magazynu.';
+		} catch (error) {
+			errorMessage = (error as Error).message;
 		} finally {
 			loading = false;
 		}
@@ -60,35 +69,22 @@
 		return 'bg-primary';
 	}
 
-	function formatBytes(bytes: number): string {
-		if (bytes >= 1000 ** 3) {
-			return `${(bytes / 1000 ** 3).toLocaleString('pl-PL', { maximumFractionDigits: 2 })} GB`;
-		}
-		if (bytes >= 1000 ** 2) {
-			return `${(bytes / 1000 ** 2).toLocaleString('pl-PL', { maximumFractionDigits: 2 })} MB`;
-		}
-		if (bytes >= 1000) {
-			return `${(bytes / 1000).toLocaleString('pl-PL', { maximumFractionDigits: 2 })} kB`;
-		}
-		return `${bytes} B`;
-	}
-
-	const rows = $derived(
+	const rows: UsageRow[] = $derived(
 		usage
 			? [
 					{
 						label: 'Pamięć (R2)',
 						icon: 'hard_drive',
-						used: usage.storageBytes as number | null,
-						limit: R2_FREE_TIER_LIMITS.storageBytes as number,
-						usedLabel: formatBytes(usage.storageBytes),
-						limitLabel: formatBytes(R2_FREE_TIER_LIMITS.storageBytes)
+						used: usage.storageBytes,
+						limit: R2_FREE_TIER_LIMITS.storageBytes,
+						usedLabel: formatBytes(usage.storageBytes, 2),
+						limitLabel: formatBytes(R2_FREE_TIER_LIMITS.storageBytes, 2)
 					},
 					{
 						label: 'Operacje klasy A (R2)',
 						icon: 'upload',
 						used: usage.classAOps,
-						limit: R2_FREE_TIER_LIMITS.classAOps as number,
+						limit: R2_FREE_TIER_LIMITS.classAOps,
 						usedLabel: usage.classAOps?.toLocaleString('pl-PL') ?? '',
 						limitLabel: R2_FREE_TIER_LIMITS.classAOps.toLocaleString('pl-PL')
 					},
@@ -96,17 +92,17 @@
 						label: 'Operacje klasy B (R2)',
 						icon: 'download',
 						used: usage.classBOps,
-						limit: R2_FREE_TIER_LIMITS.classBOps as number,
+						limit: R2_FREE_TIER_LIMITS.classBOps,
 						usedLabel: usage.classBOps?.toLocaleString('pl-PL') ?? '',
 						limitLabel: R2_FREE_TIER_LIMITS.classBOps.toLocaleString('pl-PL')
 					},
 					{
 						label: 'Baza danych (Postgres)',
 						icon: 'database',
-						used: usage.databaseBytes as number | null,
-						limit: PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes as number,
-						usedLabel: formatBytes(usage.databaseBytes),
-						limitLabel: formatBytes(PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes)
+						used: usage.databaseBytes,
+						limit: PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes,
+						usedLabel: formatBytes(usage.databaseBytes, 2),
+						limitLabel: formatBytes(PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes, 2)
 					}
 				]
 			: []

@@ -1,4 +1,5 @@
 import { ACCEPTED_IMAGE_MIME_TYPES } from '$lib/consts/storage';
+import { apiError } from '$lib/server/api';
 import { prisma } from '$lib/server/prisma';
 import { MediaService } from '$lib/server/storage/MediaService';
 import { json } from '@sveltejs/kit';
@@ -11,28 +12,15 @@ export const DELETE: RequestHandler = async () => {
 		const hero = await prisma.hero.findFirstOrThrow();
 
 		if (hero.imageMediaId) {
-			const existing = await prisma.media.findUnique({ where: { id: hero.imageMediaId } });
-
-			await prisma.hero.update({ where: { id: hero.id }, data: { imageMediaId: null } });
-
-			if (existing) {
-				await MediaService.getInstance().remove(existing.id);
-			}
+			// Deleting the media row clears hero.imageMediaId via the FK's SET NULL.
+			await MediaService.getInstance().remove(hero.imageMediaId);
 		}
 
 		return json({ success: true });
 	} catch (error) {
 		console.error(error);
 
-		return json(
-			{
-				success: false,
-				message: 'Nie udało się usunąć obrazu.'
-			},
-			{
-				status: 500
-			}
-		);
+		return apiError('Nie udało się usunąć obrazu.');
 	}
 };
 
@@ -42,53 +30,36 @@ export const POST: RequestHandler = async ({ request }) => {
 		const file = formData.get('files');
 
 		if (!(file instanceof File) || file.size === 0) {
-			return json({ success: false, message: 'Nie przesłano pliku.' }, { status: 400 });
+			return apiError('Nie przesłano pliku.', 400);
 		}
 
 		if (!(ACCEPTED_IMAGE_MIME_TYPES as readonly string[]).includes(file.type)) {
-			return json({ success: false, message: 'Nieobsługiwany format obrazu.' }, { status: 400 });
+			return apiError('Nieobsługiwany format obrazu.', 400);
 		}
 
 		if (file.size > MAX_SIZE_BYTES) {
-			return json(
-				{ success: false, message: 'Plik jest zbyt duży (maks. 10 MB).' },
-				{ status: 400 }
-			);
+			return apiError('Plik jest zbyt duży (maks. 10 MB).', 400);
 		}
 
 		const bytes = new Uint8Array(await file.arrayBuffer());
-		const hero = await prisma.hero.findFirstOrThrow();
-		const existing = hero.imageMediaId
-			? await prisma.media.findUnique({ where: { id: hero.imageMediaId } })
-			: null;
+		const hero = await prisma.hero.findFirstOrThrow({ include: { imageMedia: true } });
 
 		const mediaService = MediaService.getInstance();
 		const input = { file: bytes, filename: file.name, mimeType: file.type };
 
-		// Replace deletes the old bucket object BEFORE uploading the staged one.
-		const media = existing
-			? await mediaService.replace(existing.id, input)
+		// replace() reuses the existing row, so only a fresh row needs linking.
+		const media = hero.imageMedia
+			? await mediaService.replace(hero.imageMedia.id, input)
 			: await mediaService.create({ ...input, type: 'IMAGE' });
 
-		if (hero.imageMediaId !== media.id) {
+		if (!hero.imageMedia) {
 			await prisma.hero.update({ where: { id: hero.id }, data: { imageMediaId: media.id } });
 		}
 
-		return json({
-			success: true,
-			media
-		});
+		return json({ success: true, media });
 	} catch (error) {
 		console.error(error);
 
-		return json(
-			{
-				success: false,
-				message: 'Nie udało się przesłać obrazu.'
-			},
-			{
-				status: 500
-			}
-		);
+		return apiError('Nie udało się przesłać obrazu.');
 	}
 };

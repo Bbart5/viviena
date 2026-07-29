@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { PLACEHOLDER_IMAGE_URL } from '$lib/consts/placeholder-image-url';
-	import { ACCEPTED_IMAGE_MIME_TYPES } from '$lib/consts/storage';
+	import { ACCEPTED_IMAGE_MIME_TYPES, PLACEHOLDER_IMAGE_URL } from '$lib/consts/storage';
+	import { requestJson } from '$lib/utils/api';
 	import MediaUploadForm from './MediaUploadForm.svelte';
 	import type { Hero } from '../../../generated/prisma/client';
 
@@ -64,52 +64,44 @@
 
 	async function saveEditing() {
 		try {
-			const response = await fetch('/api/admin/hero', {
+			await requestJson('/api/admin/hero', 'Wystąpił błąd podczas zapisywania.', {
 				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(editedHero)
 			});
-
-			const result = await response.json();
-
-			if (!result.success) {
-				alert(result.message);
-				return;
-			}
 
 			Object.assign(hero, editedHero);
 
 			editing = false;
 		} catch (error) {
-			console.error(error);
-			alert('Wystąpił błąd podczas zapisywania.');
+			alert((error as Error).message);
 		}
 	}
 </script>
+
+{#snippet imageUploadCard()}
+	<div class="relative w-full rounded-2xl border border-outline-variant/25 bg-white p-4">
+		<MediaUploadForm
+			action="/api/admin/hero/image"
+			accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
+			maxSizeMb={10}
+			label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
+			hint="AVIF, PNG, JPEG, WebP, SVG lub GIF (maks. 10 MB)"
+			submitLabel="Zapisz obraz"
+			previewUrl={displayedImageUrl}
+			previewKind="image"
+			deleteAction={currentImageUrl ? '/api/admin/hero/image' : null}
+			onuploaded={handleImageUploaded}
+			ondeleted={handleImageDeleted}
+		/>
+	</div>
+{/snippet}
 
 <section id="start" class="relative flex flex-col overflow-hidden lg:flex-row lg:items-center">
 	<!-- Mobile Hero Image (top, 21:9, edge-to-edge) -->
 	<div class="relative w-full lg:hidden">
 		{#if admin && editing}
-			<div class="px-6 pt-6">
-				<div class="rounded-2xl border border-outline-variant/25 bg-white p-4">
-					<MediaUploadForm
-						action="/api/admin/hero/image"
-						accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
-						maxSizeMb={10}
-						label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
-						hint="AVIF, PNG, JPEG, WebP, SVG lub GIF (maks. 10 MB)"
-						submitLabel="Zapisz obraz"
-						previewUrl={displayedImageUrl}
-						previewKind="image"
-						deleteAction={currentImageUrl ? '/api/admin/hero/image' : null}
-						onuploaded={handleImageUploaded}
-						ondeleted={handleImageDeleted}
-					/>
-				</div>
-			</div>
+			<div class="px-6 pt-6">{@render imageUploadCard()}</div>
 		{:else}
 			<div class="aspect-21/9 w-full overflow-hidden">
 				<img src={displayedImageUrl} alt="VIVIENA" class="h-full w-full object-cover" />
@@ -233,21 +225,7 @@
 				class="absolute inset-0 rounded-full bg-linear-to-tr from-primary/15 to-primary-container/20 blur-3xl"
 			></div>
 			{#if admin && editing}
-				<div class="relative w-full rounded-2xl border border-outline-variant/25 bg-white p-4">
-					<MediaUploadForm
-						action="/api/admin/hero/image"
-						accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
-						maxSizeMb={10}
-						label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
-						hint="AVIF, PNG, JPEG, WebP, SVG lub GIF (maks. 10 MB)"
-						submitLabel="Zapisz obraz"
-						previewUrl={displayedImageUrl}
-						previewKind="image"
-						deleteAction={currentImageUrl ? '/api/admin/hero/image' : null}
-						onuploaded={handleImageUploaded}
-						ondeleted={handleImageDeleted}
-					/>
-				</div>
+				{@render imageUploadCard()}
 			{:else}
 				<div class="relative w-full overflow-hidden rounded-2xl">
 					<img

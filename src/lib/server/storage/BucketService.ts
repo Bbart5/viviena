@@ -9,7 +9,6 @@ import {
 } from '$env/static/private';
 import {
 	DeleteObjectCommand,
-	GetObjectCommand,
 	ListObjectsV2Command,
 	PutObjectCommand,
 	S3Client
@@ -63,36 +62,8 @@ export class BucketService {
 		return this.getPublicUrl(key);
 	}
 
-	public async get(key: string): Promise<Uint8Array> {
-		const response = await this.client.send(
-			new GetObjectCommand({ Bucket: this.bucket, Key: key })
-		);
-
-		if (!response.Body) {
-			throw new Error(`Empty response body for object "${key}".`);
-		}
-
-		return response.Body.transformToByteArray();
-	}
-
 	public async delete(key: string): Promise<void> {
 		await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
-	}
-
-	/**
-	 * The overwritten object is deleted from the bucket BEFORE the staged one is
-	 * uploaded. Deleting a nonexistent key succeeds (S3 semantics), so this is also
-	 * safe when the old object is already gone.
-	 */
-	public async overwrite(
-		oldKey: string,
-		newKey: string,
-		body: Uint8Array,
-		contentType: string
-	): Promise<string> {
-		await this.delete(oldKey);
-
-		return this.upload(newKey, body, contentType);
 	}
 
 	public async listAll(prefix?: string): Promise<BucketObject[]> {

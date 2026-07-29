@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { requestJson } from '$lib/utils/api';
 	import FileDropInput from './FileDropInput.svelte';
 
 	interface Props {
-		/** Endpoint the staged files are POSTed to as multipart FormData. */
+		/** Endpoint the staged file is POSTed to as multipart FormData. */
 		action: string;
 		fieldName?: string;
 		accept?: string;
-		multiple?: boolean;
 		maxSizeMb?: number;
 		label?: string;
 		hint?: string;
@@ -16,6 +16,8 @@
 		previewKind?: 'image' | 'video' | 'audio';
 		/** Endpoint receiving DELETE for the existing media; enables the delete button. */
 		deleteAction?: string | null;
+		/** Shown in a browser confirm before deleting; pass null to skip the confirmation. */
+		deleteConfirmMessage?: string | null;
 		class?: string;
 		onuploaded?: (response: unknown) => void;
 		ondeleted?: () => void;
@@ -26,7 +28,6 @@
 		action,
 		fieldName = 'files',
 		accept = 'image/*,video/*,audio/*',
-		multiple = false,
 		maxSizeMb = 100,
 		label = 'Przeciągnij i upuść plik lub kliknij, aby wybrać',
 		hint = '',
@@ -34,13 +35,14 @@
 		previewUrl = null,
 		previewKind = 'image',
 		deleteAction = null,
+		deleteConfirmMessage = 'Czy na pewno chcesz usunąć ten plik? Tej operacji nie można cofnąć.',
 		class: className = '',
 		onuploaded,
 		ondeleted,
 		onerror
 	}: Props = $props();
 
-	let files = $state<File[]>([]);
+	let file = $state<File | null>(null);
 	let busy = $state(false);
 	let errorMessage = $state<string | null>(null);
 
@@ -54,22 +56,18 @@
 			return;
 		}
 
+		if (deleteConfirmMessage && !confirm(deleteConfirmMessage)) {
+			return;
+		}
+
 		busy = true;
 		errorMessage = null;
 
 		try {
-			const response = await fetch(deleteAction, { method: 'DELETE' });
-			const body = await response.json();
-
-			if (!response.ok || !body.success) {
-				throw new Error(body.message ?? 'Nie udało się usunąć pliku.');
-			}
-
+			await requestJson(deleteAction, 'Nie udało się usunąć pliku.', { method: 'DELETE' });
 			ondeleted?.();
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Nie udało się usunąć pliku.';
-			errorMessage = message;
-			onerror?.(message);
+			handleFileError((error as Error).message);
 		} finally {
 			busy = false;
 		}
@@ -78,7 +76,7 @@
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
-		if (!files.length || busy) {
+		if (!file || busy) {
 			return;
 		}
 
@@ -87,23 +85,17 @@
 
 		try {
 			const formData = new FormData();
-			for (const file of files) {
-				formData.append(fieldName, file);
-			}
+			formData.append(fieldName, file);
 
-			const response = await fetch(action, { method: 'POST', body: formData });
-			const body = await response.json();
+			const body = await requestJson(action, 'Nie udało się przesłać pliku.', {
+				method: 'POST',
+				body: formData
+			});
 
-			if (!response.ok || !body.success) {
-				throw new Error(body.message ?? 'Nie udało się przesłać plików.');
-			}
-
-			files = [];
+			file = null;
 			onuploaded?.(body);
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Nie udało się przesłać plików.';
-			errorMessage = message;
-			onerror?.(message);
+			handleFileError((error as Error).message);
 		} finally {
 			busy = false;
 		}
@@ -112,9 +104,8 @@
 
 <form class={className} onsubmit={handleSubmit}>
 	<FileDropInput
-		bind:files
+		bind:file
 		{accept}
-		{multiple}
 		{maxSizeMb}
 		{label}
 		{hint}
@@ -132,7 +123,7 @@
 
 	<button
 		type="submit"
-		disabled={busy || files.length === 0}
+		disabled={busy || !file}
 		class="mt-4 cursor-pointer rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 	>
 		{busy ? 'Przesyłanie...' : submitLabel}

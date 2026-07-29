@@ -1,3 +1,4 @@
+import { apiError } from '$lib/server/api';
 import { prisma } from '$lib/server/prisma';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { plainToInstance } from 'class-transformer';
@@ -6,9 +7,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { ENVIRONMENT, JWT_SECRET } from '$env/static/private';
 import type { JwtSessionPayload } from '$lib/types/jwt.payload';
-import { SESSION_TOKEN_COOKIE_NAME, SESSION_TOKEN_COOKIE_PATH } from '$lib/consts/auth';
+import {
+	SESSION_TOKEN_COOKIE_NAME,
+	SESSION_TOKEN_COOKIE_PATH,
+	SESSION_TTL_SECONDS
+} from '$lib/consts/auth';
 
-export class LoginRequestDto {
+class LoginRequestDto {
 	@IsNotEmpty()
 	@IsString()
 	declare username: string;
@@ -18,56 +23,60 @@ export class LoginRequestDto {
 	declare password: string;
 }
 
+// SvelteKit forbids runtime exports besides HTTP verbs in +server.ts; the login
+// page only needs the type.
+export type { LoginRequestDto };
+
+// Empty, unknown, or wrong credentials all get the same answer so the response
+// does not reveal whether the username exists.
+const invalidCredentials = () => apiError('Niepoprawny login lub hasło.', 401);
+
 export const POST: RequestHandler = async ({ request, cookies }) => {
-	const body = await request.json();
-	const loginDto = plainToInstance(LoginRequestDto, body);
-	const errors = await validate(loginDto);
+	try {
+		const body = await request.json();
+		const loginDto = plainToInstance(LoginRequestDto, body);
+		const errors = await validate(loginDto);
 
-	if (errors.length > 0) {
-		const firstError = errors[0];
+		if (errors.length > 0) {
+			return invalidCredentials();
+		}
 
-		return json(
+		const foundUser = await prisma.user.findFirst({
+			where: {
+				username: loginDto.username
+			}
+		});
+
+		if (!foundUser) {
+			return invalidCredentials();
+		}
+
+		const passwordsMatch = await bcrypt.compare(loginDto.password, foundUser.passwordHash);
+
+		if (!passwordsMatch) {
+			return invalidCredentials();
+		}
+
+		const token = jwt.sign(
 			{
-				success: false,
-				field: firstError.property,
-				message: Object.values(firstError.constraints ?? {})[0] ?? 'Niepoprawne dane.'
-			},
-			{ status: 400 }
+				username: foundUser.username
+			} satisfies JwtSessionPayload,
+			JWT_SECRET,
+			{
+				expiresIn: SESSION_TTL_SECONDS
+			}
 		);
+
+		cookies.set(SESSION_TOKEN_COOKIE_NAME, token, {
+			path: SESSION_TOKEN_COOKIE_PATH,
+			secure: ENVIRONMENT === 'production',
+			maxAge: SESSION_TTL_SECONDS
+		});
+
+		return json({ success: true });
+	} catch (error) {
+		console.error(error);
+
+		return apiError('Wystąpił błąd. Spróbuj ponownie później.');
 	}
-
-	const foundUser = await prisma.user.findFirst({
-		where: {
-			username: loginDto.username
-		}
-	});
-
-	if (!foundUser) {
-		return json({ success: true }, { status: 500 });
-	}
-
-	const passwordsMatch = await bcrypt.compare(loginDto.password, foundUser.passwordHash);
-
-	if (!passwordsMatch) {
-		return json({ success: true }, { status: 500 });
-	}
-
-	const token = jwt.sign(
-		{
-			username: foundUser.username
-		} satisfies JwtSessionPayload,
-		JWT_SECRET,
-		{
-			expiresIn: '24h'
-		}
-	);
-
-	cookies.set(SESSION_TOKEN_COOKIE_NAME, token, {
-		path: SESSION_TOKEN_COOKIE_PATH,
-		expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-		secure: ENVIRONMENT === 'production',
-		maxAge: 7 * 24 * 60 * 60 // 7 days in Unix epoch
-	});
-
-	return json({ success: true }, { status: 200 });
 };

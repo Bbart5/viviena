@@ -46,30 +46,33 @@ export class MediaService {
 		});
 	}
 
-	/**
-	 * The old bucket object is always deleted BEFORE the staged file is uploaded
-	 * (see BucketService.overwrite); only then is the database row updated.
-	 */
 	public async replace(id: string, input: Omit<MediaUploadInput, 'type'>): Promise<Media> {
 		const existing = await prisma.media.findUniqueOrThrow({ where: { id } });
-		const newKey = this.buildKey(input.filename);
-		const url = await BucketService.getInstance().overwrite(
-			existing.key,
-			newKey,
-			input.file,
-			input.mimeType
-		);
+		const bucket = BucketService.getInstance();
+		const key = this.buildKey(input.filename);
+		const url = await bucket.upload(key, input.file, input.mimeType);
 
-		return prisma.media.update({
+		const media = await prisma.media.update({
 			where: { id },
 			data: {
-				key: newKey,
+				key,
 				url,
 				filename: input.filename,
 				mimeType: input.mimeType,
 				size: input.file.byteLength
 			}
 		});
+
+		// The old object is deleted last so a failed upload or row update never
+		// leaves the site pointing at a missing file; a failed delete merely
+		// orphans the old object in the bucket.
+		try {
+			await bucket.delete(existing.key);
+		} catch (error) {
+			console.error(`Failed to delete replaced bucket object "${existing.key}".`, error);
+		}
+
+		return media;
 	}
 
 	public async remove(id: string): Promise<void> {
