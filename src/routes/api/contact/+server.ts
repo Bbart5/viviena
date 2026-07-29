@@ -18,9 +18,9 @@ async function renderContactEmail(data: ContactDto): Promise<string> {
 	const { default: template } = await import('$lib/server/email-templates/contact.html?raw');
 
 	return template
-		.replaceAll('{{name}}', escapeHtml(data.name))
-		.replaceAll('{{email}}', escapeHtml(data.email))
-		.replaceAll('{{message}}', escapeHtml(data.message));
+		.replaceAll('{{name}}', escapeHtml(data.name.trim()))
+		.replaceAll('{{email}}', escapeHtml(data.email.trim()))
+		.replaceAll('{{message}}', escapeHtml(data.message.trim()));
 }
 
 export async function POST({ request }: RequestEvent) {
@@ -41,7 +41,7 @@ export async function POST({ request }: RequestEvent) {
 				{ status: 400 }
 			);
 		}
-		
+
 		const transporter = MailTransport.getInstance();
 
 		await transporter.sendMail({

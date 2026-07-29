@@ -1,3 +1,4 @@
+import { apiError } from '$lib/server/api';
 import { prisma } from '$lib/server/prisma';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -19,21 +20,10 @@ export const PUT: RequestHandler = async ({ request }) => {
 			}
 		});
 
-		return json({
-			success: true,
-			hero
-		});
+		return json({ success: true, hero });
 	} catch (error) {
 		console.error(error);
 
-		return json(
-			{
-				success: false,
-				message: 'Nie udało się zapisać zmian.'
-			},
-			{
-				status: 500
-			}
-		);
+		return apiError('Nie udało się zapisać zmian.');
 	}
 };

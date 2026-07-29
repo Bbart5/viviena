@@ -11,7 +11,7 @@
 		Documents,
 		Footer
 	} from '$lib';
-	import type { Action, Area, HowWeWorkCard, Member, OurDocument } from '../types';
+	import type { Action, Member, OurDocument } from '../types';
 	import { asset } from '$app/paths';
 
 	let { data }: { data: PageData } = $props();

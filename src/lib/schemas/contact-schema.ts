@@ -7,11 +7,11 @@ export const CONTACT_SCHEMA_RESTRICTIONS = {
 		matches: /^[\p{L}\s'-]+$/u
 	},
 	email: {
-		max: 100,
+		max: 100
 	},
 	message: {
 		min: 20,
-		max: 1000,
+		max: 1000
 	}
 } as const;
 

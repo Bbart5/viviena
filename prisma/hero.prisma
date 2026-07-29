@@ -1,9 +1,12 @@
 model Hero {
   id Int @id @default(autoincrement())
 
-  title   String
-  header1 String
-  header2 String
-  header3 String
+  title       String
+  header1     String
+  header2     String
+  header3     String
   description String
+
+  imageMediaId String? @db.Uuid
+  imageMedia   Media?  @relation(fields: [imageMediaId], references: [id], onDelete: SetNull)
 }

@@ -263,21 +263,21 @@
 				{#if admin && editing}
 					<button
 						onclick={saveEditing}
-						class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
+						class="cursor-pointer rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
 					>
 						Zapisz
 					</button>
 
 					<button
 						onclick={cancelEditing}
-						class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
+						class="cursor-pointer rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
 					>
 						Anuluj
 					</button>
 				{:else}
 					<button
 						onclick={startEditing}
-						class="rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90"
+						class="cursor-pointer rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90"
 					>
 						Edytuj
 					</button>

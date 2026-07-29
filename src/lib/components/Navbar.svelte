@@ -23,7 +23,7 @@
 <nav class="sticky top-0 z-50 border-b border-outline-variant/30 bg-white/95 backdrop-blur-md">
 	<div class="mx-auto flex w-full max-w-360 items-center justify-between px-6 py-5 md:px-8">
 		<a href={resolve('/#start')} class="flex items-center gap-3" onclick={() => scrollTo('#start')}>
-			<img alt="VIVIENA Logo" class="h-9 w-auto" src={asset("/brand/logo.svg")} />
+			<img alt="VIVIENA Logo" class="h-9 w-auto" src={asset('/brand/logo.svg')} />
 		</a>
 
 		<!-- Desktop Nav -->
@@ -55,7 +55,7 @@
 				Napisz do nas
 			</a>
 			<button
-				class="text-brand-text lg:hidden"
+				class="cursor-pointer text-brand-text lg:hidden"
 				onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 				aria-label="Menu"
 			>

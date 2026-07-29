@@ -34,7 +34,9 @@
 							<div
 								class="absolute inset-0 scale-0 rounded-full bg-primary opacity-20 transition-transform duration-500 group-hover:scale-105"
 							></div>
-							<div class="flex h-full w-full items-center justify-center rounded-full bg-surface-container-low text-primary/40 transition-all duration-500 group-hover:bg-surface-container">
+							<div
+								class="flex h-full w-full items-center justify-center rounded-full bg-surface-container-low text-primary/40 transition-all duration-500 group-hover:bg-surface-container"
+							>
 								<img src={member.img} alt={member.name} class="rounded-full" />
 							</div>
 						</div>
@@ -59,7 +61,9 @@
 							<div
 								class="absolute inset-0 scale-0 rounded-full bg-tertiary opacity-20 transition-transform duration-500 group-hover:scale-105"
 							></div>
-							<div class="flex h-full w-full items-center justify-center rounded-full bg-surface-container-low text-primary/40 transition-all duration-500 group-hover:bg-surface-container">
+							<div
+								class="flex h-full w-full items-center justify-center rounded-full bg-surface-container-low text-primary/40 transition-all duration-500 group-hover:bg-surface-container"
+							>
 								<img src={member.img} alt={member.name} class="rounded-full" />
 							</div>
 						</div>

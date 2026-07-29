@@ -2,12 +2,14 @@ import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 
 export const load: PageServerLoad = async () => {
-	const hero = await prisma.hero.findFirstOrThrow();
+	const { imageMedia, ...hero } = await prisma.hero.findFirstOrThrow({
+		include: { imageMedia: true }
+	});
 	const about = await prisma.about.findFirstOrThrow();
 	const areas = await prisma.areas.findFirstOrThrow();
 
 	return {
-		hero,
+		hero: { ...hero, imageUrl: imageMedia?.url ?? null },
 		about,
 		areas
 	};

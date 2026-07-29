@@ -1,14 +1,29 @@
 <script lang="ts">
-	import { asset } from '$app/paths';
+	import { ACCEPTED_IMAGE_MIME_TYPES, PLACEHOLDER_IMAGE_URL } from '$lib/consts/storage';
+	import { requestJson } from '$lib/utils/api';
+	import MediaUploadForm from './MediaUploadForm.svelte';
 	import type { Hero } from '../../../generated/prisma/client';
 
 	interface Props {
 		scrollTo: (href: string) => void;
-		hero: Hero;
+		hero: Hero & { imageUrl: string | null };
 		admin?: boolean;
 	}
 
 	let { scrollTo, hero, admin = false }: Props = $props();
+
+	// undefined = no local change yet, null = deleted, string = freshly uploaded
+	let imageOverride = $state<string | null | undefined>(undefined);
+	const currentImageUrl = $derived(imageOverride !== undefined ? imageOverride : hero.imageUrl);
+	const displayedImageUrl = $derived(currentImageUrl ?? PLACEHOLDER_IMAGE_URL);
+
+	function handleImageUploaded(response: unknown) {
+		imageOverride = (response as { media: { url: string } }).media.url;
+	}
+
+	function handleImageDeleted() {
+		imageOverride = null;
+	}
 
 	let editing = $state(false);
 
@@ -49,38 +64,50 @@
 
 	async function saveEditing() {
 		try {
-			const response = await fetch('/api/admin/hero', {
+			await requestJson('/api/admin/hero', 'Wystąpił błąd podczas zapisywania.', {
 				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(editedHero)
 			});
-
-			const result = await response.json();
-
-			if (!result.success) {
-				alert(result.message);
-				return;
-			}
 
 			Object.assign(hero, editedHero);
 
 			editing = false;
 		} catch (error) {
-			console.error(error);
-			alert('Wystąpił błąd podczas zapisywania.');
+			alert((error as Error).message);
 		}
 	}
 </script>
 
+{#snippet imageUploadCard()}
+	<div class="relative w-full rounded-2xl border border-outline-variant/25 bg-white p-4">
+		<MediaUploadForm
+			action="/api/admin/hero/image"
+			accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
+			maxSizeMb={10}
+			label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
+			hint="AVIF, PNG, JPEG, WebP, SVG lub GIF (maks. 10 MB)"
+			submitLabel="Zapisz obraz"
+			previewUrl={displayedImageUrl}
+			previewKind="image"
+			deleteAction={currentImageUrl ? '/api/admin/hero/image' : null}
+			onuploaded={handleImageUploaded}
+			ondeleted={handleImageDeleted}
+		/>
+	</div>
+{/snippet}
+
 <section id="start" class="relative flex flex-col overflow-hidden lg:flex-row lg:items-center">
 	<!-- Mobile Hero Image (top, 21:9, edge-to-edge) -->
 	<div class="relative w-full lg:hidden">
-		<div class="aspect-21/9 w-full overflow-hidden">
-			<img src={asset('/hero/hero.jpg')} alt="VIVIENA" class="h-full w-full object-cover" />
-		</div>
-		<div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-white"></div>
+		{#if admin && editing}
+			<div class="px-6 pt-6">{@render imageUploadCard()}</div>
+		{:else}
+			<div class="aspect-21/9 w-full overflow-hidden">
+				<img src={displayedImageUrl} alt="VIVIENA" class="h-full w-full object-cover" />
+			</div>
+			<div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-white"></div>
+		{/if}
 	</div>
 
 	<div
@@ -169,21 +196,21 @@
 					{#if admin && editing}
 						<button
 							onclick={saveEditing}
-							class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
+							class="cursor-pointer rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
 						>
 							Zapisz
 						</button>
 
 						<button
 							onclick={cancelEditing}
-							class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
+							class="cursor-pointer rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
 						>
 							Anuluj
 						</button>
 					{:else}
 						<button
 							onclick={startEditing}
-							class="rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90"
+							class="cursor-pointer rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90"
 						>
 							Edytuj
 						</button>
@@ -197,13 +224,17 @@
 			<div
 				class="absolute inset-0 rounded-full bg-linear-to-tr from-primary/15 to-primary-container/20 blur-3xl"
 			></div>
-			<div class="relative w-full overflow-hidden rounded-2xl">
-				<img
-					src={asset('/hero/hero.jpg')}
-					alt="VIVIENA"
-					class="h-auto w-full rounded-2xl border border-outline-variant/25 transition-all duration-700 hover:opacity-100"
-				/>
-			</div>
+			{#if admin && editing}
+				{@render imageUploadCard()}
+			{:else}
+				<div class="relative w-full overflow-hidden rounded-2xl">
+					<img
+						src={displayedImageUrl}
+						alt="VIVIENA"
+						class="h-auto w-full rounded-2xl border border-outline-variant/25 transition-all duration-700 hover:opacity-100"
+					/>
+				</div>
+			{/if}
 		</div>
 	</div>
 </section>

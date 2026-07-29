@@ -11,9 +11,10 @@
 		ActionsSection,
 		TeamSection,
 		Documents,
-		Footer
+		Footer,
+		StorageUsageWidget
 	} from '$lib';
-	import type { Action, Area, HowWeWorkCard, Member, OurDocument } from '../../types';
+	import type { Action, Member, OurDocument } from '../../types';
 
 	let { data }: { data: PageData } = $props();
 
@@ -160,6 +161,9 @@
 <Navbar />
 
 <main>
+	<section class="mx-auto max-w-360 px-6 pt-28 pb-4 md:px-8">
+		<StorageUsageWidget />
+	</section>
 	<Hero hero={data.hero} {scrollTo} admin={true} />
 	<About about={data.about} admin={true} />
 	<AreasGrid areas={data.areas} admin={true} />
