@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "MediaType" AS ENUM ('IMAGE', 'VIDEO', 'AUDIO');
+
 -- CreateTable
 CREATE TABLE "About" (
     "id" SERIAL NOT NULL,
@@ -16,6 +19,26 @@ CREATE TABLE "About" (
     "card4Description" TEXT NOT NULL,
 
     CONSTRAINT "About_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Action" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "date" TEXT NOT NULL,
+    "tag" TEXT NOT NULL,
+    "tagColor" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "relation" TEXT NOT NULL,
+    "showCta" BOOLEAN NOT NULL DEFAULT false,
+    "ctaLabel" TEXT NOT NULL,
+    "details" TEXT[],
+    "people" TEXT[],
+    "partners" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Action_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -44,8 +67,24 @@ CREATE TABLE "Hero" (
     "header2" TEXT NOT NULL,
     "header3" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "imageMediaId" UUID,
 
     CONSTRAINT "Hero_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Media" (
+    "id" UUID NOT NULL,
+    "type" "MediaType" NOT NULL,
+    "key" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "filename" TEXT NOT NULL,
+    "mimeType" TEXT NOT NULL,
+    "size" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Media_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -60,4 +99,10 @@ CREATE TABLE "User" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Media_key_key" ON "Media"("key");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- AddForeignKey
+ALTER TABLE "Hero" ADD CONSTRAINT "Hero_imageMediaId_fkey" FOREIGN KEY ("imageMediaId") REFERENCES "Media"("id") ON DELETE SET NULL ON UPDATE CASCADE;

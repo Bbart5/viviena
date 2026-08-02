@@ -7,10 +7,16 @@ export const load: PageServerLoad = async () => {
 	});
 	const about = await prisma.about.findFirstOrThrow();
 	const areas = await prisma.areas.findFirstOrThrow();
+	const actions = await prisma.action.findMany({
+		orderBy: {
+			createdAt: 'desc'
+		}
+	});
 
 	return {
 		hero: { ...hero, imageUrl: imageMedia?.url ?? null },
 		about,
-		areas
+		areas,
+		actions
 	};
 };
