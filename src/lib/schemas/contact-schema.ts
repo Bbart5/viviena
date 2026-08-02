@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 export const CONTACT_SCHEMA_RESTRICTIONS = {
 	name: {
-		min: 1,
+		min: 2,
 		max: 50,
 		matches: /^[\p{L}\s'-]+$/u
 	},

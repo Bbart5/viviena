@@ -1,9 +1,12 @@
 -- CreateEnum
 CREATE TYPE "MediaType" AS ENUM ('IMAGE', 'VIDEO', 'AUDIO');
 
+-- CreateEnum
+CREATE TYPE "TeamGroup" AS ENUM ('BOARD', 'REVISION');
+
 -- CreateTable
 CREATE TABLE "About" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "title" TEXT NOT NULL,
     "header" TEXT NOT NULL,
     "paragraph1" TEXT NOT NULL,
@@ -23,7 +26,7 @@ CREATE TABLE "About" (
 
 -- CreateTable
 CREATE TABLE "Action" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "title" TEXT NOT NULL,
     "date" TEXT NOT NULL,
     "tag" TEXT NOT NULL,
@@ -35,6 +38,7 @@ CREATE TABLE "Action" (
     "details" TEXT[],
     "people" TEXT[],
     "partners" TEXT[],
+    "imageMediaId" UUID,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -43,7 +47,7 @@ CREATE TABLE "Action" (
 
 -- CreateTable
 CREATE TABLE "Areas" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "title" TEXT NOT NULL,
     "header1" TEXT NOT NULL,
     "paragraph1" TEXT NOT NULL,
@@ -61,7 +65,7 @@ CREATE TABLE "Areas" (
 
 -- CreateTable
 CREATE TABLE "Hero" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "title" TEXT NOT NULL,
     "header1" TEXT NOT NULL,
     "header2" TEXT NOT NULL,
@@ -88,6 +92,19 @@ CREATE TABLE "Media" (
 );
 
 -- CreateTable
+CREATE TABLE "TeamMember" (
+    "id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+    "group" "TeamGroup" NOT NULL,
+    "imageMediaId" UUID,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "TeamMember_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "User" (
     "id" UUID NOT NULL,
     "username" TEXT NOT NULL,
@@ -105,4 +122,10 @@ CREATE UNIQUE INDEX "Media_key_key" ON "Media"("key");
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- AddForeignKey
+ALTER TABLE "Action" ADD CONSTRAINT "Action_imageMediaId_fkey" FOREIGN KEY ("imageMediaId") REFERENCES "Media"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Hero" ADD CONSTRAINT "Hero_imageMediaId_fkey" FOREIGN KEY ("imageMediaId") REFERENCES "Media"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_imageMediaId_fkey" FOREIGN KEY ("imageMediaId") REFERENCES "Media"("id") ON DELETE SET NULL ON UPDATE CASCADE;

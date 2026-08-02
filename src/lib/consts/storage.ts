@@ -1,4 +1,6 @@
-// Decimal units — Cloudflare bills in GB-months, not GiB.
+import { asset } from '$app/paths';
+
+// Decimal units - Cloudflare bills in GB-months, not GiB.
 export const R2_FREE_TIER_LIMITS = {
 	storageBytes: 10 * 1000 ** 3, // 10 GB
 	classAOps: 1 * 1000 ** 2,
@@ -9,17 +11,17 @@ export const PRISMA_POSTGRES_FREE_TIER_LIMITS = {
 	databaseBytes: 500 * 1000 ** 2 // 500 MB
 } as const;
 
-export const STORAGE_USAGE_ENDPOINT = '/api/admin/storage/usage' as const;
+// Served locally - an external placeholder host would be a third-party request
+// the privacy policy doesn't cover.
+export const PLACEHOLDER_IMAGE_URL = asset('/brand/placeholder.svg');
 
-export const PLACEHOLDER_IMAGE_URL =
-	'https://placehold.co/800x600/ffffff/3367E2?text=VIVIENA' as const;
-
+// No SVG: the upload endpoints trust the client-declared mime type, and SVG
+// can carry scripts (stored-XSS risk if media is ever served same-origin).
 export const ACCEPTED_IMAGE_MIME_TYPES = [
 	'image/avif',
 	'image/png',
 	'image/jpeg',
 	'image/webp',
-	'image/svg+xml',
 	'image/gif'
 ] as const;
 

@@ -1,18 +1,10 @@
 <script lang="ts">
-	import {
-		PRISMA_POSTGRES_FREE_TIER_LIMITS,
-		R2_FREE_TIER_LIMITS,
-		STORAGE_USAGE_ENDPOINT
-	} from '$lib/consts/storage';
-	import { requestJson } from '$lib/utils/api';
+	import { PRISMA_POSTGRES_FREE_TIER_LIMITS, R2_FREE_TIER_LIMITS } from '$lib/consts/storage';
+	import { getStorageUsage, refreshStorageUsage } from '$lib/remote/storage.remote';
+	import { commandErrorMessage } from '$lib/utils/api';
 	import { formatBytes } from '$lib/utils/format-bytes';
 
-	interface ResourceUsage {
-		storageBytes: number;
-		databaseBytes: number;
-		classAOps: number | null;
-		classBOps: number | null;
-	}
+	type ResourceUsage = Awaited<ReturnType<typeof getStorageUsage>>;
 
 	interface UsageRow {
 		label: string;
@@ -29,31 +21,16 @@
 
 	let { class: className = '' }: Props = $props();
 
-	let usage = $state<ResourceUsage | null>(null);
-	let loading = $state(true);
-	let errorMessage = $state<string | null>(null);
+	const refreshing = $derived(refreshStorageUsage.pending > 0);
 
-	async function loadUsage(fresh = false) {
-		loading = true;
-		errorMessage = null;
-
+	async function refresh() {
 		try {
-			const body = await requestJson<{ usage: ResourceUsage }>(
-				`${STORAGE_USAGE_ENDPOINT}${fresh ? '?fresh=1' : ''}`,
-				'Nie udało się pobrać statystyk magazynu.'
-			);
-
-			usage = body.usage;
+			await refreshStorageUsage();
 		} catch (error) {
-			errorMessage = (error as Error).message;
-		} finally {
-			loading = false;
+			console.error(error);
+			alert(commandErrorMessage(error, 'Nie udało się pobrać statystyk magazynu.'));
 		}
 	}
-
-	$effect(() => {
-		loadUsage();
-	});
 
 	function percentage(used: number, limit: number): number {
 		return (used / limit) * 100;
@@ -69,44 +46,42 @@
 		return 'bg-primary';
 	}
 
-	const rows: UsageRow[] = $derived(
-		usage
-			? [
-					{
-						label: 'Pamięć (R2)',
-						icon: 'hard_drive',
-						used: usage.storageBytes,
-						limit: R2_FREE_TIER_LIMITS.storageBytes,
-						usedLabel: formatBytes(usage.storageBytes, 2),
-						limitLabel: formatBytes(R2_FREE_TIER_LIMITS.storageBytes, 2)
-					},
-					{
-						label: 'Operacje klasy A (R2)',
-						icon: 'upload',
-						used: usage.classAOps,
-						limit: R2_FREE_TIER_LIMITS.classAOps,
-						usedLabel: usage.classAOps?.toLocaleString('pl-PL') ?? '',
-						limitLabel: R2_FREE_TIER_LIMITS.classAOps.toLocaleString('pl-PL')
-					},
-					{
-						label: 'Operacje klasy B (R2)',
-						icon: 'download',
-						used: usage.classBOps,
-						limit: R2_FREE_TIER_LIMITS.classBOps,
-						usedLabel: usage.classBOps?.toLocaleString('pl-PL') ?? '',
-						limitLabel: R2_FREE_TIER_LIMITS.classBOps.toLocaleString('pl-PL')
-					},
-					{
-						label: 'Baza danych (Postgres)',
-						icon: 'database',
-						used: usage.databaseBytes,
-						limit: PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes,
-						usedLabel: formatBytes(usage.databaseBytes, 2),
-						limitLabel: formatBytes(PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes, 2)
-					}
-				]
-			: []
-	);
+	function buildRows(usage: ResourceUsage): UsageRow[] {
+		return [
+			{
+				label: 'Pamięć (R2)',
+				icon: 'hard_drive',
+				used: usage.storageBytes,
+				limit: R2_FREE_TIER_LIMITS.storageBytes,
+				usedLabel: formatBytes(usage.storageBytes, 2),
+				limitLabel: formatBytes(R2_FREE_TIER_LIMITS.storageBytes, 2)
+			},
+			{
+				label: 'Operacje klasy A (R2)',
+				icon: 'upload',
+				used: usage.classAOps,
+				limit: R2_FREE_TIER_LIMITS.classAOps,
+				usedLabel: usage.classAOps?.toLocaleString('pl-PL') ?? '',
+				limitLabel: R2_FREE_TIER_LIMITS.classAOps.toLocaleString('pl-PL')
+			},
+			{
+				label: 'Operacje klasy B (R2)',
+				icon: 'download',
+				used: usage.classBOps,
+				limit: R2_FREE_TIER_LIMITS.classBOps,
+				usedLabel: usage.classBOps?.toLocaleString('pl-PL') ?? '',
+				limitLabel: R2_FREE_TIER_LIMITS.classBOps.toLocaleString('pl-PL')
+			},
+			{
+				label: 'Baza danych (Postgres)',
+				icon: 'database',
+				used: usage.databaseBytes,
+				limit: PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes,
+				usedLabel: formatBytes(usage.databaseBytes, 2),
+				limitLabel: formatBytes(PRISMA_POSTGRES_FREE_TIER_LIMITS.databaseBytes, 2)
+			}
+		];
+	}
 </script>
 
 <div class="rounded-2xl border border-outline-variant/30 bg-white p-4 {className}">
@@ -117,23 +92,40 @@
 		</div>
 		<button
 			type="button"
-			onclick={() => loadUsage(true)}
-			disabled={loading}
+			onclick={refresh}
+			disabled={refreshing}
 			aria-label="Odśwież statystyki"
 			class="flex cursor-pointer items-center gap-1 rounded-lg border border-outline-variant/30 px-2.5 py-1 text-xs font-semibold text-brand-muted transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
 		>
-			<span class="material-symbols-outlined text-sm {loading ? 'animate-spin' : ''}">refresh</span>
+			<span class="material-symbols-outlined text-sm {refreshing ? 'animate-spin' : ''}">
+				refresh
+			</span>
 			Odśwież
 		</button>
 	</div>
 
-	{#if loading && !usage}
-		<p class="text-sm text-brand-muted">Ładowanie statystyk...</p>
-	{:else if errorMessage}
-		<p class="text-sm text-error">{errorMessage}</p>
-	{:else if usage}
+	<svelte:boundary>
+		{#snippet pending()}
+			<p class="text-sm text-brand-muted">Ładowanie statystyk...</p>
+		{/snippet}
+
+		{#snippet failed(error, reset)}
+			<div class="flex items-center gap-3">
+				<p class="text-sm text-error">
+					{commandErrorMessage(error, 'Nie udało się pobrać statystyk magazynu.')}
+				</p>
+				<button
+					type="button"
+					onclick={reset}
+					class="cursor-pointer rounded-lg border border-outline-variant/30 px-2.5 py-1 text-xs font-semibold text-brand-muted transition hover:border-primary/40 hover:text-primary"
+				>
+					Spróbuj ponownie
+				</button>
+			</div>
+		{/snippet}
+
 		<div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-			{#each rows as row (row.label)}
+			{#each buildRows(await getStorageUsage()) as row (row.label)}
 				<div
 					class="rounded-lg border border-outline-variant/20 bg-surface-container-low/60 px-3 py-2"
 				>
@@ -165,5 +157,5 @@
 				</div>
 			{/each}
 		</div>
-	{/if}
+	</svelte:boundary>
 </div>

@@ -1,24 +1,3 @@
-<!-- <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
-
-	async function onLogout() {
-		await fetch(resolve('/admin/logout'), {
-			method: 'POST'
-		});
-
-		goto(resolve('/admin/login'));
-
-    // TODO: make a funny joke on bartosz_b account - Math.random - chance 1 in 20 to go to pornhub
-		// window.location = 'https://pornhub.com' as any;
-	}
-</script>
-
-<button
-	class="top-4 rounded-lg bg-red-500 px-4 py-2 text-white shadow-lg cursor-pointer"
-	onclick={onLogout}>Wyloguj się</button
-> -->
-
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';

@@ -1,5 +1,5 @@
 model About {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid()) @db.Uuid
 
   title      String
   header     String

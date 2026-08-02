@@ -2,7 +2,7 @@
 	import { formatBytes } from '$lib/utils/format-bytes';
 
 	interface Props {
-		/** Staged file — bind with `bind:file` to consume it from outside. */
+		/** Staged file - bind with `bind:file` to consume it from outside. */
 		file?: File | null;
 		accept?: string;
 		maxSizeMb?: number;

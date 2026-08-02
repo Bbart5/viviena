@@ -5,7 +5,8 @@ enum MediaType {
 }
 
 model Media {
-  id       String    @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
+
   type     MediaType
   key      String    @unique
   url      String
@@ -16,5 +17,7 @@ model Media {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  heroes Hero[]
+  heroes      Hero[]
+  actions     Action[]
+  teamMembers TeamMember[]
 }

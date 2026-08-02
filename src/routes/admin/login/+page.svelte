@@ -27,6 +27,7 @@
 		try {
 			await requestJson(resolve('/admin/login'), 'Wystąpił błąd. Spróbuj ponownie później.', {
 				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ username, password } satisfies LoginRequestDto)
 			});
 

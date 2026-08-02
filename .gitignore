@@ -25,4 +25,5 @@ vite.config.ts.timestamp-*
 
 /generated
 
-encode-users.ts
+# Local input for `npm run encode-users` - contains real credentials.
+/users.json

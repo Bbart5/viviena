@@ -1,30 +1,34 @@
 <script lang="ts">
-	import type { About } from '../../../generated/prisma/client';
+	import { getAbout, updateAbout } from '$lib/remote/about.remote';
+	import { commandErrorMessage } from '$lib/utils/api';
 
 	interface Props {
-		about: About;
 		admin?: boolean;
 	}
 
-	let { about, admin }: Props = $props();
+	let { admin }: Props = $props();
+
+	const about = $derived(await getAbout());
 
 	let editing = $state(false);
 
+	let saving = $state(false);
+
 	let editedAbout = $state({
-		id: about.id,
-		title: about.title,
-		header: about.header,
-		paragraph1: about.paragraph1,
-		paragraph2: about.paragraph2,
-		paragraph3: about.paragraph3,
-		card1Title: about.card1Title,
-		card1Description: about.card1Description,
-		card2Title: about.card2Title,
-		card2Description: about.card2Description,
-		card3Title: about.card3Title,
-		card3Description: about.card3Description,
-		card4Title: about.card4Title,
-		card4Description: about.card4Description
+		id: 0,
+		title: '',
+		header: '',
+		paragraph1: '',
+		paragraph2: '',
+		paragraph3: '',
+		card1Title: '',
+		card1Description: '',
+		card2Title: '',
+		card2Description: '',
+		card3Title: '',
+		card3Description: '',
+		card4Title: '',
+		card4Description: ''
 	});
 
 	function startEditing() {
@@ -49,49 +53,27 @@
 	}
 
 	function cancelEditing() {
-		editedAbout = {
-			id: about.id,
-			title: about.title,
-			header: about.header,
-			paragraph1: about.paragraph1,
-			paragraph2: about.paragraph2,
-			paragraph3: about.paragraph3,
-			card1Title: about.card1Title,
-			card1Description: about.card1Description,
-			card2Title: about.card2Title,
-			card2Description: about.card2Description,
-			card3Title: about.card3Title,
-			card3Description: about.card3Description,
-			card4Title: about.card4Title,
-			card4Description: about.card4Description
-		};
-
 		editing = false;
 	}
 
 	async function saveEditing() {
+		if (saving) return;
+
+		const fields = $state.snapshot(editedAbout);
+
+		saving = true;
+		// Close the form right away — the override shows the new content instantly.
+		editing = false;
+
 		try {
-			const response = await fetch('/api/admin/about', {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(editedAbout)
-			});
-
-			const result = await response.json();
-
-			if (!result.success) {
-				alert(result.message);
-				return;
-			}
-
-			Object.assign(about, editedAbout);
-
-			editing = false;
+			await updateAbout(fields).updates(getAbout().withOverride((a) => ({ ...a, ...fields })));
 		} catch (error) {
 			console.error(error);
-			alert('Wystąpił błąd podczas zapisywania.');
+			editedAbout = fields;
+			editing = true;
+			alert(commandErrorMessage(error, 'Wystąpił błąd podczas zapisywania.'));
+		} finally {
+			saving = false;
 		}
 	}
 </script>

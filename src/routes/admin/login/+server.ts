@@ -1,10 +1,9 @@
 import { apiError } from '$lib/server/api';
 import { prisma } from '$lib/server/prisma';
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { plainToInstance } from 'class-transformer';
-import { IsNotEmpty, IsString, validate } from 'class-validator';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import * as z from 'zod';
 import { ENVIRONMENT, JWT_SECRET } from '$env/static/private';
 import type { JwtSessionPayload } from '$lib/types/jwt.payload';
 import {
@@ -13,19 +12,16 @@ import {
 	SESSION_TTL_SECONDS
 } from '$lib/consts/auth';
 
-class LoginRequestDto {
-	@IsNotEmpty()
-	@IsString()
-	declare username: string;
+// zod instead of class-validator: decorator-based DTOs silently lose their
+// metadata under esbuild/oxc transforms, which made validation reject every
+// well-formed login.
+const loginSchema = z.object({
+	username: z.string().min(1),
+	password: z.string().min(1)
+});
 
-	@IsNotEmpty()
-	@IsString()
-	declare password: string;
-}
-
-// SvelteKit forbids runtime exports besides HTTP verbs in +server.ts; the login
-// page only needs the type.
-export type { LoginRequestDto };
+// The login page only needs the type.
+export type LoginRequestDto = z.infer<typeof loginSchema>;
 
 // Empty, unknown, or wrong credentials all get the same answer so the response
 // does not reveal whether the username exists.
@@ -33,17 +29,15 @@ const invalidCredentials = () => apiError('Niepoprawny login lub hasło.', 401);
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	try {
-		const body = await request.json();
-		const loginDto = plainToInstance(LoginRequestDto, body);
-		const errors = await validate(loginDto);
+		const parsed = loginSchema.safeParse(await request.json());
 
-		if (errors.length > 0) {
+		if (!parsed.success) {
 			return invalidCredentials();
 		}
 
 		const foundUser = await prisma.user.findFirst({
 			where: {
-				username: loginDto.username
+				username: parsed.data.username
 			}
 		});
 
@@ -51,7 +45,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			return invalidCredentials();
 		}
 
-		const passwordsMatch = await bcrypt.compare(loginDto.password, foundUser.passwordHash);
+		const passwordsMatch = await bcrypt.compare(parsed.data.password, foundUser.passwordHash);
 
 		if (!passwordsMatch) {
 			return invalidCredentials();

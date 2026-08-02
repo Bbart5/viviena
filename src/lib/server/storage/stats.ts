@@ -94,7 +94,7 @@ async function getMinioUsage(): Promise<StorageUsage> {
 }
 
 async function getR2Usage(): Promise<StorageUsage> {
-	// R2 free tier limits reset monthly — usage is month-to-date.
+	// R2 free tier limits reset monthly - usage is month-to-date.
 	const since = new Date();
 	since.setUTCDate(1);
 	since.setUTCHours(0, 0, 0, 0);

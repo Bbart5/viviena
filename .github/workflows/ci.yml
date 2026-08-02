@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # $env/static/private requires every variable to exist at build time and
+      # prisma generate (npm prepare) needs DATABASE_URL - the example file
+      # provides safe dev values for all of them. No database is contacted.
+      - name: Provide env
+        run: cp .env.example .env
+
+      - name: Install
+        run: npm ci
+
+      - name: Prettier
+        run: npx prettier --check .
+
+      - name: ESLint
+        run: npx eslint .
+
+      - name: svelte-check
+        run: npm run check
+
+      - name: Build
+        run: npm run build

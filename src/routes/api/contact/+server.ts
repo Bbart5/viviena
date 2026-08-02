@@ -1,9 +1,8 @@
 import { GMAIL_USER } from '$env/static/private';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { MailTransport } from '$lib/server/mail/MailTransport';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
-import { ContactDto } from '$lib/server/dto/ContactDto';
+import { ValidationError } from 'yup';
+import { contactSchema, type ContactSchema } from '$lib/schemas/contact-schema';
 
 function escapeHtml(value: string): string {
 	return value
@@ -14,32 +13,36 @@ function escapeHtml(value: string): string {
 		.replace(/'/g, '&#39;');
 }
 
-async function renderContactEmail(data: ContactDto): Promise<string> {
+async function renderContactEmail(data: ContactSchema): Promise<string> {
 	const { default: template } = await import('$lib/server/email-templates/contact.html?raw');
 
 	return template
 		.replaceAll('{{name}}', escapeHtml(data.name.trim()))
 		.replaceAll('{{email}}', escapeHtml(data.email.trim()))
-		.replaceAll('{{message}}', escapeHtml(data.message.trim()));
+		.replaceAll('{{message}}', escapeHtml(data.message.trim()).replace(/\r?\n/g, '<br>'));
 }
 
 export async function POST({ request }: RequestEvent) {
 	try {
 		const body = await request.json();
-		const contactDto = plainToInstance(ContactDto, body);
-		const errors = await validate(contactDto);
 
-		if (errors.length > 0) {
-			const firstError = errors[0];
+		// The same yup schema the form validates with client-side.
+		let contact: ContactSchema;
+		try {
+			contact = await contactSchema.validate(body, { stripUnknown: true });
+		} catch (error) {
+			if (error instanceof ValidationError) {
+				return json(
+					{
+						success: false,
+						field: error.path,
+						message: error.message
+					},
+					{ status: 400 }
+				);
+			}
 
-			return json(
-				{
-					success: false,
-					field: firstError.property,
-					message: Object.values(firstError.constraints ?? {})[0] ?? 'Niepoprawne dane.'
-				},
-				{ status: 400 }
-			);
+			throw error;
 		}
 
 		const transporter = MailTransport.getInstance();
@@ -47,9 +50,9 @@ export async function POST({ request }: RequestEvent) {
 		await transporter.sendMail({
 			from: GMAIL_USER,
 			to: GMAIL_USER,
-			replyTo: contactDto.email,
-			subject: `Nowa wiadomość od ${contactDto.name}`,
-			html: await renderContactEmail(contactDto)
+			replyTo: contact.email,
+			subject: `Nowa wiadomość od ${contact.name}`,
+			html: await renderContactEmail(contact)
 		});
 
 		return json({ success: true }, { status: 200 });

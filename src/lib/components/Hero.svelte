@@ -1,42 +1,45 @@
 <script lang="ts">
+	import type { Media } from '../../../generated/prisma/client';
 	import { ACCEPTED_IMAGE_MIME_TYPES, PLACEHOLDER_IMAGE_URL } from '$lib/consts/storage';
-	import { requestJson } from '$lib/utils/api';
-	import MediaUploadForm from './MediaUploadForm.svelte';
-	import type { Hero } from '../../../generated/prisma/client';
+	import { getHero, updateHero } from '$lib/remote/hero.remote';
+	import { commandErrorMessage, requestJson } from '$lib/utils/api';
+	import FileDropInput from './FileDropInput.svelte';
 
 	interface Props {
 		scrollTo: (href: string) => void;
-		hero: Hero & { imageUrl: string | null };
 		admin?: boolean;
 	}
 
-	let { scrollTo, hero, admin = false }: Props = $props();
+	let { scrollTo, admin = false }: Props = $props();
 
-	// undefined = no local change yet, null = deleted, string = freshly uploaded
-	let imageOverride = $state<string | null | undefined>(undefined);
-	const currentImageUrl = $derived(imageOverride !== undefined ? imageOverride : hero.imageUrl);
-	const displayedImageUrl = $derived(currentImageUrl ?? PLACEHOLDER_IMAGE_URL);
+	const hero = $derived(await getHero());
 
-	function handleImageUploaded(response: unknown) {
-		imageOverride = (response as { media: { url: string } }).media.url;
-	}
-
-	function handleImageDeleted() {
-		imageOverride = null;
-	}
+	const displayedImageUrl = $derived(hero.imageUrl ?? PLACEHOLDER_IMAGE_URL);
 
 	let editing = $state(false);
 
+	let saving = $state(false);
+
+	let stagedImage = $state<File | null>(null);
+
+	let removeImage = $state(false);
+
+	let imageError = $state<string | null>(null);
+
 	let editedHero = $state({
-		id: hero.id,
-		title: hero.title,
-		header1: hero.header1,
-		header2: hero.header2,
-		header3: hero.header3,
-		description: hero.description
+		id: 0,
+		title: '',
+		header1: '',
+		header2: '',
+		header3: '',
+		description: ''
 	});
 
 	function startEditing() {
+		stagedImage = null;
+		removeImage = false;
+		imageError = null;
+
 		editedHero = {
 			id: hero.id,
 			title: hero.title,
@@ -50,50 +53,80 @@
 	}
 
 	function cancelEditing() {
-		editedHero = {
-			id: hero.id,
-			title: hero.title,
-			header1: hero.header1,
-			header2: hero.header2,
-			header3: hero.header3,
-			description: hero.description
-		};
-
 		editing = false;
+		stagedImage = null;
+		removeImage = false;
+		imageError = null;
+	}
+
+	async function uploadImage(file: File): Promise<Media> {
+		const formData = new FormData();
+		formData.append('files', file);
+
+		const body = await requestJson<{ media: Media }>(
+			'/api/admin/hero/image',
+			'Nie udało się przesłać obrazu.',
+			{ method: 'POST', body: formData }
+		);
+
+		return body.media;
 	}
 
 	async function saveEditing() {
+		if (saving) return;
+
+		const fields = $state.snapshot(editedHero);
+		const staged = stagedImage;
+		const remove = removeImage;
+
+		saving = true;
+
 		try {
-			await requestJson('/api/admin/hero', 'Wystąpił błąd podczas zapisywania.', {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(editedHero)
-			});
+			// Upload first (the form stays open with a busy button) so the command's
+			// single-flight refresh already contains the new image.
+			const uploaded = staged ? await uploadImage(staged) : null;
 
-			Object.assign(hero, editedHero);
+			cancelEditing();
 
-			editing = false;
+			await updateHero({ ...fields, removeImage: remove && !staged }).updates(
+				getHero().withOverride((h) => ({
+					...h,
+					...fields,
+					imageUrl: uploaded ? uploaded.url : remove ? null : h.imageUrl
+				}))
+			);
 		} catch (error) {
-			alert((error as Error).message);
+			console.error(error);
+			editedHero = fields;
+			stagedImage = staged;
+			removeImage = remove;
+			editing = true;
+			alert(commandErrorMessage(error, 'Wystąpił błąd podczas zapisywania.'));
+		} finally {
+			saving = false;
 		}
 	}
 </script>
 
 {#snippet imageUploadCard()}
 	<div class="relative w-full rounded-2xl border border-outline-variant/25 bg-white p-4">
-		<MediaUploadForm
-			action="/api/admin/hero/image"
+		<FileDropInput
+			bind:file={stagedImage}
 			accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
 			maxSizeMb={10}
 			label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
-			hint="AVIF, PNG, JPEG, WebP, SVG lub GIF (maks. 10 MB)"
-			submitLabel="Zapisz obraz"
-			previewUrl={displayedImageUrl}
+			hint="AVIF, PNG, JPEG, WebP lub GIF (maks. 10 MB)"
+			previewUrl={removeImage ? null : hero.imageUrl}
 			previewKind="image"
-			deleteAction={currentImageUrl ? '/api/admin/hero/image' : null}
-			onuploaded={handleImageUploaded}
-			ondeleted={handleImageDeleted}
+			disabled={saving}
+			onselect={() => (imageError = null)}
+			onerror={(message) => (imageError = message)}
+			ondeleterequest={hero.imageUrl && !removeImage ? () => (removeImage = true) : undefined}
 		/>
+
+		{#if imageError}
+			<p class="mt-2 text-sm text-error">{imageError}</p>
+		{/if}
 	</div>
 {/snippet}
 

@@ -23,6 +23,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 		jwtTokenValid = null;
 	}
 
+	// Remote function requests don't hit the path-based guard below, so commands
+	// check this themselves via getRequestEvent().
+	event.locals.session = jwtTokenValid;
+
 	const currentPath = event.url.pathname;
 	const isProtected =
 		PROTECTED_PREFIXES.some((path) => currentPath === path || currentPath.startsWith(`${path}/`)) &&

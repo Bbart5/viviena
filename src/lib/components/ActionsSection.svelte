@@ -1,6 +1,11 @@
 <script lang="ts">
-	// import type { Action } from '../../types';
-	import type { Action } from '../../../generated/prisma/client';
+	import type { Media } from '../../../generated/prisma/client';
+	import { ACCEPTED_IMAGE_MIME_TYPES, PLACEHOLDER_IMAGE_URL } from '$lib/consts/storage';
+	import { createAction, deleteAction, getActions, updateAction } from '$lib/remote/actions.remote';
+	import { commandErrorMessage, requestJson } from '$lib/utils/api';
+	import FileDropInput from './FileDropInput.svelte';
+
+	type ActionWithMedia = Awaited<ReturnType<typeof getActions>>[number];
 
 	type EditableAction = {
 		id: number;
@@ -18,11 +23,13 @@
 	};
 
 	interface Props {
-		actions: Action[];
 		admin?: boolean;
 	}
 
-	let { actions, admin }: Props = $props();
+	let { admin }: Props = $props();
+
+	/** Placeholder id of the optimistic card shown while createAction is in flight. */
+	const TEMP_ID = -1;
 
 	let creating = $state(false);
 
@@ -30,8 +37,23 @@
 
 	let editedAction = $state<EditableAction | null>(null);
 
-	function startEditing(action: Action) {
+	let stagedImage = $state<File | null>(null);
+
+	let removeImage = $state(false);
+
+	let imageError = $state<string | null>(null);
+
+	let saving = $state(false);
+
+	/** Locally previewed image (object URL) shown on a card while its upload is in flight. */
+	let pendingImage = $state<{ actionId: number; url: string } | null>(null);
+
+	function startEditing(action: ActionWithMedia) {
+		creating = false;
 		editingId = action.id;
+		stagedImage = null;
+		removeImage = false;
+		imageError = null;
 
 		editedAction = {
 			id: action.id,
@@ -52,9 +74,12 @@
 	function startCreating() {
 		creating = true;
 		editingId = null;
+		stagedImage = null;
+		removeImage = false;
+		imageError = null;
 
 		editedAction = {
-			id: 0,
+			id: TEMP_ID,
 			title: '',
 			date: '',
 			tag: '',
@@ -70,75 +95,194 @@
 	}
 
 	function cancelEditing() {
+		creating = false;
 		editingId = null;
 		editedAction = null;
+		stagedImage = null;
+		removeImage = false;
+		imageError = null;
+	}
+
+	/** Restores the form after a failed save so the typed content isn't lost. */
+	function reopenForm(
+		fields: EditableAction,
+		staged: File | null,
+		remove: boolean,
+		wasCreating: boolean
+	) {
+		creating = wasCreating;
+		editingId = wasCreating ? null : fields.id;
+		editedAction = fields;
+		stagedImage = staged;
+		removeImage = remove;
+	}
+
+	function payloadOf(fields: EditableAction) {
+		return {
+			title: fields.title,
+			date: fields.date,
+			tag: fields.tag,
+			tagColor: fields.tagColor,
+			description: fields.description,
+			details: fields.details,
+			relation: fields.relation,
+			people: fields.people,
+			partners: fields.partners,
+			showCta: fields.showCta,
+			ctaLabel: fields.ctaLabel
+		};
+	}
+
+	async function uploadImage(actionId: number, file: File): Promise<Media> {
+		const formData = new FormData();
+		formData.append('files', file);
+
+		const body = await requestJson<{ media: Media }>(
+			`/api/admin/actions/${actionId}/image`,
+			'Nie udało się przesłać obrazu.',
+			{ method: 'POST', body: formData }
+		);
+
+		return body.media;
+	}
+
+	async function saveNew(fields: EditableAction, staged: File | null) {
+		const data = payloadOf(fields);
+		const optimisticUrl = staged ? URL.createObjectURL(staged) : null;
+
+		if (optimisticUrl) {
+			pendingImage = { actionId: TEMP_ID, url: optimisticUrl };
+		}
+
+		// Close the form right away — the override below shows the new card instantly.
+		cancelEditing();
+
+		try {
+			const created = await createAction(data).updates(
+				getActions().withOverride((current) => [
+					{
+						...data,
+						id: TEMP_ID,
+						imageMediaId: null,
+						imageMedia: null,
+						createdAt: new Date(),
+						updatedAt: new Date()
+					},
+					...current
+				])
+			);
+
+			// The image needs the real id, so it can only be uploaded afterwards; the
+			// object URL keeps covering the card until the refreshed data lands.
+			if (staged && optimisticUrl) {
+				pendingImage = { actionId: created.id, url: optimisticUrl };
+
+				try {
+					await uploadImage(created.id, staged);
+					await getActions().refresh();
+				} catch (err) {
+					// The action itself was created — reopening the form here would
+					// invite a duplicate, so only report the failed image upload.
+					console.error(err);
+					alert(commandErrorMessage(err, 'Nie udało się przesłać obrazu.'));
+				}
+			}
+		} finally {
+			if (optimisticUrl) {
+				URL.revokeObjectURL(optimisticUrl);
+			}
+
+			pendingImage = null;
+		}
+	}
+
+	async function saveExisting(fields: EditableAction, staged: File | null, remove: boolean) {
+		// Upload first (the form stays open with a busy button) so the command's
+		// single-flight refresh already contains the new image.
+		const uploaded = staged ? await uploadImage(fields.id, staged) : null;
+
+		cancelEditing();
+
+		await updateAction({
+			...payloadOf(fields),
+			id: fields.id,
+			removeImage: remove && !staged
+		}).updates(
+			getActions().withOverride((current) =>
+				current.map((action) =>
+					action.id === fields.id
+						? {
+								...action,
+								...payloadOf(fields),
+								imageMedia: uploaded ?? (remove ? null : action.imageMedia),
+								imageMediaId: uploaded ? uploaded.id : remove ? null : action.imageMediaId
+							}
+						: action
+				)
+			)
+		);
 	}
 
 	async function saveEditing() {
-		if (!editedAction) return;
+		if (!editedAction || saving) return;
 
-		const action = editedAction;
+		const fields = $state.snapshot(editedAction);
+		const staged = stagedImage;
+		const remove = removeImage;
+		const wasCreating = creating;
+
+		saving = true;
 
 		try {
-			const response = await fetch('/api/admin/actions', {
-				method: creating ? 'POST' : 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(action)
-			});
-
-			const result = await response.json();
-
-			if (!result.success) {
-				alert(result.message);
-				return;
-			}
-
-			if (creating) {
-				actions = [result.action, ...actions];
-
-				creating = false;
+			if (wasCreating) {
+				await saveNew(fields, staged);
 			} else {
-				const index = actions.findIndex((a) => a.id === action.id);
-
-				if (index !== -1) {
-					Object.assign(actions[index], action);
-				}
+				await saveExisting(fields, staged, remove);
 			}
-
-			editingId = null;
-			editedAction = null;
-		} catch (error) {
-			console.error(error);
-			alert('Wystąpił błąd podczas zapisywania.');
+		} catch (err) {
+			console.error(err);
+			reopenForm(fields, staged, remove, wasCreating);
+			alert(commandErrorMessage(err, 'Wystąpił błąd podczas zapisywania.'));
+		} finally {
+			saving = false;
 		}
 	}
 
-	async function deleteAction(id: number) {
+	async function removeAction(id: number) {
+		if (!confirm('Czy na pewno chcesz usunąć to wydarzenie? Tej operacji nie można cofnąć.')) {
+			return;
+		}
+
 		try {
-			const response = await fetch('/api/admin/actions', {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ id })
-			});
-
-			const result = await response.json();
-
-			if (!result.success) {
-				alert(result.message);
-				return;
-			}
-
-			actions = actions.filter((action) => action.id !== id);
-		} catch (error) {
-			console.error(error);
-			alert('Wystąpił błąd podczas usuwania.');
+			await deleteAction(id).updates(
+				getActions().withOverride((current) => current.filter((action) => action.id !== id))
+			);
+		} catch (err) {
+			console.error(err);
+			alert(commandErrorMessage(err, 'Wystąpił błąd podczas usuwania.'));
 		}
 	}
 </script>
+
+{#snippet imagePicker(currentUrl: string | null)}
+	<FileDropInput
+		bind:file={stagedImage}
+		accept={ACCEPTED_IMAGE_MIME_TYPES.join(',')}
+		maxSizeMb={10}
+		label="Przeciągnij i upuść obraz lub kliknij, aby wybrać"
+		hint="AVIF, PNG, JPEG, WebP lub GIF (maks. 10 MB)"
+		previewUrl={removeImage ? null : currentUrl}
+		previewKind="image"
+		disabled={saving}
+		onselect={() => (imageError = null)}
+		onerror={(message) => (imageError = message)}
+		ondeleterequest={currentUrl && !removeImage ? () => (removeImage = true) : undefined}
+	/>
+
+	{#if imageError}
+		<p class="mt-2 text-sm text-error">{imageError}</p>
+	{/if}
+{/snippet}
 
 <section
 	id="dzialania"
@@ -185,6 +329,10 @@
 		{#if creating && editedAction}
 			<div class="mb-8 rounded-2xl border border-outline-variant/30 bg-white p-8">
 				<h3 class="mb-8 text-2xl font-bold">Nowe wydarzenie</h3>
+
+				<div class="mb-6">
+					{@render imagePicker(null)}
+				</div>
 
 				<div class="mb-6 flex items-start justify-between gap-4">
 					<input
@@ -279,17 +427,16 @@
 				<div class="flex gap-3">
 					<button
 						onclick={saveEditing}
-						class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
+						disabled={saving}
+						class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						Utwórz
+						{saving ? 'Tworzenie...' : 'Utwórz'}
 					</button>
 
 					<button
-						onclick={() => {
-							creating = false;
-							editedAction = null;
-						}}
-						class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
+						onclick={cancelEditing}
+						disabled={saving}
+						class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						Anuluj
 					</button>
@@ -299,15 +446,25 @@
 
 		<!-- Action Cards -->
 		<div class="grid grid-cols-1 gap-8">
-			{#each actions as action (action.id)}
+			{#each await getActions() as action (action.id)}
+				{@const imageUrl =
+					pendingImage?.actionId === action.id
+						? pendingImage.url
+						: (action.imageMedia?.url ?? PLACEHOLDER_IMAGE_URL)}
 				<div
 					class="group flex flex-col rounded-2xl border border-outline-variant/30 bg-white transition-all duration-500 hover:shadow-[0_0_40px_rgba(57,81,193,0.12)]"
 				>
-					<div
-						class="flex h-56 items-center justify-center overflow-hidden rounded-t-2xl bg-linear-to-br from-primary/10 to-primary-container/25"
-					>
-						<!-- <img src={action.image} alt={action.title} class="h-full w-full object-cover" /> -->
-					</div>
+					{#if editingId === action.id && editedAction}
+						<div
+							class="rounded-t-2xl border-b border-outline-variant/20 bg-surface-container-low p-4"
+						>
+							{@render imagePicker(action.imageMedia?.url ?? null)}
+						</div>
+					{:else}
+						<div class="h-56 overflow-hidden rounded-t-2xl">
+							<img src={imageUrl} alt={action.title} class="h-full w-full object-cover" />
+						</div>
+					{/if}
 
 					<div class="flex flex-1 flex-col px-4 py-8">
 						<div class="mb-6 flex items-start justify-between gap-4">
@@ -509,28 +666,32 @@
 							{#if editingId === action.id}
 								<button
 									onclick={saveEditing}
-									class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
+									disabled={saving}
+									class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
 								>
-									Zapisz
+									{saving ? 'Zapisywanie...' : 'Zapisz'}
 								</button>
 
 								<button
 									onclick={cancelEditing}
-									class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
+									disabled={saving}
+									class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									Anuluj
 								</button>
 							{:else}
 								<button
 									onclick={() => startEditing(action)}
-									class="rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90"
+									disabled={action.id === TEMP_ID}
+									class="rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									Edytuj
 								</button>
 
 								<button
-									onclick={() => deleteAction(action.id)}
-									class="rounded-xl bg-red-600 px-5 py-2 font-semibold text-white transition hover:bg-red-700"
+									onclick={() => removeAction(action.id)}
+									disabled={action.id === TEMP_ID}
+									class="rounded-xl bg-red-600 px-5 py-2 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									Usuń
 								</button>

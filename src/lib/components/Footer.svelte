@@ -7,7 +7,7 @@
 		<!-- Brand -->
 		<div class="space-y-6">
 			<div class="flex items-center gap-3">
-				<img alt="VIVIENA" src="/brand/logo.svg" class="h-8 w-auto" />
+				<img alt="VIVIENA" src={asset('/brand/logo.svg')} class="h-8 w-auto" />
 			</div>
 			<p class="text-sm leading-relaxed text-brand-muted">
 				Stowarzyszenie VIVIENA - edukacja, rozwój i praktyczny dostęp do wiedzy dla młodych ludzi,

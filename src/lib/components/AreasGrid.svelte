@@ -1,28 +1,32 @@
 <script lang="ts">
-	import type { Areas } from '../../../generated/prisma/client';
+	import { getAreas, updateAreas } from '$lib/remote/areas.remote';
+	import { commandErrorMessage } from '$lib/utils/api';
 
 	interface Props {
-		areas: Areas;
 		admin?: boolean;
 	}
 
-	let { areas, admin }: Props = $props();
+	let { admin }: Props = $props();
+
+	const areas = $derived(await getAreas());
 
 	let editing = $state(false);
 
+	let saving = $state(false);
+
 	let editedAreas = $state({
-		id: areas.id,
-		title: areas.title,
-		header1: areas.header1,
-		paragraph1: areas.paragraph1,
-		header2: areas.header2,
-		paragraph2: areas.paragraph2,
-		header3: areas.header3,
-		paragraph3: areas.paragraph3,
-		header4: areas.header4,
-		paragraph4: areas.paragraph4,
-		header5: areas.header5,
-		paragraph5: areas.paragraph5
+		id: 0,
+		title: '',
+		header1: '',
+		paragraph1: '',
+		header2: '',
+		paragraph2: '',
+		header3: '',
+		paragraph3: '',
+		header4: '',
+		paragraph4: '',
+		header5: '',
+		paragraph5: ''
 	});
 
 	function startEditing() {
@@ -45,47 +49,27 @@
 	}
 
 	function cancelEditing() {
-		editedAreas = {
-			id: areas.id,
-			title: areas.title,
-			header1: areas.header1,
-			paragraph1: areas.paragraph1,
-			header2: areas.header2,
-			paragraph2: areas.paragraph2,
-			header3: areas.header3,
-			paragraph3: areas.paragraph3,
-			header4: areas.header4,
-			paragraph4: areas.paragraph4,
-			header5: areas.header5,
-			paragraph5: areas.paragraph5
-		};
-
 		editing = false;
 	}
 
 	async function saveEditing() {
+		if (saving) return;
+
+		const fields = $state.snapshot(editedAreas);
+
+		saving = true;
+		// Close the form right away — the override shows the new content instantly.
+		editing = false;
+
 		try {
-			const response = await fetch('/api/admin/areas', {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(editedAreas)
-			});
-
-			const result = await response.json();
-
-			if (!result.success) {
-				alert(result.message);
-				return;
-			}
-
-			Object.assign(areas, editedAreas);
-
-			editing = false;
+			await updateAreas(fields).updates(getAreas().withOverride((a) => ({ ...a, ...fields })));
 		} catch (error) {
 			console.error(error);
-			alert('Wystąpił błąd podczas zapisywania.');
+			editedAreas = fields;
+			editing = true;
+			alert(commandErrorMessage(error, 'Wystąpił błąd podczas zapisywania.'));
+		} finally {
+			saving = false;
 		}
 	}
 </script>

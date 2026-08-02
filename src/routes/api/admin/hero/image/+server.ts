@@ -7,23 +7,9 @@ import type { RequestHandler } from './$types';
 
 const MAX_SIZE_BYTES = 10 * 1000 * 1000; // 10 MB
 
-export const DELETE: RequestHandler = async () => {
-	try {
-		const hero = await prisma.hero.findFirstOrThrow();
-
-		if (hero.imageMediaId) {
-			// Deleting the media row clears hero.imageMediaId via the FK's SET NULL.
-			await MediaService.getInstance().remove(hero.imageMediaId);
-		}
-
-		return json({ success: true });
-	} catch (error) {
-		console.error(error);
-
-		return apiError('Nie udało się usunąć obrazu.');
-	}
-};
-
+// Uploads stay a multipart endpoint because command() arguments are
+// devalue-serialized JSON and cannot carry a File. Image removal lives in the
+// deleteHeroImage command instead.
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const formData = await request.formData();

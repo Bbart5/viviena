@@ -10,4 +10,3 @@ export { default as Contact } from './components/Contact.svelte';
 export { default as Footer } from './components/Footer.svelte';
 export { default as StorageUsageWidget } from './components/StorageUsageWidget.svelte';
 export { default as FileDropInput } from './components/FileDropInput.svelte';
-export { default as MediaUploadForm } from './components/MediaUploadForm.svelte';
