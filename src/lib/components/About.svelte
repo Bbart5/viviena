@@ -15,7 +15,7 @@
 	let saving = $state(false);
 
 	let editedAbout = $state({
-		id: 0,
+		id: '',
 		title: '',
 		header: '',
 		paragraph1: '',
@@ -62,7 +62,7 @@
 		const fields = $state.snapshot(editedAbout);
 
 		saving = true;
-		// Close the form right away — the override shows the new content instantly.
+		// Close the form right away - the override shows the new content instantly.
 		editing = false;
 
 		try {

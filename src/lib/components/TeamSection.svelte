@@ -21,7 +21,7 @@
 	let { admin }: Props = $props();
 
 	/** Placeholder id of the optimistic card shown while createTeamMember is in flight. */
-	const TEMP_ID = -1;
+	const TEMP_ID = 'temp-id';
 
 	const FALLBACK_AVATAR = asset('/team/avatar-fallback.svg');
 
@@ -31,10 +31,10 @@
 
 	let creatingGroup = $state<TeamGroup | null>(null);
 
-	let editingId = $state<number | null>(null);
+	let editingId = $state<string | null>(null);
 
-	let editedMember = $state<{ id: number; name: string; role: string; group: TeamGroup }>({
-		id: 0,
+	let editedMember = $state<{ id: string; name: string; role: string; group: TeamGroup }>({
+		id: '',
 		name: '',
 		role: '',
 		group: 'BOARD'
@@ -49,7 +49,7 @@
 	let saving = $state(false);
 
 	/** Locally previewed photo (object URL) shown on a card while its upload is in flight. */
-	let pendingImage = $state<{ memberId: number; url: string } | null>(null);
+	let pendingImage = $state<{ memberId: string; url: string } | null>(null);
 
 	/**
 	 * Swaps a missing photo for the local fallback avatar. An action (not just
@@ -102,7 +102,7 @@
 		imageError = null;
 	}
 
-	async function uploadImage(memberId: number, file: File): Promise<Media> {
+	async function uploadImage(memberId: string, file: File): Promise<Media> {
 		const formData = new FormData();
 		formData.append('files', file);
 
@@ -225,7 +225,7 @@
 		}
 	}
 
-	async function removeMember(id: number) {
+	async function removeMember(id: string) {
 		if (
 			!confirm('Czy na pewno chcesz usunąć tego członka zespołu? Tej operacji nie można cofnąć.')
 		) {

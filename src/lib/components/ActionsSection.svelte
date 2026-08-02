@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Media } from '../../../generated/prisma/client';
-	import { ACCEPTED_IMAGE_MIME_TYPES, PLACEHOLDER_IMAGE_URL } from '$lib/consts/storage';
+	import { ACCEPTED_IMAGE_MIME_TYPES } from '$lib/consts/storage';
 	import { createAction, deleteAction, getActions, updateAction } from '$lib/remote/actions.remote';
 	import { commandErrorMessage, requestJson } from '$lib/utils/api';
 	import FileDropInput from './FileDropInput.svelte';
@@ -8,7 +8,7 @@
 	type ActionWithMedia = Awaited<ReturnType<typeof getActions>>[number];
 
 	type EditableAction = {
-		id: number;
+		id: string;
 		title: string;
 		date: string;
 		tag: string;
@@ -29,24 +29,18 @@
 	let { admin }: Props = $props();
 
 	/** Placeholder id of the optimistic card shown while createAction is in flight. */
-	const TEMP_ID = -1;
+	const TEMP_ID = 'temp_id';
 
 	let creating = $state(false);
-
-	let editingId = $state<number | null>(null);
-
+	let editingId = $state<string | null>(null);
 	let editedAction = $state<EditableAction | null>(null);
-
 	let stagedImage = $state<File | null>(null);
-
 	let removeImage = $state(false);
-
 	let imageError = $state<string | null>(null);
-
 	let saving = $state(false);
 
 	/** Locally previewed image (object URL) shown on a card while its upload is in flight. */
-	let pendingImage = $state<{ actionId: number; url: string } | null>(null);
+	let pendingImage = $state<{ actionId: string; url: string } | null>(null);
 
 	function startEditing(action: ActionWithMedia) {
 		creating = false;
@@ -133,7 +127,7 @@
 		};
 	}
 
-	async function uploadImage(actionId: number, file: File): Promise<Media> {
+	async function uploadImage(actionId: string, file: File): Promise<Media> {
 		const formData = new FormData();
 		formData.append('files', file);
 
@@ -154,7 +148,7 @@
 			pendingImage = { actionId: TEMP_ID, url: optimisticUrl };
 		}
 
-		// Close the form right away — the override below shows the new card instantly.
+		// Close the form right away - the override below shows the new card instantly.
 		cancelEditing();
 
 		try {
@@ -181,7 +175,7 @@
 					await uploadImage(created.id, staged);
 					await getActions().refresh();
 				} catch (err) {
-					// The action itself was created — reopening the form here would
+					// The action itself was created - reopening the form here would
 					// invite a duplicate, so only report the failed image upload.
 					console.error(err);
 					alert(commandErrorMessage(err, 'Nie udało się przesłać obrazu.'));
@@ -248,7 +242,7 @@
 		}
 	}
 
-	async function removeAction(id: number) {
+	async function removeAction(id: string) {
 		if (!confirm('Czy na pewno chcesz usunąć to wydarzenie? Tej operacji nie można cofnąć.')) {
 			return;
 		}
@@ -450,7 +444,7 @@
 				{@const imageUrl =
 					pendingImage?.actionId === action.id
 						? pendingImage.url
-						: (action.imageMedia?.url ?? PLACEHOLDER_IMAGE_URL)}
+						: (action.imageMedia?.url ?? null)}
 				<div
 					class="group flex flex-col rounded-2xl border border-outline-variant/30 bg-white transition-all duration-500 hover:shadow-[0_0_40px_rgba(57,81,193,0.12)]"
 				>
@@ -460,10 +454,14 @@
 						>
 							{@render imagePicker(action.imageMedia?.url ?? null)}
 						</div>
-					{:else}
+					{:else if imageUrl}
 						<div class="h-56 overflow-hidden rounded-t-2xl">
 							<img src={imageUrl} alt={action.title} class="h-full w-full object-cover" />
 						</div>
+					{:else}
+						<div
+							class="flex h-56 items-center justify-center overflow-hidden rounded-t-2xl bg-linear-to-br from-primary/10 to-primary-container/25"
+						></div>
 					{/if}
 
 					<div class="flex flex-1 flex-col px-4 py-8">
