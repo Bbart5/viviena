@@ -1,0 +1,22 @@
+model Action {
+  id Int @id @default(autoincrement())
+
+  title String
+  date  String
+
+  tag      String
+  tagColor String
+
+  description String @db.Text
+  relation    String @db.Text
+
+  showCta  Boolean @default(false)
+  ctaLabel String
+
+  details  String[]
+  people   String[]
+  partners String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

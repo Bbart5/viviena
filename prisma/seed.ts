@@ -13,8 +13,14 @@ async function main() {
 		users.map(async ({ username, password }) => {
 			const passwordHash = await bcrypt.hash(password, 10);
 
-			await prisma.user.create({
-				data: {
+			await prisma.user.upsert({
+				where: {
+					username
+				},
+				update: {
+					passwordHash
+				},
+				create: {
 					username,
 					passwordHash
 				}
@@ -103,6 +109,54 @@ async function main() {
 
 			paragraph5:
 				'Pokazujemy, jak planować wydatki, budować dobre nawyki finansowe, rozumieć budżet osobisty i podejmować codzienne decyzje, które mają realny wpływ na przyszłość.'
+		}
+	});
+
+	await prisma.action.create({
+		data: {
+			title: 'Finance Academy, VII edycja, 2026',
+			date: '22-24 kwietnia 2026',
+
+			tag: 'Zakończone',
+			tagColor: 'green',
+
+			showCta: false,
+			ctaLabel: 'Zobacz relację',
+
+			description:
+				'Finance Academy to konferencja edukacyjna dla licealistów i studentów, której celem jest pokazanie finansów w praktyczny, ciekawy i przystępny sposób. Wydarzenie łączy konferencję stacjonarną z webinarami online i odpowiada na realny problem: młodzi ludzie często znają ryzykowne aktywa z internetu, ale brakuje im rzetelnych podstaw dotyczących oszczędzania, inwestowania i bezpieczeństwa finansowego.',
+
+			relation:
+				'Wydarzenie było odpowiedzią na wyniki ankiety: młodzież częściej deklarowała znajomość ryzykownych aktywów (krypto, CFD, Forex) niż podstaw takich jak ETF-y, obligacje, oszczędzanie i bezpieczeństwo finansowe.',
+
+			details: [
+				'Organizatorzy: Stowarzyszenie VIVIENA we współpracy z SKN Inwestor',
+				'Format: wydarzenie hybrydowe (konferencja stacjonarna + webinary online)',
+				'22 kwietnia: konferencja dla uczniów szkół średnich',
+				'23-24 kwietnia: webinary online, bardziej skierowane do studentów'
+			],
+
+			people: [
+				'Prof. Joanna Senyszyn',
+				'Emil Łobodziński',
+				'Hubert Świerczewski (Pankracy)',
+				'dr hab. prof. UŁ Artur Sajnóg',
+				'Agata Kobylińska',
+				'Jakub Petera (@k.b.a_p.t.r)',
+				'Mikołaj Światowy (@mikolaj_swiatowy)',
+				'Natalia Śliwka (@natalia.sliwka.180)',
+				'Młodzieżowa Rada Miasta',
+				'Młodzieżowy Sejmik Województwa Łódzkiego'
+			],
+
+			partners: [
+				'PwC',
+				'PKO BP',
+				'MRM',
+				'Politechnika Łódzka',
+				'Uniwersytet Łódzki',
+				'inni partnerzy'
+			]
 		}
 	});
 

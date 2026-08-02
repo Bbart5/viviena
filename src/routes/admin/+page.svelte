@@ -18,48 +18,6 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const actions: Action[] = [
-		{
-			title: 'Finance Academy, VII edycja, 2026',
-			date: '22-24 kwietnia 2026',
-			tag: 'Zakończone',
-			tagColor: 'green',
-			ctaLabel: 'Zobacz relację',
-			showCta: false,
-			image: asset('/events/finance-academy-2026-cover.jpg'),
-			description:
-				'Finance Academy to konferencja edukacyjna dla licealistów i studentów, której celem jest pokazanie finansów w praktyczny, ciekawy i przystępny sposób. Wydarzenie łączy konferencję stacjonarną z webinarami online i odpowiada na realny problem: młodzi ludzie często znają ryzykowne aktywa z internetu, ale brakuje im rzetelnych podstaw dotyczących oszczędzania, inwestowania i bezpieczeństwa finansowego.',
-			details: [
-				'Organizatorzy: Stowarzyszenie VIVIENA we współpracy z SKN Inwestor',
-				'Format: wydarzenie hybrydowe (konferencja stacjonarna + webinary online)',
-				'22 kwietnia: konferencja dla uczniów szkół średnich',
-				'23-24 kwietnia: webinary online, bardziej skierowane do studentów'
-			],
-			relation:
-				'Wydarzenie było odpowiedzią na wyniki ankiety: młodzież częściej deklarowała znajomość ryzykownych aktywów (krypto, CFD, Forex) niż podstaw takich jak ETF-y, obligacje, oszczędzanie i bezpieczeństwo finansowe.',
-			people: [
-				'Prof. Joanna Senyszyn',
-				'Emil Łobodziński',
-				'Hubert Świerczewski (Pankracy)',
-				'dr hab. prof. UŁ Artur Sajnóg',
-				'Agata Kobylińska',
-				'Jakub Petera (@k.b.a_p.t.r)',
-				'Mikołaj Światowy (@mikolaj_swiatowy)',
-				'Natalia Śliwka (@natalia.sliwka.180)',
-				'Młodzieżowa Rada Miasta',
-				'Młodzieżowy Sejmik Województwa Łódzkiego'
-			],
-			partners: [
-				'PwC',
-				'PKOBP',
-				'MRM',
-				'Politechnika Łódzka',
-				'Uniwersytet Łódzki',
-				'inni partnerzy'
-			]
-		}
-	];
-
 	// TODO - photo: dodaj zdjęcia do /static/team/
 	const boardMembers: Member[] = [
 		{
@@ -167,7 +125,7 @@
 	<Hero hero={data.hero} {scrollTo} admin={true} />
 	<About about={data.about} admin={true} />
 	<AreasGrid areas={data.areas} admin={true} />
-	<ActionsSection {actions} />
+	<ActionsSection actions={data.actions} admin={true} />
 	<TeamSection {boardMembers} {revisionMembers} />
 	<Documents {documents} />
 </main>

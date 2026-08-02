@@ -18,7 +18,7 @@ export interface Action {
 	tagColor: string;
 	ctaLabel: string;
 	showCta: boolean;
-	image: string;
+	// image: string;
 	description: string;
 	details: string[];
 	relation: string;
