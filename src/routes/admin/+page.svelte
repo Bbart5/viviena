@@ -10,7 +10,8 @@
 		TeamSection,
 		Documents,
 		Footer,
-		StorageUsageWidget
+		StorageUsageWidget,
+		SavingOverlay
 	} from '$lib';
 	import { documents } from '$lib/data/site-content';
 	import { observeSectionHashes, scrollToSection } from '$lib/utils/sections';
@@ -19,6 +20,8 @@
 </script>
 
 <LogoutButton />
+
+<SavingOverlay />
 
 <Navbar />
 

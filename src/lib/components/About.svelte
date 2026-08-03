@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getAbout, updateAbout } from '$lib/remote/about.remote';
+	import { beginGlobalSaving, endGlobalSaving } from '$lib/state/global-saving.svelte';
 	import { commandErrorMessage } from '$lib/utils/api';
 
 	interface Props {
@@ -62,6 +63,7 @@
 		const fields = $state.snapshot(editedAbout);
 
 		saving = true;
+		beginGlobalSaving();
 		// Close the form right away - the override shows the new content instantly.
 		editing = false;
 
@@ -74,6 +76,7 @@
 			alert(commandErrorMessage(error, 'Wystąpił błąd podczas zapisywania.'));
 		} finally {
 			saving = false;
+			endGlobalSaving();
 		}
 	}
 </script>
@@ -285,14 +288,16 @@
 				{#if admin && editing}
 					<button
 						onclick={saveEditing}
-						class="cursor-pointer rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700"
+						disabled={saving}
+						class="cursor-pointer rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
-						Zapisz
+						{saving ? 'Zapisywanie...' : 'Zapisz'}
 					</button>
 
 					<button
 						onclick={cancelEditing}
-						class="cursor-pointer rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container"
+						disabled={saving}
+						class="cursor-pointer rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						Anuluj
 					</button>

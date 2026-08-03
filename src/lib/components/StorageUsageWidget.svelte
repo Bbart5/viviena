@@ -142,7 +142,7 @@
 					</div>
 					{#if row.used === null}
 						<div class="mt-2 h-1.5 rounded-full bg-surface-container-highest opacity-50"></div>
-						<p class="mt-1.5 text-xs text-brand-muted">Brak danych (dev)</p>
+						<p class="mt-1.5 text-xs text-brand-muted">Brak danych</p>
 					{:else}
 						<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-container-highest">
 							<div

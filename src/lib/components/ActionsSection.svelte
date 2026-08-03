@@ -2,6 +2,7 @@
 	import type { Media } from '../../../generated/prisma/client';
 	import { ACCEPTED_IMAGE_MIME_TYPES } from '$lib/consts/storage';
 	import { createAction, deleteAction, getActions, updateAction } from '$lib/remote/actions.remote';
+	import { beginGlobalSaving, endGlobalSaving } from '$lib/state/global-saving.svelte';
 	import { commandErrorMessage, requestJson } from '$lib/utils/api';
 	import FileDropInput from './FileDropInput.svelte';
 
@@ -226,6 +227,7 @@
 		const wasCreating = creating;
 
 		saving = true;
+		beginGlobalSaving();
 
 		try {
 			if (wasCreating) {
@@ -239,6 +241,7 @@
 			alert(commandErrorMessage(err, 'Wystąpił błąd podczas zapisywania.'));
 		} finally {
 			saving = false;
+			endGlobalSaving();
 		}
 	}
 
@@ -247,6 +250,8 @@
 			return;
 		}
 
+		beginGlobalSaving();
+
 		try {
 			await deleteAction(id).updates(
 				getActions().withOverride((current) => current.filter((action) => action.id !== id))
@@ -254,6 +259,8 @@
 		} catch (err) {
 			console.error(err);
 			alert(commandErrorMessage(err, 'Wystąpił błąd podczas usuwania.'));
+		} finally {
+			endGlobalSaving();
 		}
 	}
 </script>
@@ -448,19 +455,57 @@
 				<div
 					class="group flex flex-col rounded-2xl border border-outline-variant/30 bg-white transition-all duration-500 hover:shadow-[0_0_40px_rgba(57,81,193,0.12)]"
 				>
+					{#if admin}
+						<div class="flex gap-3 border-b border-outline-variant/20 p-4">
+							{#if editingId === action.id}
+								<button
+									onclick={saveEditing}
+									disabled={saving}
+									class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									{saving ? 'Zapisywanie...' : 'Zapisz'}
+								</button>
+
+								<button
+									onclick={cancelEditing}
+									disabled={saving}
+									class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									Anuluj
+								</button>
+							{:else}
+								<button
+									onclick={() => startEditing(action)}
+									disabled={action.id === TEMP_ID}
+									class="rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									Edytuj
+								</button>
+
+								<button
+									onclick={() => removeAction(action.id)}
+									disabled={action.id === TEMP_ID}
+									class="rounded-xl bg-red-600 px-5 py-2 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									Usuń
+								</button>
+							{/if}
+						</div>
+					{/if}
+
 					{#if editingId === action.id && editedAction}
-						<div
-							class="rounded-t-2xl border-b border-outline-variant/20 bg-surface-container-low p-4"
-						>
+						<div class="border-b border-outline-variant/20 bg-surface-container-low p-4">
 							{@render imagePicker(action.imageMedia?.url ?? null)}
 						</div>
 					{:else if imageUrl}
-						<div class="h-56 overflow-hidden rounded-t-2xl">
+						<div class="h-56 overflow-hidden {admin ? '' : 'rounded-t-2xl'}">
 							<img src={imageUrl} alt={action.title} class="h-full w-full object-cover" />
 						</div>
 					{:else}
 						<div
-							class="flex h-56 items-center justify-center overflow-hidden rounded-t-2xl bg-linear-to-br from-primary/10 to-primary-container/25"
+							class="flex h-56 items-center justify-center overflow-hidden bg-linear-to-br from-primary/10 to-primary-container/25 {admin
+								? ''
+								: 'rounded-t-2xl'}"
 						></div>
 					{/if}
 
@@ -659,43 +704,6 @@
 						</div>
 					</div>
 
-					{#if admin}
-						<div class="mt-6 flex gap-3">
-							{#if editingId === action.id}
-								<button
-									onclick={saveEditing}
-									disabled={saving}
-									class="rounded-xl bg-green-600 px-5 py-2 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									{saving ? 'Zapisywanie...' : 'Zapisz'}
-								</button>
-
-								<button
-									onclick={cancelEditing}
-									disabled={saving}
-									class="rounded-xl border border-outline px-5 py-2 font-semibold transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									Anuluj
-								</button>
-							{:else}
-								<button
-									onclick={() => startEditing(action)}
-									disabled={action.id === TEMP_ID}
-									class="rounded-xl bg-primary px-5 py-2 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									Edytuj
-								</button>
-
-								<button
-									onclick={() => removeAction(action.id)}
-									disabled={action.id === TEMP_ID}
-									class="rounded-xl bg-red-600 px-5 py-2 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									Usuń
-								</button>
-							{/if}
-						</div>
-					{/if}
 				</div>
 			{/each}
 		</div>

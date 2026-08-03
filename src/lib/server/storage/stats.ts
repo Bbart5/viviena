@@ -83,7 +83,8 @@ interface OperationsGroup {
 	sum: { requests: number };
 }
 
-async function getMinioUsage(): Promise<StorageUsage> {
+/** Sums object sizes over the S3 API - works for MinIO and R2 alike, but has no ops counters. */
+async function getBucketListingUsage(): Promise<StorageUsage> {
 	const objects = await BucketService.getInstance().listAll();
 
 	return {
@@ -94,6 +95,17 @@ async function getMinioUsage(): Promise<StorageUsage> {
 }
 
 async function getR2Usage(): Promise<StorageUsage> {
+	try {
+		return await getR2AnalyticsUsage();
+	} catch (error) {
+		// Analytics needs a CLOUDFLARE_API_TOKEN with "Account Analytics: Read" -
+		// without it (or on any API hiccup) still report storage via the S3 API.
+		console.error('R2 analytics unavailable, falling back to bucket listing:', error);
+		return getBucketListingUsage();
+	}
+}
+
+async function getR2AnalyticsUsage(): Promise<StorageUsage> {
 	// R2 free tier limits reset monthly - usage is month-to-date.
 	const since = new Date();
 	since.setUTCDate(1);
@@ -163,7 +175,7 @@ async function getDatabaseSizeBytes(): Promise<number> {
 	return Number(row.size);
 }
 
-const getStorageUsage = ENVIRONMENT === 'production' ? getR2Usage : getMinioUsage;
+const getStorageUsage = ENVIRONMENT === 'production' ? getR2Usage : getBucketListingUsage;
 
 const CACHE_TTL_MS = 60_000;
 

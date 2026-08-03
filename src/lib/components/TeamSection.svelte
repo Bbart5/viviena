@@ -8,6 +8,7 @@
 		getTeamMembers,
 		updateTeamMember
 	} from '$lib/remote/team.remote';
+	import { beginGlobalSaving, endGlobalSaving } from '$lib/state/global-saving.svelte';
 	import { commandErrorMessage, requestJson } from '$lib/utils/api';
 	import FileDropInput from './FileDropInput.svelte';
 
@@ -200,6 +201,7 @@
 		const optimisticUrl = wasCreating && staged ? URL.createObjectURL(staged) : null;
 
 		saving = true;
+		beginGlobalSaving();
 
 		try {
 			if (wasCreating) {
@@ -222,6 +224,7 @@
 
 			pendingImage = null;
 			saving = false;
+			endGlobalSaving();
 		}
 	}
 
@@ -232,6 +235,8 @@
 			return;
 		}
 
+		beginGlobalSaving();
+
 		try {
 			await deleteTeamMember(id).updates(
 				getTeamMembers().withOverride((current) => current.filter((member) => member.id !== id))
@@ -239,6 +244,8 @@
 		} catch (err) {
 			console.error(err);
 			alert(commandErrorMessage(err, 'Wystąpił błąd podczas usuwania.'));
+		} finally {
+			endGlobalSaving();
 		}
 	}
 </script>

@@ -65,10 +65,10 @@ Tailwind CSS 4.
 
 | Script                                      | Purpose                                            |
 | ------------------------------------------- | -------------------------------------------------- |
-| `npm run dev` / `build` / `preview`         | Vite dev server / production build / preview       |
+| `npm run dev` / `preview`                   | Vite dev server / preview of the production build  |
+| `npm run build`                             | `svelte-kit sync` + `prisma generate` + Vite build |
 | `npm run check`                             | `svelte-kit sync` + `svelte-check`                 |
 | `npm run lint` / `lint:fix`                 | Prettier + ESLint check / auto-fix                 |
-| `npm run format`                            | Prettier write                                     |
 | `npm run encode-users -- <users.json>`      | Encode admin accounts for `SEED_USERS`             |
 | `npm run prisma:migrate:dev` / `seed` / ... | Prisma workflows (`generate`, `studio`, `format`…) |
 
@@ -88,15 +88,58 @@ Tailwind CSS 4.
 - **Media** - `MediaService` + `BucketService` store uploads in S3-compatible storage and track
   them in the `Media` table; deleting an owner cleans up both the row and the object.
 
-## Deployment
+## Deployment (Vercel)
 
-The project uses `@sveltejs/adapter-auto`, which detects Vercel, Netlify and Cloudflare Pages.
-Before the first production deploy:
+The project uses `@sveltejs/adapter-vercel`. The Node version comes from the `engines` field in
+`package.json`; the build command is the default `npm run build`.
 
-- set the production `S3_*` values (R2 endpoint, `S3_FORCE_PATH_STYLE='false'`, public bucket URL)
-  and `CLOUDFLARE_*` (analytics for the storage widget),
-- verify the Cloudflare GraphQL dataset/field names flagged in
-  `src/lib/server/storage/stats.ts` (TODO) - the admin storage widget queries them,
+### Build order on a fresh clone
+
+`generated/` (Prisma client) and `.svelte-kit/` are gitignored, so CI has to produce both before
+Vite runs. `tsconfig.json` extends `.svelte-kit/tsconfig.json`, which only exists after
+`svelte-kit sync` - that is why both the `prepare` (runs on `npm install`) and `build` scripts run
+`svelte-kit sync` **first**, then `prisma generate`, then `vite build`. Do not remove the
+`extends` from `tsconfig.json`; without it every `$lib`/`$env` import loses its types.
+
+### Environment variables
+
+Every variable from `.env.example` must be defined in the Vercel project settings - they are read
+through `$env/static/private` at **build time**, and a missing one fails the build. Production
+values:
+
+| Variable                              | Production value                                 |
+| ------------------------------------- | ------------------------------------------------ |
+| `DATABASE_URL`                        | Prisma Accelerate URL (`prisma+postgres://...`)  |
+| `ENVIRONMENT`                         | `production`                                     |
+| `S3_ENDPOINT`                         | `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`  |
+| `S3_REGION` / `S3_FORCE_PATH_STYLE`   | `auto` / `false`                                 |
+| `S3_PUBLIC_BASE_URL`                  | r2.dev URL or custom domain of the public bucket |
+| `CLOUDFLARE_ACCOUNT_ID` / `..._TOKEN` | R2 analytics for the storage widget (see below)  |
+| `JWT_SECRET`, `SEED_USERS`, `GMAIL_*` | same meaning as in development                   |
+
+The app picks the database driver from the `DATABASE_URL` protocol: `prisma+postgres://` goes
+through Prisma Accelerate (`withAccelerate`), a direct `postgres://` URL uses the `pg` driver
+adapter. The same detection applies to `prisma/seed.ts`.
+
+### Database
+
+Deploys do **not** run migrations. Apply them (and seed once - see First-time setup) against the
+production database yourself:
+
+```sh
+DATABASE_URL='<accelerate url>' npx prisma migrate deploy
+DATABASE_URL='<accelerate url>' SEED_USERS='<encoded>' npm run prisma:seed
+```
+
+### Storage widget analytics
+
+The admin storage widget reads month-to-date R2 usage from the Cloudflare GraphQL API; the token
+in `CLOUDFLARE_API_TOKEN` needs the **Account Analytics: Read** permission (a bucket-scoped R2
+token is not enough). Without it the widget falls back to listing the bucket over S3 - storage
+size still shows, the class A/B operation counters show "Brak danych".
+
+### Before the first deploy
+
 - provide real team photos in `static/team/` (a local fallback avatar is shown meanwhile).
 
 ## Design reference

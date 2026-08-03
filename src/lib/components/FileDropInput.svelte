@@ -176,7 +176,7 @@
 					onclick={ondeleterequest}
 					{disabled}
 					aria-label="Usuń obecny plik"
-					class="absolute top-2 right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/90 text-brand-muted shadow-md transition hover:bg-error/10 hover:text-error disabled:opacity-50"
+					class="absolute top-2 right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-red-600 text-white shadow-md transition hover:bg-red-700 disabled:opacity-50"
 				>
 					<span class="material-symbols-outlined text-base">delete</span>
 				</button>
