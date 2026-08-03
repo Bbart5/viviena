@@ -27,7 +27,7 @@
 	let imageError = $state<string | null>(null);
 
 	let editedHero = $state({
-		id: 0,
+		id: '',
 		title: '',
 		header1: '',
 		header2: '',

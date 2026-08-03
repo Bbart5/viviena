@@ -1,9 +1,17 @@
 import { PrismaClient } from '../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { withAccelerate } from '@prisma/extension-accelerate';
 import bcrypt from 'bcrypt';
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+// Accelerate URLs (prisma:// / prisma+postgres://) go over HTTP and must not be
+// passed to the pg driver adapter; direct postgres:// URLs are the reverse.
+const isAccelerate = /^prisma(\+postgres)?:\/\//.test(process.env.DATABASE_URL ?? '');
+
+const prisma = isAccelerate
+	? (new PrismaClient({ accelerateUrl: process.env.DATABASE_URL }).$extends(
+			withAccelerate()
+		) as unknown as PrismaClient)
+	: new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
 async function main() {
 	if (!process.env.SEED_USERS) {
