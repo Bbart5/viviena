@@ -1,0 +1,1368 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Architektura — viviena</title>
+		<style>
+			:root {
+				--bg: #f6f7f9;
+				--surface: #ffffff;
+				--surface-2: #eef0f4;
+				--text: #1c2330;
+				--text-muted: #5b6472;
+				--border: #d9dee6;
+				--link: #b9c2cf;
+				--shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+				--accent: #2563eb;
+				--why-bg: #fdf6e7;
+				--why-border: #d97706;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--bg: #12151c;
+					--surface: #1b2029;
+					--surface-2: #232936;
+					--text: #e6e9ef;
+					--text-muted: #97a0ad;
+					--border: #323a48;
+					--link: #45506180;
+					--shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+					--why-bg: #2a2417;
+					--why-border: #b45309;
+				}
+			}
+			:root[data-theme='light'] {
+				--bg: #f6f7f9;
+				--surface: #ffffff;
+				--surface-2: #eef0f4;
+				--text: #1c2330;
+				--text-muted: #5b6472;
+				--border: #d9dee6;
+				--link: #b9c2cf;
+				--shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+				--why-bg: #fdf6e7;
+				--why-border: #d97706;
+			}
+			:root[data-theme='dark'] {
+				--bg: #12151c;
+				--surface: #1b2029;
+				--surface-2: #232936;
+				--text: #e6e9ef;
+				--text-muted: #97a0ad;
+				--border: #323a48;
+				--link: #45506180;
+				--shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+				--why-bg: #2a2417;
+				--why-border: #b45309;
+			}
+			* {
+				box-sizing: border-box;
+				margin: 0;
+			}
+			html,
+			body {
+				height: 100%;
+			}
+			body {
+				font-family:
+					'Segoe UI',
+					system-ui,
+					-apple-system,
+					sans-serif;
+				background: var(--bg);
+				color: var(--text);
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+			}
+			header {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				flex-wrap: wrap;
+				padding: 10px 16px;
+				background: var(--surface);
+				border-bottom: 1px solid var(--border);
+				z-index: 5;
+			}
+			header h1 {
+				font-size: 16px;
+				font-weight: 700;
+				white-space: nowrap;
+			}
+			header .sub {
+				font-size: 12px;
+				color: var(--text-muted);
+				white-space: nowrap;
+			}
+			#search {
+				flex: 1 1 180px;
+				max-width: 340px;
+				min-width: 140px;
+				padding: 7px 12px;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				background: var(--bg);
+				color: var(--text);
+				font-size: 13px;
+				outline: none;
+			}
+			#search:focus {
+				border-color: var(--accent);
+			}
+			.controls {
+				display: flex;
+				gap: 6px;
+				margin-left: auto;
+			}
+			.controls button {
+				padding: 6px 10px;
+				font-size: 12px;
+				font-weight: 600;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				background: var(--surface);
+				color: var(--text);
+				cursor: pointer;
+				white-space: nowrap;
+			}
+			.controls button:hover {
+				background: var(--surface-2);
+			}
+			#legend {
+				display: flex;
+				gap: 6px;
+				flex-wrap: wrap;
+				align-items: center;
+				padding: 8px 16px;
+				background: var(--surface);
+				border-bottom: 1px solid var(--border);
+				font-size: 12px;
+			}
+			#legend .chip {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 3px 10px;
+				border-radius: 999px;
+				border: 1px solid var(--border);
+				background: var(--bg);
+				cursor: pointer;
+				user-select: none;
+				color: var(--text);
+			}
+			#legend .chip .dot {
+				width: 9px;
+				height: 9px;
+				border-radius: 50%;
+			}
+			#legend .chip.active {
+				border-color: var(--accent);
+				background: var(--surface-2);
+				font-weight: 700;
+			}
+			#legend .hint {
+				color: var(--text-muted);
+				margin-left: auto;
+			}
+			#matchcount {
+				color: var(--text-muted);
+				font-size: 12px;
+				white-space: nowrap;
+			}
+			main {
+				flex: 1;
+				position: relative;
+				overflow: hidden;
+			}
+			#canvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+				cursor: grab;
+				touch-action: none;
+			}
+			#canvas.dragging {
+				cursor: grabbing;
+			}
+			.node rect.card {
+				fill: var(--surface);
+				stroke: var(--border);
+				stroke-width: 1;
+				rx: 9;
+				filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
+			}
+			.node.group rect.card {
+				stroke-dasharray: 5 3;
+			}
+			.node.gen rect.card {
+				fill: var(--surface-2);
+				stroke-dasharray: 3 3;
+			}
+			.node.gen text {
+				fill: var(--text-muted) !important;
+			}
+			.node.selected rect.card {
+				stroke: var(--accent);
+				stroke-width: 2;
+			}
+			.node.hit rect.card {
+				stroke-width: 2;
+			}
+			.node.dim {
+				opacity: 0.22;
+			}
+			.node {
+				cursor: pointer;
+			}
+			.node text.name {
+				font-size: 13px;
+				font-weight: 600;
+				fill: var(--text);
+			}
+			.node text.short {
+				font-size: 10.5px;
+				fill: var(--text-muted);
+			}
+			.node rect.tag {
+				rx: 2.5;
+			}
+			path.edge {
+				fill: none;
+				stroke: var(--link);
+				stroke-width: 1.4;
+			}
+			path.edge.dim {
+				opacity: 0.15;
+			}
+			.toggle circle {
+				fill: var(--surface-2);
+				stroke: var(--border);
+			}
+			.toggle text {
+				font-size: 11px;
+				font-weight: 700;
+				fill: var(--text-muted);
+				text-anchor: middle;
+			}
+			.toggle:hover circle {
+				stroke: var(--accent);
+			}
+			#panel {
+				position: absolute;
+				top: 12px;
+				right: 12px;
+				bottom: 12px;
+				width: min(400px, calc(100vw - 24px));
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+				padding: 18px;
+				overflow-y: auto;
+				display: none;
+				z-index: 10;
+			}
+			#panel.open {
+				display: block;
+			}
+			#panel .close {
+				position: absolute;
+				top: 10px;
+				right: 12px;
+				border: none;
+				background: none;
+				color: var(--text-muted);
+				font-size: 20px;
+				cursor: pointer;
+				line-height: 1;
+			}
+			#panel .crumbs {
+				font-size: 11px;
+				color: var(--text-muted);
+				word-break: break-all;
+				margin-bottom: 6px;
+			}
+			#panel h2 {
+				font-size: 17px;
+				margin-bottom: 8px;
+				word-break: break-word;
+				padding-right: 20px;
+			}
+			#panel .cat {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.3px;
+				padding: 3px 10px;
+				border-radius: 999px;
+				margin-bottom: 12px;
+				background: var(--surface-2);
+			}
+			#panel .cat .dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+			}
+			#panel .desc {
+				font-size: 13.5px;
+				line-height: 1.6;
+				white-space: pre-line;
+			}
+			#panel .why {
+				margin-top: 14px;
+				padding: 10px 12px 10px 14px;
+				background: var(--why-bg);
+				border-left: 3px solid var(--why-border);
+				border-radius: 0 8px 8px 0;
+				font-size: 13px;
+				line-height: 1.55;
+			}
+			#panel .why b {
+				display: block;
+				margin-bottom: 4px;
+				font-size: 11.5px;
+				letter-spacing: 0.4px;
+				text-transform: uppercase;
+				color: var(--why-border);
+			}
+			#panel .kids {
+				margin-top: 14px;
+				font-size: 12px;
+				color: var(--text-muted);
+			}
+			footer {
+				padding: 6px 16px;
+				font-size: 11.5px;
+				color: var(--text-muted);
+				background: var(--surface);
+				border-top: 1px solid var(--border);
+				display: flex;
+				gap: 14px;
+				flex-wrap: wrap;
+			}
+			@media (max-width: 640px) {
+				header h1 {
+					font-size: 14px;
+				}
+				header .sub {
+					display: none;
+				}
+				#legend .hint {
+					display: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<div>
+				<h1>viviena — mapa architektury</h1>
+				<div class="sub">
+					SvelteKit 2 · Svelte 5 · Prisma 7 · Postgres · R2/MinIO · Tailwind 4 · Vercel
+				</div>
+			</div>
+			<input id="search" type="search" placeholder="Szukaj: auth, upload, ISR, seed…" />
+			<span id="matchcount"></span>
+			<div class="controls">
+				<button id="btn-expand" title="Rozwiń wszystkie gałęzie">Rozwiń</button>
+				<button id="btn-collapse" title="Zwiń do 2 poziomów">Zwiń</button>
+				<button id="btn-fit" title="Dopasuj całość do okna">Dopasuj</button>
+				<button id="btn-zoom-out">−</button>
+				<button id="btn-zoom-in">+</button>
+				<button id="btn-theme" title="Przełącz motyw">◐</button>
+			</div>
+		</header>
+		<div id="legend"></div>
+		<main>
+			<svg id="canvas" xmlns="http://www.w3.org/2000/svg"><g id="world"></g></svg>
+			<aside id="panel">
+				<button class="close" title="Zamknij">×</button>
+				<div class="crumbs"></div>
+				<h2></h2>
+				<span class="cat"></span>
+				<p class="desc"></p>
+				<div class="why" hidden><b>Dlaczego tak?</b><span></span></div>
+				<div class="kids"></div>
+			</aside>
+		</main>
+		<footer>
+			<span>🖱 przeciągnij = przesuwanie</span>
+			<span>scroll = zoom</span>
+			<span>klik węzła = szczegóły</span>
+			<span>⊕ / ⊖ = zwijanie gałęzi</span>
+			<span>klik kategorii w legendzie = filtr</span>
+		</footer>
+		<script>
+			'use strict';
+
+			/* ---------------------------------- kategorie --------------------------------- */
+			const CATS = {
+				route: { label: 'Strony i endpointy', color: '#2563eb' },
+				component: { label: 'Komponenty UI', color: '#9333ea' },
+				server: { label: 'Serwisy / kod serwera', color: '#059669' },
+				db: { label: 'Baza danych', color: '#0891b2' },
+				util: { label: 'Utils / consts / stan', color: '#d97706' },
+				asset: { label: 'Zasoby statyczne', color: '#ea580c' },
+				config: { label: 'Konfiguracja / infra / CI', color: '#64748b' },
+				docs: { label: 'Dokumentacja / archiwum', color: '#db2777' },
+				generated: { label: 'Generowane (poza gitem)', color: '#9aa3af' }
+			};
+
+			/* ------------------------------------ dane ------------------------------------ */
+			/* n = nazwa, c = kategoria, s = krótki opis (w węźle), d = pełny opis,
+   w = "dlaczego tak?" (uzasadnienie decyzji), g = węzeł-grupa (nie plik/katalog), k = dzieci */
+			const TREE = {
+				n: 'viviena/',
+				c: 'config',
+				s: 'SvelteKit 2 · Prisma 7 · R2 · Vercel',
+				d: 'Strona publiczna (one-page) i panel administracyjny Stowarzyszenia VIVIENA. SvelteKit 2 (Svelte 5 runes, eksperymentalne remote functions i await w komponentach), Prisma 7 na PostgreSQL, media w storage zgodnym z S3 (MinIO lokalnie, Cloudflare R2 na produkcji), Tailwind CSS 4. Hosting: Vercel.',
+				w: 'Stack dobrany pod trzy kryteria: całość mieści się w darmowych tierach (Vercel, R2, Prisma Postgres/Accelerate), zero utrzymania własnego serwera (stowarzyszenie nie ma zaplecza ops) oraz znajomość narzędzi — szybkie dowożenie bez nauki nowej platformy.',
+				k: [
+					{
+						n: 'src/',
+						c: 'config',
+						s: 'cały kod aplikacji',
+						d: 'Kod aplikacji SvelteKit: routing (routes/), biblioteka współdzielona (lib/), hooki serwerowe i typy globalne.',
+						k: [
+							{
+								n: 'hooks.server.ts',
+								c: 'server',
+								s: 'autoryzacja + nagłówki anty-indeksujące',
+								d: 'Serce autoryzacji. Przy każdym żądaniu weryfikuje JWT z cookie sessionToken, wynik zapisuje w locals.session i pilnuje ścieżek /admin oraz /api/admin: brak ważnej sesji = redirect do logowania (strony) lub 401 JSON (API). Do odpowiedzi admin/api dokleja X-Robots-Tag: noindex, nofollow.',
+								w: 'Żądania remote functions idą spod /_app/remote/* i OMIJAJĄ ten path guard — dlatego każda admińska komenda/query dodatkowo woła requireAdmin() z lib/server/auth.ts. X-Robots-Tag to „pas i szelki” razem z robots.txt: crawler nie zaindeksuje panelu, nawet gdyby zignorował robots.'
+							},
+							{
+								n: 'app.html',
+								c: 'config',
+								s: 'szkielet HTML',
+								d: 'Szkielet dokumentu (%sveltekit.head% / %sveltekit.body%), favicony i link do manifestu.'
+							},
+							{
+								n: 'app.d.ts',
+								c: 'config',
+								s: 'typy globalne (Locals)',
+								d: 'Globalne deklaracje SvelteKit — App.Locals.session (payload JWT albo null), ustawiane w hooks.server.ts i czytane w remote functions oraz endpointach.'
+							},
+							{
+								n: 'types.ts',
+								c: 'util',
+								s: 'wspólne typy',
+								d: 'Współdzielone typy niezwiązane z konkretną domeną — obecnie OurDocument (wpis listy dokumentów prawnych).'
+							},
+							{
+								n: 'routes/',
+								c: 'route',
+								s: 'strony + resztkowe REST',
+								d: 'Routing SvelteKit: strona publiczna, panel /admin i nieliczne endpointy REST.\nZasada projektu: dane płyną przez remote functions, a REST zostaje tylko tam, gdzie remote functions nie sięgają — multipart upload plików, mutacje cookies (login/logout) i publiczny formularz kontaktowy.',
+								k: [
+									{
+										n: '+layout.svelte + layout.css',
+										c: 'component',
+										s: 'globalna rama i motyw',
+										d: 'Wspólny layout wszystkich stron oraz layout.css — import Tailwind CSS 4 i definicja motywu (design tokens). Tailwind 4 konfiguruje się w CSS, stąd brak tailwind.config.js.'
+									},
+									{
+										n: '+page.svelte',
+										c: 'route',
+										s: 'strona główna (one-page)',
+										d: 'Publiczny jednostronicowiec: składa sekcje z $lib (Navbar, Hero, About, AreasGrid, ActionsSection, TeamSection, Documents, Contact, Footer) i podpina scroll-spy z utils/sections.ts (hash w URL podąża za przewijaną sekcją).'
+									},
+									{
+										n: '+page.server.ts',
+										c: 'route',
+										s: 'ISR — cache strony głównej',
+										d: 'Konfiguracja adaptera Vercel: ISR z expiration: 60.',
+										w: 'SSR strony głównej wykonuje kilka zapytań do bazy (hero, about, actions, team) — na zimno ~1 s na każde żądanie. ISR cache’uje wyrenderowany HTML na edge’u i regeneruje go w tle najwyżej raz na minutę: goście dostają natychmiastową odpowiedź, a zmiany z panelu admina są widoczne w ~60 s.'
+									},
+									{
+										n: 'admin/',
+										c: 'route',
+										s: 'panel administracyjny',
+										d: 'Panel admina — całość chroniona path guardem w hooks.server.ts (redirect na login bez sesji).',
+										k: [
+											{
+												n: '+page.svelte',
+												c: 'route',
+												s: 'edycja treści + widget storage',
+												d: 'Jednostronicowy panel: edycja hero, „o nas”, obszarów, akcji i zespołu przez remote commands (z optymistycznym UI i nakładką SavingOverlay) oraz widget zużycia zasobów (StorageUsageWidget).'
+											},
+											{
+												n: 'login/',
+												c: 'route',
+												s: 'logowanie (REST + JWT)',
+												d: 'Strona logowania (+page.svelte) i POST /admin/login (+server.ts): walidacja zod, bcrypt.compare z hashem w bazie, podpisanie JWT i ustawienie httpOnly cookie. TTL tokenu i cookie pochodzi z jednej stałej (consts/auth.ts).',
+												w: 'REST zamiast remote function, bo logowanie mutuje cookies. Zod zamiast class-validator: dekoratorowe DTO gubiły metadane pod transformacjami esbuild/oxc i walidacja odrzucała poprawne logowania. Puste, błędne i nieistniejące dane logowania dostają identyczną odpowiedź — endpoint nie zdradza, czy dany login istnieje.'
+											},
+											{
+												n: 'logout/+server.ts',
+												c: 'route',
+												s: 'wylogowanie',
+												d: 'Kasuje cookie sesji i przekierowuje na stronę logowania. REST z tego samego powodu co login — mutacja cookies.'
+											}
+										]
+									},
+									{
+										n: 'api/',
+										c: 'route',
+										s: 'resztkowe endpointy REST',
+										d: 'Endpointy REST, których nie dało się zastąpić remote functions.',
+										k: [
+											{
+												n: 'contact/+server.ts',
+												c: 'route',
+												s: 'formularz kontaktowy',
+												d: 'Publiczny POST: walidacja zod (dokładnie ta sama schema, którą waliduje formularz po stronie klienta — schemas/contact-schema.ts), escapowanie HTML wszystkich pól, render szablonu email-templates/contact.html i wysyłka przez MailTransport (Gmail).'
+											},
+											{
+												n: 'admin/…/image (×3)',
+												c: 'route',
+												s: 'uploady obrazków (multipart)',
+												d: 'Trzy endpointy uploadu: /api/admin/hero/image, /api/admin/actions/[id]/image, /api/admin/team/[id]/image. Przyjmują multipart/form-data, walidują typ MIME (listy z consts/storage.ts) i oddają plik do MediaService.',
+												w: 'Argumenty remote commands są serializowane devalue (JSON) i nie przeniosą obiektu File — dlatego upload musiał zostać na klasycznym REST. Ścieżki /api/admin/* chroni path guard w hooks.server.ts.'
+											}
+										]
+									},
+									{
+										n: 'og/[card].png/+server.ts',
+										c: 'route',
+										s: 'dynamiczne obrazki OG',
+										d: 'Generuje karty Open Graph 1200×630 (PNG) przez lib/server/og/render.ts. Treść kart „home” i „o-nas” jest czytana na żywo z bazy, więc udostępniana miniatura zawsze zgadza się z treścią opublikowaną przez adminów; przy jakimkolwiek błędzie — fallback na kartę domyślną.'
+									},
+									{
+										n: 'robots.txt + sitemap.xml',
+										c: 'route',
+										s: 'SEO',
+										d: 'Oba generowane w kodzie (+server.ts). robots.txt blokuje /admin i /api oraz wskazuje sitemapę; sitemap.xml wystawia kanoniczne adresy na SITE_URL (host www — patrz consts/site.ts).'
+									}
+								]
+							},
+							{
+								n: 'lib/',
+								c: 'util',
+								s: 'biblioteka współdzielona ($lib)',
+								d: 'Wszystko importowane jako $lib. Podział: components (UI), remote (warstwa danych), server (kod tylko-serwerowy), a consts / utils / schemas / state / data / types to drobnica pomocnicza.',
+								k: [
+									{
+										n: 'index.ts',
+										c: 'util',
+										s: 'barrel eksport komponentów',
+										d: 'Re-eksport wszystkich komponentów, żeby importować krótko: import { Hero, Navbar } from "$lib".'
+									},
+									{
+										n: 'components/',
+										c: 'component',
+										s: 'komponenty Svelte 5 (runes)',
+										d: 'Wszystkie komponenty UI — sekcje strony publicznej oraz narzędzia panelu admina.',
+										k: [
+											{
+												n: 'sekcje strony',
+												c: 'component',
+												g: true,
+												s: 'Hero, About, AreasGrid, Actions…',
+												d: 'Navbar, Hero, About, AreasGrid, ActionsSection, TeamSection, Documents, Contact, Footer — kolejne sekcje jednostronicowca. Treść pochodzi z remote queries (hero/about/areas/actions/team) albo jest statyczna (Documents ← data/site-content.ts).'
+											},
+											{
+												n: 'Seo.svelte',
+												c: 'component',
+												s: 'meta / OG / canonical / JSON-LD',
+												d: 'Centralny komponent meta tagów: tytuł (z automatycznym dopiskiem nazwy strony), description, canonical na SITE_URL, karty OG/Twitter, opcjonalny noindex i JSON-LD. Domyślny obrazek OG to dynamiczne /og/home.png.'
+											},
+											{
+												n: 'FileDropInput.svelte',
+												c: 'component',
+												s: 'drag & drop uploadu',
+												d: 'Pole przeciągnij-i-upuść dla obrazków w panelu admina — podgląd wybranego pliku i walidacja akceptowanych typów.'
+											},
+											{
+												n: 'SavingOverlay.svelte',
+												c: 'component',
+												s: 'nakładka „zapisywanie…”',
+												d: 'Pełnoekranowa nakładka blokująca UI podczas zapisu — sterowana licznikiem z state/global-saving.svelte.ts.'
+											},
+											{
+												n: 'StorageUsageWidget.svelte',
+												c: 'component',
+												s: 'zużycie R2 + DB vs limity',
+												d: 'Widget w panelu: zużycie storage R2 (rozmiar + operacje klasy A/B) i rozmiar bazy na tle darmowych limitów z consts/storage.ts; przycisk odświeżenia omija minutowy cache statystyk.',
+												w: 'Darmowe tiery są twardym budżetem projektu — widget istnieje po to, żeby admin widział zużycie, zanim Cloudflare albo Prisma zaczną naliczać opłaty.'
+											},
+											{
+												n: 'LogoutButton.svelte',
+												c: 'component',
+												s: 'wylogowanie',
+												d: 'Przycisk wylogowania — POST na /admin/logout.'
+											}
+										]
+									},
+									{
+										n: 'remote/',
+										c: 'server',
+										s: 'warstwa danych: query + command',
+										d: 'Eksperymentalne remote functions SvelteKit — jeden plik na domenę. query = odczyt, command = mutacja walidowana schemą zod; każda admińska funkcja woła requireAdmin(), a po zapisie odświeża query (refresh) lub robi optymistyczny update przez command().updates(query().withOverride(...)).',
+										w: 'Wybrane zamiast klasycznych endpointów REST / form actions z dwóch powodów: znacznie mniej boilerplate’u (typowane wywołania wprost z komponentów, bez ręcznego fetch + endpoint + walidacja) oraz wbudowany mechanizm optymistycznego UI dla panelu admina.',
+										k: [
+											{
+												n: 'hero.remote.ts',
+												c: 'server',
+												s: 'sekcja hero (singleton)',
+												d: 'getHero / updateHero. Usunięcie obrazka kasuje wiersz Media — FK z SET NULL czyści referencję w hero.'
+											},
+											{
+												n: 'about.remote.ts',
+												c: 'server',
+												s: 'sekcja „o nas” (singleton)',
+												d: 'Odczyt i zapis treści sekcji „O nas”.'
+											},
+											{
+												n: 'areas.remote.ts',
+												c: 'server',
+												s: 'obszary działania',
+												d: 'Odczyt i zapis obszarów działania stowarzyszenia.'
+											},
+											{
+												n: 'actions.remote.ts',
+												c: 'server',
+												s: 'CRUD akcji/wydarzeń',
+												d: 'Pełny CRUD akcji (lista sortowana po createdAt, malejąco) — tytuł, tag, opis, szczegóły, osoby, partnerzy, CTA; obrazki przez MediaService.'
+											},
+											{
+												n: 'team.remote.ts',
+												c: 'server',
+												s: 'CRUD zespołu',
+												d: 'CRUD członków zespołu wraz ze zdjęciami (MediaService).'
+											},
+											{
+												n: 'storage.remote.ts',
+												c: 'server',
+												s: 'statystyki zużycia',
+												d: 'getStorageUsage / refreshStorageUsage dla widgetu w panelu. Odczyt korzysta z minutowego cache’u statystyk; refresh omija cache i w tej samej rundzie odświeża query.'
+											}
+										]
+									},
+									{
+										n: 'server/',
+										c: 'server',
+										s: 'kod wyłącznie serwerowy',
+										d: 'Moduły wykonywane tylko na serwerze — SvelteKit pilnuje, żeby nic stąd nie trafiło do bundla klienta.',
+										k: [
+											{
+												n: 'auth.ts',
+												c: 'server',
+												s: 'requireAdmin()',
+												d: 'Jedna funkcja: requireAdmin() — rzuca 401, jeśli locals.session (ustawione w hooks.server.ts) jest puste.',
+												w: 'Remote functions są serwowane spod /_app/remote/* i omijają path guard z hooks — każda admińska komenda/query musi sprawdzić sesję sama. To świadomy wzorzec obronny, nie przypadkowa duplikacja.'
+											},
+											{
+												n: 'prisma.ts',
+												c: 'server',
+												s: 'klient bazy (singleton)',
+												d: 'Eksportuje jedną instancję PrismaClient. Driver wykrywany po protokole DATABASE_URL: prisma+postgres:// → Prisma Accelerate (po HTTP, withAccelerate), postgres:// → adapter pg (bezpośrednie połączenie).',
+												w: 'Ten sam kod działa lokalnie (Docker Postgres, postgres://) i na Vercelu (Accelerate). URL-e Accelerate nie mogą trafić do drivera pg — i odwrotnie — stąd automatyczna detekcja zamiast flagi konfiguracyjnej.'
+											},
+											{
+												n: 'api.ts',
+												c: 'server',
+												s: 'apiError()',
+												d: 'apiError(message, status) — wspólny kształt błędów JSON { success: false, message } dla endpointów REST.'
+											},
+											{
+												n: 'mail/MailTransport.ts',
+												c: 'server',
+												s: 'nodemailer (Gmail)',
+												d: 'Singleton transportu nodemailer: Gmail + hasło aplikacji (GMAIL_USER / GMAIL_APP_PASSWORD). Inicjalizowany eagerly przy starcie serwera w hooks.server.ts.'
+											},
+											{
+												n: 'email-templates/contact.html',
+												c: 'server',
+												s: 'szablon maila',
+												d: 'Szablon HTML wiadomości z formularza kontaktowego — placeholdery {{name}} / {{email}} / {{message}} podmieniane po escapowaniu HTML.'
+											},
+											{
+												n: 'og/',
+												c: 'server',
+												s: 'render kart OG (satori)',
+												d: 'render.ts: satori (drzewo obiektów w kształcie Reacta) → SVG → resvg → PNG 1200×630. Fonty (Inter, Manrope) i logo leżą lokalnie w repo, więc render nie zależy od sieci.'
+											},
+											{
+												n: 'storage/',
+												c: 'server',
+												s: 'media: S3/R2 + tabela Media',
+												d: 'Warstwa mediów — obiekty w buckecie i ich metadane w bazie, zawsze w parze.',
+												k: [
+													{
+														n: 'BucketService.ts',
+														c: 'server',
+														s: 'klient S3 (MinIO/R2)',
+														d: 'Singleton na @aws-sdk/client-s3: upload, delete, listowanie obiektów i budowa publicznych URL-i (S3_PUBLIC_BASE_URL). Jeden kod obsługuje MinIO w dev (forcePathStyle) i Cloudflare R2 na produkcji.'
+													},
+													{
+														n: 'MediaService.ts',
+														c: 'server',
+														s: 'obiekt + wiersz Media w parze',
+														d: 'Nadbudowa nad BucketService: każdy upload to obiekt w buckecie + wiersz w tabeli Media (typ, klucz, URL, MIME, rozmiar). create / replace / remove utrzymują spójność obu stron — usunięcie mediów sprząta i wiersz, i obiekt w storage.'
+													},
+													{
+														n: 'stats.ts',
+														c: 'server',
+														s: 'zużycie R2 + rozmiar DB',
+														d: 'Liczy month-to-date zużycie R2 przez Cloudflare GraphQL API (operacje klasyfikowane na A/B tak, jak liczy je cennik) oraz rozmiar bazy danych. Wynik cache’owany minutę, żeby wejścia do panelu były tanie.',
+														w: 'Token Cloudflare musi mieć uprawnienie Account Analytics: Read (token bucket-scoped nie wystarcza). Bez niego fallback listuje bucket przez S3 — rozmiar storage jest, liczniki operacji pokazują „Brak danych”. Na MinIO (dev) liczniki są zawsze niedostępne.'
+													}
+												]
+											}
+										]
+									},
+									{
+										n: 'consts/',
+										c: 'util',
+										s: 'stałe klient + serwer',
+										d: 'Stałe współdzielone przez klienta i serwer.',
+										k: [
+											{
+												n: 'auth.ts',
+												c: 'util',
+												s: 'cookie sesji + TTL',
+												d: 'Nazwa i ścieżka cookie sesji oraz SESSION_TTL_SECONDS — jedna stała dla ważności JWT i max-age cookie, żeby te dwa czasy nigdy się nie rozjechały.'
+											},
+											{
+												n: 'site.ts',
+												c: 'util',
+												s: 'kanoniczny URL, nazwa, opis',
+												d: 'SITE_URL = https://www.viviena.pl (apex viviena.pl robi 307 na www, więc www jest hostem kanonicznym), nazwa, opis i locale strony — jedno źródło prawdy dla SEO, OG i sitemapy.'
+											},
+											{
+												n: 'storage.ts',
+												c: 'util',
+												s: 'limity free tier + MIME',
+												d: 'Limity darmowych tierów R2 i Prisma Postgres (jednostki dziesiętne — Cloudflare rozlicza GB, nie GiB), lokalny placeholder obrazka oraz listy akceptowanych typów MIME (obraz/wideo/audio).',
+												w: 'SVG celowo wykluczone z uploadów: endpointy ufają typowi MIME deklarowanemu przez klienta, a SVG może nieść skrypty (ryzyko stored-XSS, gdyby media były kiedyś serwowane same-origin). Placeholder serwowany lokalnie, bo zewnętrzny hosting placeholderów to third-party request, którego nie opisuje polityka prywatności.'
+											}
+										]
+									},
+									{
+										n: 'schemas/contact-schema.ts',
+										c: 'util',
+										s: 'schema formularza (zod)',
+										d: 'Schema zod formularza kontaktowego — jedna definicja używana i w przeglądarce (walidacja pól na żywo przez adapter zod4 superforms), i w /api/contact (walidacja żądania przez safeParse).',
+										w: 'Pierwotnie yup (pozostałość z developmentu — projekt miał przez to dwie biblioteki walidacji). Zmigrowane na zod, bo remote functions SvelteKit wymagają walidatora zgodnego ze Standard Schema (zod jest, yup nie) — ujednolicenie mogło więc iść tylko w stronę zod. Łańcuch min(1) odtwarza zachowanie required() z yup: puste pole zgłasza „jest wymagane”, nie komunikat o długości.'
+									},
+									{
+										n: 'utils/',
+										c: 'util',
+										s: 'pomocnicze funkcje',
+										d: 'Małe funkcje pomocnicze używane w komponentach.',
+										k: [
+											{
+												n: 'api.ts',
+												c: 'util',
+												s: 'obsługa błędów fetch/commands',
+												d: 'requestJson() — fetch endpointów { success, message } rzucający Error z komunikatem serwera (call site potrzebuje tylko try/catch). commandErrorMessage() — wyciąga komunikat użytkownika z odrzuconej komendy/query (HttpError body) z fallbackiem. Razem ujednolicają pokazywanie błędów w UI.'
+											},
+											{
+												n: 'format-bytes.ts',
+												c: 'util',
+												s: 'formatowanie bajtów (SI)',
+												d: 'Formatowanie bajtów w jednostkach dziesiętnych (kB/MB/GB, locale pl-PL) — celowo SI, spójnie z tym, jak limity free tier w consts/storage liczą bajty.'
+											},
+											{
+												n: 'sections.ts',
+												c: 'util',
+												s: 'scroll-spy sekcji',
+												d: 'scrollToSection() — płynne przewijanie do sekcji; observeSectionHashes() — IntersectionObserver odbijający aktualnie widoczną sekcję do hasha URL przez replaceState (sprzątany w onMount cleanup).'
+											}
+										]
+									},
+									{
+										n: 'state/global-saving.svelte.ts',
+										c: 'util',
+										s: 'globalny stan „zapisywanie”',
+										d: 'Licznik aktywnych operacji zapisu (runes, $state) + beginGlobalSaving / endGlobalSaving. Steruje nakładką SavingOverlay.',
+										w: 'Celowo licznik, a nie boolean: nakładające się operacje trzymają overlay na ekranie, dopóki nie zakończy się OSTATNIA z nich.'
+									},
+									{
+										n: 'data/site-content.ts',
+										c: 'util',
+										s: 'lista dokumentów prawnych',
+										d: 'Statyczna lista dokumentów (tytuł, opis, link do static/documents, ikona Material) renderowana w sekcji Dokumenty.'
+									},
+									{
+										n: 'types/jwt.payload.ts',
+										c: 'util',
+										s: 'kształt payloadu JWT',
+										d: 'Typ payloadu JWT sesji (username) — współdzielony przez login, hooks.server.ts i App.Locals.'
+									}
+								]
+							}
+						]
+					},
+					{
+						n: 'prisma/',
+						c: 'db',
+						s: 'schema + migracje + seed',
+						d: 'Definicja bazy danych: schema podzielona na pliki per model (multi-file schema Prismy 7), migracje SQL i skrypt seed.',
+						w: 'Podział schemy na pliki per model = czytelność i porządek: każdą domenę edytuje się w jej własnym, krótkim pliku zamiast przewijać jeden wielki schema.prisma.',
+						k: [
+							{
+								n: 'schema.prisma',
+								c: 'db',
+								s: 'generator + datasource',
+								d: 'Część wspólna schemy: generator prisma-client z outputem do generated/prisma oraz datasource postgresql. URL bazy dostarcza prisma.config.ts.'
+							},
+							{
+								n: 'modele domenowe (×6)',
+								c: 'db',
+								g: true,
+								s: 'hero, about, areas, actions, team, user',
+								d: 'hero.prisma, about.prisma, areas.prisma, actions.prisma, team.prisma, user.prisma. Hero/About/Areas to singletony — strona czyta je przez findFirstOrThrow (stąd obowiązkowy seed). Action i TeamMember to zwykłe listy; User trzyma bcryptowe hashe kont adminów.'
+							},
+							{
+								n: 'media.prisma',
+								c: 'db',
+								s: 'rejestr obiektów S3/R2',
+								d: 'Model Media — metadane każdego obiektu w buckecie (typ, klucz, URL, MIME, rozmiar). Właściciele (hero, action, team member) wskazują media przez FK z onDelete: SET NULL, więc skasowanie wiersza Media automatycznie czyści referencje.'
+							},
+							{
+								n: 'migrations/',
+								c: 'db',
+								s: 'migracje SQL',
+								d: 'Migracje generowane przez prisma migrate dev.',
+								w: 'Deploy na Vercelu NIE uruchamia migracji — prisma migrate deploy trzeba wykonać ręcznie na produkcyjnej bazie (świadomie: deploy aplikacji i zmiana schematu to osobne, kontrolowane kroki).'
+							},
+							{
+								n: 'seed.ts',
+								c: 'db',
+								s: 'seed — obowiązkowy!',
+								d: 'Tworzy singletony treści (hero/about/areas) i konta adminów z SEED_USERS (base64 JSON → hash bcrypt). Driver bazy wykrywa po protokole URL identycznie jak lib/server/prisma.ts.',
+								w: 'Seed jest obowiązkowy: strona renderuje singletony przez findFirstOrThrow, więc niezasiana baza = błąd 500 na stronie głównej. Konta adminów idą przez SEED_USERS, bo repo nie może zawierać haseł.'
+							}
+						]
+					},
+					{
+						n: 'static/',
+						c: 'asset',
+						s: 'pliki serwowane 1:1',
+						d: 'Zasoby statyczne serwowane bez przetwarzania.',
+						k: [
+							{
+								n: 'brand/',
+								c: 'asset',
+								s: 'logo + placeholder',
+								d: 'logo.svg oraz placeholder.svg — placeholder hostowany lokalnie, bo zewnętrzny host placeholderów byłby third-party requestem nieopisanym w polityce prywatności.'
+							},
+							{
+								n: 'documents/',
+								c: 'asset',
+								s: 'dokumenty prawne (HTML)',
+								d: 'Polityka prywatności, regulamin strony i dane organizacyjne — statyczne strony HTML linkowane z sekcji Dokumenty (lista w data/site-content.ts).'
+							},
+							{
+								n: 'team/',
+								c: 'asset',
+								s: 'zdjęcia zespołu (fallback)',
+								d: 'avatar-fallback.svg — zastępczy awatar pokazywany, dopóki nie zostaną dostarczone prawdziwe zdjęcia zespołu (punkt z checklisty przed startem produkcji).'
+							},
+							{
+								n: 'favicony + site.webmanifest',
+								c: 'asset',
+								g: true,
+								s: 'komplet ikon PWA/przeglądarek',
+								d: 'favicon.ico / .svg / 16 / 32, apple-touch-icon, icon-192 / 512 i manifest. Wszystkie rastry generowane skryptem scripts/generate-icons.mjs z wektorowego favicon.svg — ręcznie edytuje się tylko SVG.'
+							}
+						]
+					},
+					{
+						n: 'scripts/generate-icons.mjs',
+						c: 'config',
+						s: 'generator ikon z favicon.svg',
+						d: 'Renderuje static/favicon.svg (resvg) do wszystkich rastrowych faviconów i ikon aplikacji w static/ — centrowanie znaku na kwadratowym płótnie, warianty z tłem i bez. Uruchamiany ręcznie po każdej zmianie znaku: node scripts/generate-icons.mjs.'
+					},
+					{
+						n: 'media-to-upload/',
+						c: 'asset',
+						s: 'poczekalnia na upload',
+						d: 'Folder roboczy: grafiki przygotowane do ręcznego wgrania przez panel admina na produkcji (hero, okładki akcji). Aplikacja go nie serwuje — to tylko przechowalnia plików „w drodze” do R2.'
+					},
+					{
+						n: '.github/workflows/ci.yml',
+						c: 'config',
+						s: 'CI: lint + check + build',
+						d: 'GitHub Actions (push na master + każdy PR): Prettier, ESLint, svelte-check i pełny build.',
+						w: 'CI kopiuje .env.example jako .env, bo $env/static/private wymaga istnienia KAŻDEJ zmiennej w czasie builda, a prisma generate potrzebuje DATABASE_URL — plik przykładowy dostarcza bezpieczne wartości developerskie; z bazą nic się nie łączy.'
+					},
+					{
+						n: '.claude/launch.json',
+						c: 'config',
+						s: 'dev server dla Claude Code',
+						d: 'Konfiguracja uruchamiania dev serwera na potrzeby podglądu w Claude Code.'
+					},
+					{
+						n: 'konfiguracja (root)',
+						c: 'config',
+						g: true,
+						s: 'package.json, configi, docker…',
+						d: 'Pliki konfiguracyjne w korzeniu repozytorium.',
+						k: [
+							{
+								n: 'package.json',
+								c: 'config',
+								s: 'skrypty + zależności + engines',
+								d: 'Skrypty (dev / build / check / lint / prisma:* / encode-users) i zależności. engines.node >= 24 steruje też wersją Node na Vercelu.',
+								w: 'prepare (odpalany przy npm install) i build wykonują NAJPIERW svelte-kit sync, POTEM prisma generate: na świeżym klonie nie istnieją ani .svelte-kit/ (a tsconfig go extends’uje), ani generated/ (klient Prismy) — bez tej kolejności nic się nie skompiluje.'
+							},
+							{
+								n: 'svelte.config.js',
+								c: 'config',
+								s: 'adapter Vercel + flagi eksperymentalne',
+								d: 'Adapter @sveltejs/adapter-vercel oraz flagi eksperymentalne: kit.experimental.remoteFunctions (warstwa danych) i compilerOptions.experimental.async (await w komponentach). Runes wymuszone dla całego kodu poza node_modules.'
+							},
+							{
+								n: 'vite.config.ts',
+								c: 'config',
+								s: 'Vite + Tailwind 4',
+								d: 'Konfiguracja Vite z pluginem @tailwindcss/vite — Tailwind 4 nie potrzebuje osobnego tailwind.config.js (motyw definiowany w routes/layout.css).'
+							},
+							{
+								n: 'tsconfig.json',
+								c: 'config',
+								s: 'extends .svelte-kit/tsconfig',
+								d: 'Rozszerza .svelte-kit/tsconfig.json — plik, który istnieje dopiero po svelte-kit sync.',
+								w: 'Nie usuwać extends: bez niego wszystkie importy $lib / $env tracą typy. To dlatego sync musi być pierwszym krokiem prepare i build.'
+							},
+							{
+								n: 'eslint + prettier',
+								c: 'config',
+								g: true,
+								s: 'lint i formatowanie',
+								d: 'eslint.config.js (typescript-eslint + eslint-plugin-svelte + eslint-config-prettier) oraz .prettierrc / .prettierignore (prettier-plugin-svelte + prettier-plugin-tailwindcss — m.in. sortowanie klas Tailwinda).'
+							},
+							{
+								n: 'docker-compose.yml',
+								c: 'config',
+								s: 'lokalny Postgres + MinIO',
+								d: 'Lokalna infrastruktura: PostgreSQL, MinIO (konsola na :9001) i jednorazowy job zakładający publiczny bucket viviena-media.',
+								w: 'MinIO daje lokalny odpowiednik S3/R2 — pełny flow uploadów można rozwijać i testować bez chmury i bez ryzyka kosztów.'
+							},
+							{
+								n: 'shell.nix',
+								c: 'config',
+								s: 'środowisko Nix (Node 24)',
+								d: 'Definicja środowiska Nix z Node 24 — alternatywa dla ręcznej instalacji Node.'
+							},
+							{
+								n: '.env.example / .env*',
+								c: 'config',
+								s: 'wzorzec zmiennych środowiska',
+								d: '.env.example to wzorzec wszystkich wymaganych zmiennych (DB, S3, JWT, Gmail, Cloudflare). Lokalne .env / .env.local / .env.prod są gitignorowane.',
+								w: 'Każda zmienna musi istnieć też w ustawieniach projektu na Vercelu: $env/static/private czyta wartości w BUILD TIME i brak którejkolwiek wywala build. CI używa .env.example jako .env.'
+							},
+							{
+								n: 'encode-users.ts + users.json',
+								c: 'config',
+								s: 'kodowanie kont adminów',
+								d: 'CLI: users.json (gitignorowany — zawiera prawdziwe hasła) → base64 JSON do zmiennej SEED_USERS, którą konsumuje prisma/seed.ts.',
+								w: 'Repo nie może zawierać haseł, a seed musi skądś dostać konta adminów — stąd zakodowana zmienna środowiskowa zamiast pliku w repo.'
+							},
+							{
+								n: 'prisma.config.ts',
+								c: 'config',
+								s: 'konfiguracja Prisma CLI',
+								d: 'Wskazuje katalog prisma/ jako schemę (multi-file), ścieżkę migracji i komendę seed (tsx prisma/seed.ts); URL bazy z env.'
+							}
+						]
+					},
+					{
+						n: 'dokumentacja i design',
+						c: 'docs',
+						g: true,
+						s: 'README + archiwum projektowe',
+						d: 'Dokumenty w korzeniu repozytorium.',
+						k: [
+							{
+								n: 'README.md',
+								c: 'docs',
+								s: 'setup, architektura, deploy',
+								d: 'Instrukcja pierwszego uruchomienia krok po kroku, notatki architektoniczne (remote functions, REST-owe wyjątki, auth, media) i procedura deploymentu na Vercel. Najlepszy punkt startowy dla nowej osoby.'
+							},
+							{
+								n: 'DESIGN.md / REFERENCE.html / TAILWIND_SPEC.md',
+								c: 'docs',
+								s: 'archiwum projektowe (Stitch)',
+								d: 'Pierwotne mockupy i wytyczne designu wygenerowane w Google Stitch na początku projektu. Materiał archiwalny — już nieżywy; obowiązuje to, co jest zaimplementowane w kodzie.'
+							}
+						]
+					},
+					{
+						n: 'generowane (poza gitem)',
+						c: 'generated',
+						g: true,
+						s: 'artefakty buildów',
+						d: 'Katalogi tworzone przez narzędzia — wszystkie gitignorowane. Na świeżym klonie odtwarzają je skrypty prepare / build.',
+						k: [
+							{
+								n: 'generated/',
+								c: 'generated',
+								s: 'klient Prismy',
+								d: 'Wygenerowany klient Prismy (output z schema.prisma). Powstaje przy prisma generate — dlatego prepare i build muszą go tworzyć przed startem Vite.'
+							},
+							{
+								n: '.svelte-kit/',
+								c: 'generated',
+								s: 'artefakty svelte-kit sync',
+								d: 'Typy tras, wygenerowany tsconfig (extends’owany przez główny tsconfig.json) i artefakty dev/builda.'
+							},
+							{
+								n: '.vercel/',
+								c: 'generated',
+								s: 'output builda Vercel',
+								d: 'Lokalny output builda w formacie Vercel (adapter).'
+							},
+							{
+								n: 'node_modules/',
+								c: 'generated',
+								s: 'zależności npm',
+								d: 'Zależności instalowane przez npm install.'
+							}
+						]
+					}
+				]
+			};
+
+			/* --------------------------------- stan + init --------------------------------- */
+			const NODE_W = 252,
+				NODE_H = 46,
+				COL = 316,
+				ROW = 58;
+			const byId = new Map();
+			(function init(node, parent, depth) {
+				node.id = parent ? parent.id + '/' + node.n : node.n;
+				node.parent = parent;
+				node.depth = depth;
+				byId.set(node.id, node);
+				(node.k || []).forEach((c) => init(c, node, depth + 1));
+			})(TREE, null, 0);
+
+			let collapsed = new Set();
+			let selectedId = null;
+			let queryText = '';
+			let activeCat = null;
+			let view = { x: 60, y: 60, k: 1 };
+
+			function defaultCollapse() {
+				collapsed = new Set();
+				byId.forEach((n) => {
+					if (n.depth >= 2 && n.k && n.k.length) collapsed.add(n.id);
+				});
+			}
+			defaultCollapse();
+
+			/* ---------------------------------- filtrowanie -------------------------------- */
+			function nodeMatches(n, q) {
+				if (activeCat && n.c !== activeCat) return false;
+				if (!q) return true;
+				const hay = (n.n + ' ' + (n.s || '') + ' ' + (n.d || '') + ' ' + (n.w || '')).toLowerCase();
+				return hay.includes(q);
+			}
+			function computeMatches() {
+				const q = queryText.trim().toLowerCase();
+				if (!q && !activeCat) return null;
+				const set = new Set();
+				byId.forEach((n) => {
+					if (nodeMatches(n, q)) set.add(n.id);
+				});
+				// rozwiń przodków trafień, żeby były widoczne
+				set.forEach((id) => {
+					let p = byId.get(id).parent;
+					while (p) {
+						collapsed.delete(p.id);
+						p = p.parent;
+					}
+				});
+				return set;
+			}
+
+			/* ------------------------------------ layout ----------------------------------- */
+			function layoutTree() {
+				const nodes = [],
+					links = [];
+				let slot = 0;
+				(function walk(n) {
+					n.x = n.depth * COL;
+					const open = n.k && n.k.length && !collapsed.has(n.id);
+					if (open) {
+						n.k.forEach(walk);
+						n.y = (n.k[0].y + n.k[n.k.length - 1].y) / 2;
+						n.k.forEach((c) => links.push([n, c]));
+					} else {
+						n.y = slot * ROW;
+						slot += 1;
+					}
+					nodes.push(n);
+				})(TREE);
+				return { nodes, links };
+			}
+
+			/* ------------------------------------ render ----------------------------------- */
+			const world = document.getElementById('world');
+			const canvas = document.getElementById('canvas');
+			const esc = (s) =>
+				String(s)
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;');
+			const trunc = (s, max) => (s.length > max ? s.slice(0, max - 1) + '…' : s);
+
+			function render() {
+				const matches = computeMatches();
+				const { nodes, links } = layoutTree();
+				let svg = '';
+				for (const [a, b] of links) {
+					const x1 = a.x + NODE_W,
+						y1 = a.y + NODE_H / 2,
+						x2 = b.x,
+						y2 = b.y + NODE_H / 2;
+					const mx = (x1 + x2) / 2;
+					const dim = matches && !(matches.has(a.id) || matches.has(b.id));
+					svg += `<path class="edge${dim ? ' dim' : ''}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`;
+				}
+				for (const n of nodes) {
+					const color = CATS[n.c].color;
+					const cls = ['node'];
+					if (n.g) cls.push('group');
+					if (n.c === 'generated') cls.push('gen');
+					if (n.id === selectedId) cls.push('selected');
+					if (matches) cls.push(matches.has(n.id) ? 'hit' : 'dim');
+					const hit = matches && matches.has(n.id);
+					svg += `<g class="${cls.join(' ')}" data-id="${esc(n.id)}" transform="translate(${n.x},${n.y})">`;
+					svg += `<rect class="card" width="${NODE_W}" height="${NODE_H}" rx="9"${hit ? ` stroke="${color}"` : ''}/>`;
+					svg += `<rect class="tag" x="0" y="8" width="4" height="${NODE_H - 16}" fill="${color}"/>`;
+					svg += `<text class="name" x="14" y="19">${esc(trunc(n.n, 31))}</text>`;
+					if (n.s) svg += `<text class="short" x="14" y="35">${esc(trunc(n.s, 40))}</text>`;
+					if (n.k && n.k.length) {
+						const isCollapsed = collapsed.has(n.id);
+						svg += `<g class="toggle" data-toggle="${esc(n.id)}" transform="translate(${NODE_W},${NODE_H / 2})">`;
+						svg += `<circle r="10"/>`;
+						svg += `<text y="3.5">${isCollapsed ? n.k.length : '−'}</text></g>`;
+					}
+					svg += `</g>`;
+				}
+				world.innerHTML = svg;
+				const count = document.getElementById('matchcount');
+				count.textContent = matches ? `${matches.size} trafień` : '';
+				applyView();
+			}
+
+			function applyView() {
+				world.setAttribute('transform', `translate(${view.x},${view.y}) scale(${view.k})`);
+			}
+
+			/* ------------------------------- panel szczegółów ------------------------------ */
+			const panel = document.getElementById('panel');
+			function openPanel(n) {
+				const crumbs = [];
+				let p = n;
+				while (p) {
+					crumbs.unshift(p.n);
+					p = p.parent;
+				}
+				panel.querySelector('.crumbs').textContent = crumbs.join(' › ');
+				panel.querySelector('h2').textContent = n.n;
+				const cat = panel.querySelector('.cat');
+				cat.innerHTML = `<span class="dot" style="background:${CATS[n.c].color}"></span>${esc(CATS[n.c].label)}${n.g ? ' · grupa' : ''}`;
+				panel.querySelector('.desc').textContent = n.d || n.s || '';
+				const why = panel.querySelector('.why');
+				if (n.w) {
+					why.hidden = false;
+					why.querySelector('span').textContent = n.w;
+				} else {
+					why.hidden = true;
+				}
+				panel.querySelector('.kids').textContent =
+					n.k && n.k.length
+						? `Zawiera ${n.k.length} ${n.k.length === 1 ? 'element' : n.k.length < 5 ? 'elementy' : 'elementów'}: ${n.k.map((c) => c.n).join(', ')}`
+						: '';
+				panel.classList.add('open');
+			}
+			panel.querySelector('.close').addEventListener('click', () => {
+				panel.classList.remove('open');
+				selectedId = null;
+				render();
+			});
+
+			/* ---------------------------------- interakcje --------------------------------- */
+			canvas.addEventListener('click', (e) => {
+				const toggle = e.target.closest('[data-toggle]');
+				if (toggle) {
+					const id = toggle.getAttribute('data-toggle');
+					if (collapsed.has(id)) collapsed.delete(id);
+					else collapsed.add(id);
+					render();
+					return;
+				}
+				const g = e.target.closest('[data-id]');
+				if (g) {
+					selectedId = g.getAttribute('data-id');
+					openPanel(byId.get(selectedId));
+					render();
+				}
+			});
+
+			let dragging = false,
+				moved = false,
+				last = null;
+			canvas.addEventListener('pointerdown', (e) => {
+				dragging = true;
+				moved = false;
+				last = { x: e.clientX, y: e.clientY };
+				canvas.classList.add('dragging');
+				canvas.setPointerCapture(e.pointerId);
+			});
+			canvas.addEventListener('pointermove', (e) => {
+				if (!dragging) return;
+				const dx = e.clientX - last.x,
+					dy = e.clientY - last.y;
+				if (Math.abs(dx) + Math.abs(dy) > 2) moved = true;
+				view.x += dx;
+				view.y += dy;
+				last = { x: e.clientX, y: e.clientY };
+				applyView();
+			});
+			canvas.addEventListener('pointerup', () => {
+				dragging = false;
+				canvas.classList.remove('dragging');
+			});
+			canvas.addEventListener(
+				'click',
+				(e) => {
+					if (moved) {
+						e.stopImmediatePropagation();
+						moved = false;
+					}
+				},
+				true
+			);
+
+			canvas.addEventListener(
+				'wheel',
+				(e) => {
+					e.preventDefault();
+					const rect = canvas.getBoundingClientRect();
+					const mx = e.clientX - rect.left,
+						my = e.clientY - rect.top;
+					const factor = Math.exp(-e.deltaY * 0.0012);
+					const k = Math.min(2.5, Math.max(0.15, view.k * factor));
+					view.x = mx - ((mx - view.x) / view.k) * k;
+					view.y = my - ((my - view.y) / view.k) * k;
+					view.k = k;
+					applyView();
+				},
+				{ passive: false }
+			);
+
+			function zoomBy(factor) {
+				const rect = canvas.getBoundingClientRect();
+				const mx = rect.width / 2,
+					my = rect.height / 2;
+				const k = Math.min(2.5, Math.max(0.15, view.k * factor));
+				view.x = mx - ((mx - view.x) / view.k) * k;
+				view.y = my - ((my - view.y) / view.k) * k;
+				view.k = k;
+				applyView();
+			}
+
+			function fit() {
+				const { nodes } = layoutTree();
+				let minX = Infinity,
+					minY = Infinity,
+					maxX = -Infinity,
+					maxY = -Infinity;
+				for (const n of nodes) {
+					minX = Math.min(minX, n.x);
+					minY = Math.min(minY, n.y);
+					maxX = Math.max(maxX, n.x + NODE_W + 20);
+					maxY = Math.max(maxY, n.y + NODE_H);
+				}
+				const rect = canvas.getBoundingClientRect();
+				const pad = 40;
+				const k = Math.min(
+					1.15,
+					(rect.width - pad * 2) / (maxX - minX),
+					(rect.height - pad * 2) / (maxY - minY)
+				);
+				view.k = Math.max(0.12, k);
+				view.x = (rect.width - (maxX - minX) * view.k) / 2 - minX * view.k;
+				view.y = (rect.height - (maxY - minY) * view.k) / 2 - minY * view.k;
+				applyView();
+			}
+
+			document.getElementById('btn-zoom-in').addEventListener('click', () => zoomBy(1.25));
+			document.getElementById('btn-zoom-out').addEventListener('click', () => zoomBy(0.8));
+			document.getElementById('btn-fit').addEventListener('click', fit);
+			document.getElementById('btn-expand').addEventListener('click', () => {
+				collapsed.clear();
+				render();
+				fit();
+			});
+			document.getElementById('btn-collapse').addEventListener('click', () => {
+				defaultCollapse();
+				render();
+				fit();
+			});
+			document.getElementById('btn-theme').addEventListener('click', () => {
+				const root = document.documentElement;
+				const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+				const cur = root.dataset.theme || (dark ? 'dark' : 'light');
+				root.dataset.theme = cur === 'dark' ? 'light' : 'dark';
+			});
+
+			const searchEl = document.getElementById('search');
+			searchEl.addEventListener('input', () => {
+				queryText = searchEl.value;
+				render();
+			});
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape') {
+					if (queryText) {
+						queryText = '';
+						searchEl.value = '';
+					}
+					activeCat = null;
+					panel.classList.remove('open');
+					selectedId = null;
+					renderLegend();
+					render();
+				}
+			});
+
+			/* ----------------------------------- legenda ----------------------------------- */
+			const legendEl = document.getElementById('legend');
+			function renderLegend() {
+				legendEl.innerHTML =
+					Object.entries(CATS)
+						.map(
+							([key, c]) =>
+								`<span class="chip${activeCat === key ? ' active' : ''}" data-cat="${key}"><span class="dot" style="background:${c.color}"></span>${esc(c.label)}</span>`
+						)
+						.join('') + `<span class="hint">Esc czyści filtry i zaznaczenie</span>`;
+			}
+			legendEl.addEventListener('click', (e) => {
+				const chip = e.target.closest('[data-cat]');
+				if (!chip) return;
+				const cat = chip.getAttribute('data-cat');
+				activeCat = activeCat === cat ? null : cat;
+				renderLegend();
+				render();
+			});
+
+			/* ------------------------------------ start ------------------------------------ */
+			renderLegend();
+			render();
+			fit();
+			addEventListener('resize', fit);
+		</script>
+	</body>
+</html>

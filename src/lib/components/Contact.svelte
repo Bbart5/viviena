@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { superForm, defaults } from 'sveltekit-superforms';
-	import { yup } from 'sveltekit-superforms/adapters';
+	import { zod4 } from 'sveltekit-superforms/adapters';
 	import { contactSchema, type ContactSchema } from '$lib/schemas/contact-schema';
 
 	type Status = { type: 'success' | 'error'; text: string };
@@ -9,9 +9,9 @@
 
 	let status = $state<Status | null>(null);
 
-	const { form, errors, enhance, submitting } = superForm(defaults(yup(contactSchema)), {
+	const { form, errors, enhance, submitting } = superForm(defaults(zod4(contactSchema)), {
 		SPA: true,
-		validators: yup(contactSchema),
+		validators: zod4(contactSchema),
 		resetForm: true,
 		onSubmit: () => {
 			status = null;
