@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Architektura — viviena</title>
+		<title>Architektura - viviena</title>
 		<style>
 			:root {
 				--bg: #f6f7f9;
@@ -360,7 +360,7 @@
 	<body>
 		<header>
 			<div>
-				<h1>viviena — mapa architektury</h1>
+				<h1>viviena - mapa architektury</h1>
 				<div class="sub">
 					SvelteKit 2 · Svelte 5 · Prisma 7 · Postgres · R2/MinIO · Tailwind 4 · Vercel
 				</div>
@@ -420,7 +420,7 @@
 				c: 'config',
 				s: 'SvelteKit 2 · Prisma 7 · R2 · Vercel',
 				d: 'Strona publiczna (one-page) i panel administracyjny Stowarzyszenia VIVIENA. SvelteKit 2 (Svelte 5 runes, eksperymentalne remote functions i await w komponentach), Prisma 7 na PostgreSQL, media w storage zgodnym z S3 (MinIO lokalnie, Cloudflare R2 na produkcji), Tailwind CSS 4. Hosting: Vercel.',
-				w: 'Stack dobrany pod trzy kryteria: całość mieści się w darmowych tierach (Vercel, R2, Prisma Postgres/Accelerate), zero utrzymania własnego serwera (stowarzyszenie nie ma zaplecza ops) oraz znajomość narzędzi — szybkie dowożenie bez nauki nowej platformy.',
+				w: 'Stack dobrany pod trzy kryteria: całość mieści się w darmowych tierach (Vercel, R2, Prisma Postgres/Accelerate), zero utrzymania własnego serwera (stowarzyszenie nie ma zaplecza ops) oraz znajomość narzędzi - szybkie dowożenie bez nauki nowej platformy.',
 				k: [
 					{
 						n: 'src/',
@@ -433,7 +433,7 @@
 								c: 'server',
 								s: 'autoryzacja + nagłówki anty-indeksujące',
 								d: 'Serce autoryzacji. Przy każdym żądaniu weryfikuje JWT z cookie sessionToken, wynik zapisuje w locals.session i pilnuje ścieżek /admin oraz /api/admin: brak ważnej sesji = redirect do logowania (strony) lub 401 JSON (API). Do odpowiedzi admin/api dokleja X-Robots-Tag: noindex, nofollow.',
-								w: 'Żądania remote functions idą spod /_app/remote/* i OMIJAJĄ ten path guard — dlatego każda admińska komenda/query dodatkowo woła requireAdmin() z lib/server/auth.ts. X-Robots-Tag to „pas i szelki” razem z robots.txt: crawler nie zaindeksuje panelu, nawet gdyby zignorował robots.'
+								w: 'Żądania remote functions idą spod /_app/remote/* i OMIJAJĄ ten path guard - dlatego każda admińska komenda/query dodatkowo woła requireAdmin() z lib/server/auth.ts. X-Robots-Tag to „pas i szelki” razem z robots.txt: crawler nie zaindeksuje panelu, nawet gdyby zignorował robots.'
 							},
 							{
 								n: 'app.html',
@@ -445,25 +445,25 @@
 								n: 'app.d.ts',
 								c: 'config',
 								s: 'typy globalne (Locals)',
-								d: 'Globalne deklaracje SvelteKit — App.Locals.session (payload JWT albo null), ustawiane w hooks.server.ts i czytane w remote functions oraz endpointach.'
+								d: 'Globalne deklaracje SvelteKit - App.Locals.session (payload JWT albo null), ustawiane w hooks.server.ts i czytane w remote functions oraz endpointach.'
 							},
 							{
 								n: 'types.ts',
 								c: 'util',
 								s: 'wspólne typy',
-								d: 'Współdzielone typy niezwiązane z konkretną domeną — obecnie OurDocument (wpis listy dokumentów prawnych).'
+								d: 'Współdzielone typy niezwiązane z konkretną domeną - obecnie OurDocument (wpis listy dokumentów prawnych).'
 							},
 							{
 								n: 'routes/',
 								c: 'route',
 								s: 'strony + resztkowe REST',
-								d: 'Routing SvelteKit: strona publiczna, panel /admin i nieliczne endpointy REST.\nZasada projektu: dane płyną przez remote functions, a REST zostaje tylko tam, gdzie remote functions nie sięgają — multipart upload plików, mutacje cookies (login/logout) i publiczny formularz kontaktowy.',
+								d: 'Routing SvelteKit: strona publiczna, panel /admin i nieliczne endpointy REST.\nZasada projektu: dane płyną przez remote functions, a REST zostaje tylko tam, gdzie remote functions nie sięgają - multipart upload plików, mutacje cookies (login/logout) i publiczny formularz kontaktowy.',
 								k: [
 									{
 										n: '+layout.svelte + layout.css',
 										c: 'component',
 										s: 'globalna rama i motyw',
-										d: 'Wspólny layout wszystkich stron oraz layout.css — import Tailwind CSS 4 i definicja motywu (design tokens). Tailwind 4 konfiguruje się w CSS, stąd brak tailwind.config.js.'
+										d: 'Wspólny layout wszystkich stron oraz layout.css - import Tailwind CSS 4 i definicja motywu (design tokens). Tailwind 4 konfiguruje się w CSS, stąd brak tailwind.config.js.'
 									},
 									{
 										n: '+page.svelte',
@@ -474,15 +474,15 @@
 									{
 										n: '+page.server.ts',
 										c: 'route',
-										s: 'ISR — cache strony głównej',
+										s: 'ISR - cache strony głównej',
 										d: 'Konfiguracja adaptera Vercel: ISR z expiration: 60.',
-										w: 'SSR strony głównej wykonuje kilka zapytań do bazy (hero, about, actions, team) — na zimno ~1 s na każde żądanie. ISR cache’uje wyrenderowany HTML na edge’u i regeneruje go w tle najwyżej raz na minutę: goście dostają natychmiastową odpowiedź, a zmiany z panelu admina są widoczne w ~60 s.'
+										w: 'SSR strony głównej wykonuje kilka zapytań do bazy (hero, about, actions, team) - na zimno ~1 s na każde żądanie. ISR cache’uje wyrenderowany HTML na edge’u i regeneruje go w tle najwyżej raz na minutę: goście dostają natychmiastową odpowiedź, a zmiany z panelu admina są widoczne w ~60 s.'
 									},
 									{
 										n: 'admin/',
 										c: 'route',
 										s: 'panel administracyjny',
-										d: 'Panel admina — całość chroniona path guardem w hooks.server.ts (redirect na login bez sesji).',
+										d: 'Panel admina - całość chroniona path guardem w hooks.server.ts (redirect na login bez sesji).',
 										k: [
 											{
 												n: '+page.svelte',
@@ -495,13 +495,13 @@
 												c: 'route',
 												s: 'logowanie (REST + JWT)',
 												d: 'Strona logowania (+page.svelte) i POST /admin/login (+server.ts): walidacja zod, bcrypt.compare z hashem w bazie, podpisanie JWT i ustawienie httpOnly cookie. TTL tokenu i cookie pochodzi z jednej stałej (consts/auth.ts).',
-												w: 'REST zamiast remote function, bo logowanie mutuje cookies. Zod zamiast class-validator: dekoratorowe DTO gubiły metadane pod transformacjami esbuild/oxc i walidacja odrzucała poprawne logowania. Puste, błędne i nieistniejące dane logowania dostają identyczną odpowiedź — endpoint nie zdradza, czy dany login istnieje.'
+												w: 'REST zamiast remote function, bo logowanie mutuje cookies. Zod zamiast class-validator: dekoratorowe DTO gubiły metadane pod transformacjami esbuild/oxc i walidacja odrzucała poprawne logowania. Puste, błędne i nieistniejące dane logowania dostają identyczną odpowiedź - endpoint nie zdradza, czy dany login istnieje.'
 											},
 											{
 												n: 'logout/+server.ts',
 												c: 'route',
 												s: 'wylogowanie',
-												d: 'Kasuje cookie sesji i przekierowuje na stronę logowania. REST z tego samego powodu co login — mutacja cookies.'
+												d: 'Kasuje cookie sesji i przekierowuje na stronę logowania. REST z tego samego powodu co login - mutacja cookies.'
 											}
 										]
 									},
@@ -515,14 +515,14 @@
 												n: 'contact/+server.ts',
 												c: 'route',
 												s: 'formularz kontaktowy',
-												d: 'Publiczny POST: walidacja zod (dokładnie ta sama schema, którą waliduje formularz po stronie klienta — schemas/contact-schema.ts), escapowanie HTML wszystkich pól, render szablonu email-templates/contact.html i wysyłka przez MailTransport (Gmail).'
+												d: 'Publiczny POST: walidacja zod (dokładnie ta sama schema, którą waliduje formularz po stronie klienta - schemas/contact-schema.ts), escapowanie HTML wszystkich pól, render szablonu email-templates/contact.html i wysyłka przez MailTransport (Gmail).'
 											},
 											{
 												n: 'admin/…/image (×3)',
 												c: 'route',
 												s: 'uploady obrazków (multipart)',
 												d: 'Trzy endpointy uploadu: /api/admin/hero/image, /api/admin/actions/[id]/image, /api/admin/team/[id]/image. Przyjmują multipart/form-data, walidują typ MIME (listy z consts/storage.ts) i oddają plik do MediaService.',
-												w: 'Argumenty remote commands są serializowane devalue (JSON) i nie przeniosą obiektu File — dlatego upload musiał zostać na klasycznym REST. Ścieżki /api/admin/* chroni path guard w hooks.server.ts.'
+												w: 'Argumenty remote commands są serializowane devalue (JSON) i nie przeniosą obiektu File - dlatego upload musiał zostać na klasycznym REST. Ścieżki /api/admin/* chroni path guard w hooks.server.ts.'
 											}
 										]
 									},
@@ -530,13 +530,13 @@
 										n: 'og/[card].png/+server.ts',
 										c: 'route',
 										s: 'dynamiczne obrazki OG',
-										d: 'Generuje karty Open Graph 1200×630 (PNG) przez lib/server/og/render.ts. Treść kart „home” i „o-nas” jest czytana na żywo z bazy, więc udostępniana miniatura zawsze zgadza się z treścią opublikowaną przez adminów; przy jakimkolwiek błędzie — fallback na kartę domyślną.'
+										d: 'Generuje karty Open Graph 1200×630 (PNG) przez lib/server/og/render.ts. Treść kart „home” i „o-nas” jest czytana na żywo z bazy, więc udostępniana miniatura zawsze zgadza się z treścią opublikowaną przez adminów; przy jakimkolwiek błędzie - fallback na kartę domyślną.'
 									},
 									{
 										n: 'robots.txt + sitemap.xml',
 										c: 'route',
 										s: 'SEO',
-										d: 'Oba generowane w kodzie (+server.ts). robots.txt blokuje /admin i /api oraz wskazuje sitemapę; sitemap.xml wystawia kanoniczne adresy na SITE_URL (host www — patrz consts/site.ts).'
+										d: 'Oba generowane w kodzie (+server.ts). robots.txt blokuje /admin i /api oraz wskazuje sitemapę; sitemap.xml wystawia kanoniczne adresy na SITE_URL (host www - patrz consts/site.ts).'
 									}
 								]
 							},
@@ -556,14 +556,14 @@
 										n: 'components/',
 										c: 'component',
 										s: 'komponenty Svelte 5 (runes)',
-										d: 'Wszystkie komponenty UI — sekcje strony publicznej oraz narzędzia panelu admina.',
+										d: 'Wszystkie komponenty UI - sekcje strony publicznej oraz narzędzia panelu admina.',
 										k: [
 											{
 												n: 'sekcje strony',
 												c: 'component',
 												g: true,
 												s: 'Hero, About, AreasGrid, Actions…',
-												d: 'Navbar, Hero, About, AreasGrid, ActionsSection, TeamSection, Documents, Contact, Footer — kolejne sekcje jednostronicowca. Treść pochodzi z remote queries (hero/about/areas/actions/team) albo jest statyczna (Documents ← data/site-content.ts).'
+												d: 'Navbar, Hero, About, AreasGrid, ActionsSection, TeamSection, Documents, Contact, Footer - kolejne sekcje jednostronicowca. Treść pochodzi z remote queries (hero/about/areas/actions/team) albo jest statyczna (Documents ← data/site-content.ts).'
 											},
 											{
 												n: 'Seo.svelte',
@@ -575,26 +575,26 @@
 												n: 'FileDropInput.svelte',
 												c: 'component',
 												s: 'drag & drop uploadu',
-												d: 'Pole przeciągnij-i-upuść dla obrazków w panelu admina — podgląd wybranego pliku i walidacja akceptowanych typów.'
+												d: 'Pole przeciągnij-i-upuść dla obrazków w panelu admina - podgląd wybranego pliku i walidacja akceptowanych typów.'
 											},
 											{
 												n: 'SavingOverlay.svelte',
 												c: 'component',
 												s: 'nakładka „zapisywanie…”',
-												d: 'Pełnoekranowa nakładka blokująca UI podczas zapisu — sterowana licznikiem z state/global-saving.svelte.ts.'
+												d: 'Pełnoekranowa nakładka blokująca UI podczas zapisu - sterowana licznikiem z state/global-saving.svelte.ts.'
 											},
 											{
 												n: 'StorageUsageWidget.svelte',
 												c: 'component',
 												s: 'zużycie R2 + DB vs limity',
 												d: 'Widget w panelu: zużycie storage R2 (rozmiar + operacje klasy A/B) i rozmiar bazy na tle darmowych limitów z consts/storage.ts; przycisk odświeżenia omija minutowy cache statystyk.',
-												w: 'Darmowe tiery są twardym budżetem projektu — widget istnieje po to, żeby admin widział zużycie, zanim Cloudflare albo Prisma zaczną naliczać opłaty.'
+												w: 'Darmowe tiery są twardym budżetem projektu - widget istnieje po to, żeby admin widział zużycie, zanim Cloudflare albo Prisma zaczną naliczać opłaty.'
 											},
 											{
 												n: 'LogoutButton.svelte',
 												c: 'component',
 												s: 'wylogowanie',
-												d: 'Przycisk wylogowania — POST na /admin/logout.'
+												d: 'Przycisk wylogowania - POST na /admin/logout.'
 											}
 										]
 									},
@@ -602,14 +602,14 @@
 										n: 'remote/',
 										c: 'server',
 										s: 'warstwa danych: query + command',
-										d: 'Eksperymentalne remote functions SvelteKit — jeden plik na domenę. query = odczyt, command = mutacja walidowana schemą zod; każda admińska funkcja woła requireAdmin(), a po zapisie odświeża query (refresh) lub robi optymistyczny update przez command().updates(query().withOverride(...)).',
+										d: 'Eksperymentalne remote functions SvelteKit - jeden plik na domenę. query = odczyt, command = mutacja walidowana schemą zod; każda admińska funkcja woła requireAdmin(), a po zapisie odświeża query (refresh) lub robi optymistyczny update przez command().updates(query().withOverride(...)).',
 										w: 'Wybrane zamiast klasycznych endpointów REST / form actions z dwóch powodów: znacznie mniej boilerplate’u (typowane wywołania wprost z komponentów, bez ręcznego fetch + endpoint + walidacja) oraz wbudowany mechanizm optymistycznego UI dla panelu admina.',
 										k: [
 											{
 												n: 'hero.remote.ts',
 												c: 'server',
 												s: 'sekcja hero (singleton)',
-												d: 'getHero / updateHero. Usunięcie obrazka kasuje wiersz Media — FK z SET NULL czyści referencję w hero.'
+												d: 'getHero / updateHero. Usunięcie obrazka kasuje wiersz Media - FK z SET NULL czyści referencję w hero.'
 											},
 											{
 												n: 'about.remote.ts',
@@ -627,7 +627,7 @@
 												n: 'actions.remote.ts',
 												c: 'server',
 												s: 'CRUD akcji/wydarzeń',
-												d: 'Pełny CRUD akcji (lista sortowana po createdAt, malejąco) — tytuł, tag, opis, szczegóły, osoby, partnerzy, CTA; obrazki przez MediaService.'
+												d: 'Pełny CRUD akcji (lista sortowana po createdAt, malejąco) - tytuł, tag, opis, szczegóły, osoby, partnerzy, CTA; obrazki przez MediaService.'
 											},
 											{
 												n: 'team.remote.ts',
@@ -647,27 +647,27 @@
 										n: 'server/',
 										c: 'server',
 										s: 'kod wyłącznie serwerowy',
-										d: 'Moduły wykonywane tylko na serwerze — SvelteKit pilnuje, żeby nic stąd nie trafiło do bundla klienta.',
+										d: 'Moduły wykonywane tylko na serwerze - SvelteKit pilnuje, żeby nic stąd nie trafiło do bundla klienta.',
 										k: [
 											{
 												n: 'auth.ts',
 												c: 'server',
 												s: 'requireAdmin()',
-												d: 'Jedna funkcja: requireAdmin() — rzuca 401, jeśli locals.session (ustawione w hooks.server.ts) jest puste.',
-												w: 'Remote functions są serwowane spod /_app/remote/* i omijają path guard z hooks — każda admińska komenda/query musi sprawdzić sesję sama. To świadomy wzorzec obronny, nie przypadkowa duplikacja.'
+												d: 'Jedna funkcja: requireAdmin() - rzuca 401, jeśli locals.session (ustawione w hooks.server.ts) jest puste.',
+												w: 'Remote functions są serwowane spod /_app/remote/* i omijają path guard z hooks - każda admińska komenda/query musi sprawdzić sesję sama. To świadomy wzorzec obronny, nie przypadkowa duplikacja.'
 											},
 											{
 												n: 'prisma.ts',
 												c: 'server',
 												s: 'klient bazy (singleton)',
 												d: 'Eksportuje jedną instancję PrismaClient. Driver wykrywany po protokole DATABASE_URL: prisma+postgres:// → Prisma Accelerate (po HTTP, withAccelerate), postgres:// → adapter pg (bezpośrednie połączenie).',
-												w: 'Ten sam kod działa lokalnie (Docker Postgres, postgres://) i na Vercelu (Accelerate). URL-e Accelerate nie mogą trafić do drivera pg — i odwrotnie — stąd automatyczna detekcja zamiast flagi konfiguracyjnej.'
+												w: 'Ten sam kod działa lokalnie (Docker Postgres, postgres://) i na Vercelu (Accelerate). URL-e Accelerate nie mogą trafić do drivera pg - i odwrotnie - stąd automatyczna detekcja zamiast flagi konfiguracyjnej.'
 											},
 											{
 												n: 'api.ts',
 												c: 'server',
 												s: 'apiError()',
-												d: 'apiError(message, status) — wspólny kształt błędów JSON { success: false, message } dla endpointów REST.'
+												d: 'apiError(message, status) - wspólny kształt błędów JSON { success: false, message } dla endpointów REST.'
 											},
 											{
 												n: 'mail/MailTransport.ts',
@@ -679,7 +679,7 @@
 												n: 'email-templates/contact.html',
 												c: 'server',
 												s: 'szablon maila',
-												d: 'Szablon HTML wiadomości z formularza kontaktowego — placeholdery {{name}} / {{email}} / {{message}} podmieniane po escapowaniu HTML.'
+												d: 'Szablon HTML wiadomości z formularza kontaktowego - placeholdery {{name}} / {{email}} / {{message}} podmieniane po escapowaniu HTML.'
 											},
 											{
 												n: 'og/',
@@ -691,7 +691,7 @@
 												n: 'storage/',
 												c: 'server',
 												s: 'media: S3/R2 + tabela Media',
-												d: 'Warstwa mediów — obiekty w buckecie i ich metadane w bazie, zawsze w parze.',
+												d: 'Warstwa mediów - obiekty w buckecie i ich metadane w bazie, zawsze w parze.',
 												k: [
 													{
 														n: 'BucketService.ts',
@@ -703,14 +703,14 @@
 														n: 'MediaService.ts',
 														c: 'server',
 														s: 'obiekt + wiersz Media w parze',
-														d: 'Nadbudowa nad BucketService: każdy upload to obiekt w buckecie + wiersz w tabeli Media (typ, klucz, URL, MIME, rozmiar). create / replace / remove utrzymują spójność obu stron — usunięcie mediów sprząta i wiersz, i obiekt w storage.'
+														d: 'Nadbudowa nad BucketService: każdy upload to obiekt w buckecie + wiersz w tabeli Media (typ, klucz, URL, MIME, rozmiar). create / replace / remove utrzymują spójność obu stron - usunięcie mediów sprząta i wiersz, i obiekt w storage.'
 													},
 													{
 														n: 'stats.ts',
 														c: 'server',
 														s: 'zużycie R2 + rozmiar DB',
 														d: 'Liczy month-to-date zużycie R2 przez Cloudflare GraphQL API (operacje klasyfikowane na A/B tak, jak liczy je cennik) oraz rozmiar bazy danych. Wynik cache’owany minutę, żeby wejścia do panelu były tanie.',
-														w: 'Token Cloudflare musi mieć uprawnienie Account Analytics: Read (token bucket-scoped nie wystarcza). Bez niego fallback listuje bucket przez S3 — rozmiar storage jest, liczniki operacji pokazują „Brak danych”. Na MinIO (dev) liczniki są zawsze niedostępne.'
+														w: 'Token Cloudflare musi mieć uprawnienie Account Analytics: Read (token bucket-scoped nie wystarcza). Bez niego fallback listuje bucket przez S3 - rozmiar storage jest, liczniki operacji pokazują „Brak danych”. Na MinIO (dev) liczniki są zawsze niedostępne.'
 													}
 												]
 											}
@@ -726,19 +726,19 @@
 												n: 'auth.ts',
 												c: 'util',
 												s: 'cookie sesji + TTL',
-												d: 'Nazwa i ścieżka cookie sesji oraz SESSION_TTL_SECONDS — jedna stała dla ważności JWT i max-age cookie, żeby te dwa czasy nigdy się nie rozjechały.'
+												d: 'Nazwa i ścieżka cookie sesji oraz SESSION_TTL_SECONDS - jedna stała dla ważności JWT i max-age cookie, żeby te dwa czasy nigdy się nie rozjechały.'
 											},
 											{
 												n: 'site.ts',
 												c: 'util',
 												s: 'kanoniczny URL, nazwa, opis',
-												d: 'SITE_URL = https://www.viviena.pl (apex viviena.pl robi 307 na www, więc www jest hostem kanonicznym), nazwa, opis i locale strony — jedno źródło prawdy dla SEO, OG i sitemapy.'
+												d: 'SITE_URL = https://www.viviena.pl (apex viviena.pl robi 307 na www, więc www jest hostem kanonicznym), nazwa, opis i locale strony - jedno źródło prawdy dla SEO, OG i sitemapy.'
 											},
 											{
 												n: 'storage.ts',
 												c: 'util',
 												s: 'limity free tier + MIME',
-												d: 'Limity darmowych tierów R2 i Prisma Postgres (jednostki dziesiętne — Cloudflare rozlicza GB, nie GiB), lokalny placeholder obrazka oraz listy akceptowanych typów MIME (obraz/wideo/audio).',
+												d: 'Limity darmowych tierów R2 i Prisma Postgres (jednostki dziesiętne - Cloudflare rozlicza GB, nie GiB), lokalny placeholder obrazka oraz listy akceptowanych typów MIME (obraz/wideo/audio).',
 												w: 'SVG celowo wykluczone z uploadów: endpointy ufają typowi MIME deklarowanemu przez klienta, a SVG może nieść skrypty (ryzyko stored-XSS, gdyby media były kiedyś serwowane same-origin). Placeholder serwowany lokalnie, bo zewnętrzny hosting placeholderów to third-party request, którego nie opisuje polityka prywatności.'
 											}
 										]
@@ -747,8 +747,8 @@
 										n: 'schemas/contact-schema.ts',
 										c: 'util',
 										s: 'schema formularza (zod)',
-										d: 'Schema zod formularza kontaktowego — jedna definicja używana i w przeglądarce (walidacja pól na żywo przez adapter zod4 superforms), i w /api/contact (walidacja żądania przez safeParse).',
-										w: 'Pierwotnie yup (pozostałość z developmentu — projekt miał przez to dwie biblioteki walidacji). Zmigrowane na zod, bo remote functions SvelteKit wymagają walidatora zgodnego ze Standard Schema (zod jest, yup nie) — ujednolicenie mogło więc iść tylko w stronę zod. Łańcuch min(1) odtwarza zachowanie required() z yup: puste pole zgłasza „jest wymagane”, nie komunikat o długości.'
+										d: 'Schema zod formularza kontaktowego - jedna definicja używana i w przeglądarce (walidacja pól na żywo przez adapter zod4 superforms), i w /api/contact (walidacja żądania przez safeParse).',
+										w: 'Pierwotnie yup (pozostałość z developmentu - projekt miał przez to dwie biblioteki walidacji). Zmigrowane na zod, bo remote functions SvelteKit wymagają walidatora zgodnego ze Standard Schema (zod jest, yup nie) - ujednolicenie mogło więc iść tylko w stronę zod. Łańcuch min(1) odtwarza zachowanie required() z yup: puste pole zgłasza „jest wymagane”, nie komunikat o długości.'
 									},
 									{
 										n: 'utils/',
@@ -760,19 +760,19 @@
 												n: 'api.ts',
 												c: 'util',
 												s: 'obsługa błędów fetch/commands',
-												d: 'requestJson() — fetch endpointów { success, message } rzucający Error z komunikatem serwera (call site potrzebuje tylko try/catch). commandErrorMessage() — wyciąga komunikat użytkownika z odrzuconej komendy/query (HttpError body) z fallbackiem. Razem ujednolicają pokazywanie błędów w UI.'
+												d: 'requestJson() - fetch endpointów { success, message } rzucający Error z komunikatem serwera (call site potrzebuje tylko try/catch). commandErrorMessage() - wyciąga komunikat użytkownika z odrzuconej komendy/query (HttpError body) z fallbackiem. Razem ujednolicają pokazywanie błędów w UI.'
 											},
 											{
 												n: 'format-bytes.ts',
 												c: 'util',
 												s: 'formatowanie bajtów (SI)',
-												d: 'Formatowanie bajtów w jednostkach dziesiętnych (kB/MB/GB, locale pl-PL) — celowo SI, spójnie z tym, jak limity free tier w consts/storage liczą bajty.'
+												d: 'Formatowanie bajtów w jednostkach dziesiętnych (kB/MB/GB, locale pl-PL) - celowo SI, spójnie z tym, jak limity free tier w consts/storage liczą bajty.'
 											},
 											{
 												n: 'sections.ts',
 												c: 'util',
 												s: 'scroll-spy sekcji',
-												d: 'scrollToSection() — płynne przewijanie do sekcji; observeSectionHashes() — IntersectionObserver odbijający aktualnie widoczną sekcję do hasha URL przez replaceState (sprzątany w onMount cleanup).'
+												d: 'scrollToSection() - płynne przewijanie do sekcji; observeSectionHashes() - IntersectionObserver odbijający aktualnie widoczną sekcję do hasha URL przez replaceState (sprzątany w onMount cleanup).'
 											}
 										]
 									},
@@ -793,7 +793,7 @@
 										n: 'types/jwt.payload.ts',
 										c: 'util',
 										s: 'kształt payloadu JWT',
-										d: 'Typ payloadu JWT sesji (username) — współdzielony przez login, hooks.server.ts i App.Locals.'
+										d: 'Typ payloadu JWT sesji (username) - współdzielony przez login, hooks.server.ts i App.Locals.'
 									}
 								]
 							}
@@ -817,25 +817,25 @@
 								c: 'db',
 								g: true,
 								s: 'hero, about, areas, actions, team, user',
-								d: 'hero.prisma, about.prisma, areas.prisma, actions.prisma, team.prisma, user.prisma. Hero/About/Areas to singletony — strona czyta je przez findFirstOrThrow (stąd obowiązkowy seed). Action i TeamMember to zwykłe listy; User trzyma bcryptowe hashe kont adminów.'
+								d: 'hero.prisma, about.prisma, areas.prisma, actions.prisma, team.prisma, user.prisma. Hero/About/Areas to singletony - strona czyta je przez findFirstOrThrow (stąd obowiązkowy seed). Action i TeamMember to zwykłe listy; User trzyma bcryptowe hashe kont adminów.'
 							},
 							{
 								n: 'media.prisma',
 								c: 'db',
 								s: 'rejestr obiektów S3/R2',
-								d: 'Model Media — metadane każdego obiektu w buckecie (typ, klucz, URL, MIME, rozmiar). Właściciele (hero, action, team member) wskazują media przez FK z onDelete: SET NULL, więc skasowanie wiersza Media automatycznie czyści referencje.'
+								d: 'Model Media - metadane każdego obiektu w buckecie (typ, klucz, URL, MIME, rozmiar). Właściciele (hero, action, team member) wskazują media przez FK z onDelete: SET NULL, więc skasowanie wiersza Media automatycznie czyści referencje.'
 							},
 							{
 								n: 'migrations/',
 								c: 'db',
 								s: 'migracje SQL',
 								d: 'Migracje generowane przez prisma migrate dev.',
-								w: 'Deploy na Vercelu NIE uruchamia migracji — prisma migrate deploy trzeba wykonać ręcznie na produkcyjnej bazie (świadomie: deploy aplikacji i zmiana schematu to osobne, kontrolowane kroki).'
+								w: 'Deploy na Vercelu NIE uruchamia migracji - prisma migrate deploy trzeba wykonać ręcznie na produkcyjnej bazie (świadomie: deploy aplikacji i zmiana schematu to osobne, kontrolowane kroki).'
 							},
 							{
 								n: 'seed.ts',
 								c: 'db',
-								s: 'seed — obowiązkowy!',
+								s: 'seed - obowiązkowy!',
 								d: 'Tworzy singletony treści (hero/about/areas) i konta adminów z SEED_USERS (base64 JSON → hash bcrypt). Driver bazy wykrywa po protokole URL identycznie jak lib/server/prisma.ts.',
 								w: 'Seed jest obowiązkowy: strona renderuje singletony przez findFirstOrThrow, więc niezasiana baza = błąd 500 na stronie głównej. Konta adminów idą przez SEED_USERS, bo repo nie może zawierać haseł.'
 							}
@@ -851,26 +851,26 @@
 								n: 'brand/',
 								c: 'asset',
 								s: 'logo + placeholder',
-								d: 'logo.svg oraz placeholder.svg — placeholder hostowany lokalnie, bo zewnętrzny host placeholderów byłby third-party requestem nieopisanym w polityce prywatności.'
+								d: 'logo.svg oraz placeholder.svg - placeholder hostowany lokalnie, bo zewnętrzny host placeholderów byłby third-party requestem nieopisanym w polityce prywatności.'
 							},
 							{
 								n: 'documents/',
 								c: 'asset',
 								s: 'dokumenty prawne (HTML)',
-								d: 'Polityka prywatności, regulamin strony i dane organizacyjne — statyczne strony HTML linkowane z sekcji Dokumenty (lista w data/site-content.ts).'
+								d: 'Polityka prywatności, regulamin strony i dane organizacyjne - statyczne strony HTML linkowane z sekcji Dokumenty (lista w data/site-content.ts).'
 							},
 							{
 								n: 'team/',
 								c: 'asset',
 								s: 'zdjęcia zespołu (fallback)',
-								d: 'avatar-fallback.svg — zastępczy awatar pokazywany, dopóki nie zostaną dostarczone prawdziwe zdjęcia zespołu (punkt z checklisty przed startem produkcji).'
+								d: 'avatar-fallback.svg - zastępczy awatar pokazywany, dopóki nie zostaną dostarczone prawdziwe zdjęcia zespołu (punkt z checklisty przed startem produkcji).'
 							},
 							{
 								n: 'favicony + site.webmanifest',
 								c: 'asset',
 								g: true,
 								s: 'komplet ikon PWA/przeglądarek',
-								d: 'favicon.ico / .svg / 16 / 32, apple-touch-icon, icon-192 / 512 i manifest. Wszystkie rastry generowane skryptem scripts/generate-icons.mjs z wektorowego favicon.svg — ręcznie edytuje się tylko SVG.'
+								d: 'favicon.ico / .svg / 16 / 32, apple-touch-icon, icon-192 / 512 i manifest. Wszystkie rastry generowane skryptem scripts/generate-icons.mjs z wektorowego favicon.svg - ręcznie edytuje się tylko SVG.'
 							}
 						]
 					},
@@ -878,20 +878,20 @@
 						n: 'scripts/generate-icons.mjs',
 						c: 'config',
 						s: 'generator ikon z favicon.svg',
-						d: 'Renderuje static/favicon.svg (resvg) do wszystkich rastrowych faviconów i ikon aplikacji w static/ — centrowanie znaku na kwadratowym płótnie, warianty z tłem i bez. Uruchamiany ręcznie po każdej zmianie znaku: node scripts/generate-icons.mjs.'
+						d: 'Renderuje static/favicon.svg (resvg) do wszystkich rastrowych faviconów i ikon aplikacji w static/ - centrowanie znaku na kwadratowym płótnie, warianty z tłem i bez. Uruchamiany ręcznie po każdej zmianie znaku: node scripts/generate-icons.mjs.'
 					},
 					{
 						n: 'media-to-upload/',
 						c: 'asset',
 						s: 'poczekalnia na upload',
-						d: 'Folder roboczy: grafiki przygotowane do ręcznego wgrania przez panel admina na produkcji (hero, okładki akcji). Aplikacja go nie serwuje — to tylko przechowalnia plików „w drodze” do R2.'
+						d: 'Folder roboczy: grafiki przygotowane do ręcznego wgrania przez panel admina na produkcji (hero, okładki akcji). Aplikacja go nie serwuje - to tylko przechowalnia plików „w drodze” do R2.'
 					},
 					{
 						n: '.github/workflows/ci.yml',
 						c: 'config',
 						s: 'CI: lint + check + build',
 						d: 'GitHub Actions (push na master + każdy PR): Prettier, ESLint, svelte-check i pełny build.',
-						w: 'CI kopiuje .env.example jako .env, bo $env/static/private wymaga istnienia KAŻDEJ zmiennej w czasie builda, a prisma generate potrzebuje DATABASE_URL — plik przykładowy dostarcza bezpieczne wartości developerskie; z bazą nic się nie łączy.'
+						w: 'CI kopiuje .env.example jako .env, bo $env/static/private wymaga istnienia KAŻDEJ zmiennej w czasie builda, a prisma generate potrzebuje DATABASE_URL - plik przykładowy dostarcza bezpieczne wartości developerskie; z bazą nic się nie łączy.'
 					},
 					{
 						n: '.claude/launch.json',
@@ -911,7 +911,7 @@
 								c: 'config',
 								s: 'skrypty + zależności + engines',
 								d: 'Skrypty (dev / build / check / lint / prisma:* / encode-users) i zależności. engines.node >= 24 steruje też wersją Node na Vercelu.',
-								w: 'prepare (odpalany przy npm install) i build wykonują NAJPIERW svelte-kit sync, POTEM prisma generate: na świeżym klonie nie istnieją ani .svelte-kit/ (a tsconfig go extends’uje), ani generated/ (klient Prismy) — bez tej kolejności nic się nie skompiluje.'
+								w: 'prepare (odpalany przy npm install) i build wykonują NAJPIERW svelte-kit sync, POTEM prisma generate: na świeżym klonie nie istnieją ani .svelte-kit/ (a tsconfig go extends’uje), ani generated/ (klient Prismy) - bez tej kolejności nic się nie skompiluje.'
 							},
 							{
 								n: 'svelte.config.js',
@@ -923,13 +923,13 @@
 								n: 'vite.config.ts',
 								c: 'config',
 								s: 'Vite + Tailwind 4',
-								d: 'Konfiguracja Vite z pluginem @tailwindcss/vite — Tailwind 4 nie potrzebuje osobnego tailwind.config.js (motyw definiowany w routes/layout.css).'
+								d: 'Konfiguracja Vite z pluginem @tailwindcss/vite - Tailwind 4 nie potrzebuje osobnego tailwind.config.js (motyw definiowany w routes/layout.css).'
 							},
 							{
 								n: 'tsconfig.json',
 								c: 'config',
 								s: 'extends .svelte-kit/tsconfig',
-								d: 'Rozszerza .svelte-kit/tsconfig.json — plik, który istnieje dopiero po svelte-kit sync.',
+								d: 'Rozszerza .svelte-kit/tsconfig.json - plik, który istnieje dopiero po svelte-kit sync.',
 								w: 'Nie usuwać extends: bez niego wszystkie importy $lib / $env tracą typy. To dlatego sync musi być pierwszym krokiem prepare i build.'
 							},
 							{
@@ -937,20 +937,20 @@
 								c: 'config',
 								g: true,
 								s: 'lint i formatowanie',
-								d: 'eslint.config.js (typescript-eslint + eslint-plugin-svelte + eslint-config-prettier) oraz .prettierrc / .prettierignore (prettier-plugin-svelte + prettier-plugin-tailwindcss — m.in. sortowanie klas Tailwinda).'
+								d: 'eslint.config.js (typescript-eslint + eslint-plugin-svelte + eslint-config-prettier) oraz .prettierrc / .prettierignore (prettier-plugin-svelte + prettier-plugin-tailwindcss - m.in. sortowanie klas Tailwinda).'
 							},
 							{
 								n: 'docker-compose.yml',
 								c: 'config',
 								s: 'lokalny Postgres + MinIO',
 								d: 'Lokalna infrastruktura: PostgreSQL, MinIO (konsola na :9001) i jednorazowy job zakładający publiczny bucket viviena-media.',
-								w: 'MinIO daje lokalny odpowiednik S3/R2 — pełny flow uploadów można rozwijać i testować bez chmury i bez ryzyka kosztów.'
+								w: 'MinIO daje lokalny odpowiednik S3/R2 - pełny flow uploadów można rozwijać i testować bez chmury i bez ryzyka kosztów.'
 							},
 							{
 								n: 'shell.nix',
 								c: 'config',
 								s: 'środowisko Nix (Node 24)',
-								d: 'Definicja środowiska Nix z Node 24 — alternatywa dla ręcznej instalacji Node.'
+								d: 'Definicja środowiska Nix z Node 24 - alternatywa dla ręcznej instalacji Node.'
 							},
 							{
 								n: '.env.example / .env*',
@@ -963,8 +963,8 @@
 								n: 'encode-users.ts + users.json',
 								c: 'config',
 								s: 'kodowanie kont adminów',
-								d: 'CLI: users.json (gitignorowany — zawiera prawdziwe hasła) → base64 JSON do zmiennej SEED_USERS, którą konsumuje prisma/seed.ts.',
-								w: 'Repo nie może zawierać haseł, a seed musi skądś dostać konta adminów — stąd zakodowana zmienna środowiskowa zamiast pliku w repo.'
+								d: 'CLI: users.json (gitignorowany - zawiera prawdziwe hasła) → base64 JSON do zmiennej SEED_USERS, którą konsumuje prisma/seed.ts.',
+								w: 'Repo nie może zawierać haseł, a seed musi skądś dostać konta adminów - stąd zakodowana zmienna środowiskowa zamiast pliku w repo.'
 							},
 							{
 								n: 'prisma.config.ts',
@@ -991,7 +991,7 @@
 								n: 'DESIGN.md / REFERENCE.html / TAILWIND_SPEC.md',
 								c: 'docs',
 								s: 'archiwum projektowe (Stitch)',
-								d: 'Pierwotne mockupy i wytyczne designu wygenerowane w Google Stitch na początku projektu. Materiał archiwalny — już nieżywy; obowiązuje to, co jest zaimplementowane w kodzie.'
+								d: 'Pierwotne mockupy i wytyczne designu wygenerowane w Google Stitch na początku projektu. Materiał archiwalny - już nieżywy; obowiązuje to, co jest zaimplementowane w kodzie.'
 							}
 						]
 					},
@@ -1000,13 +1000,13 @@
 						c: 'generated',
 						g: true,
 						s: 'artefakty buildów',
-						d: 'Katalogi tworzone przez narzędzia — wszystkie gitignorowane. Na świeżym klonie odtwarzają je skrypty prepare / build.',
+						d: 'Katalogi tworzone przez narzędzia - wszystkie gitignorowane. Na świeżym klonie odtwarzają je skrypty prepare / build.',
 						k: [
 							{
 								n: 'generated/',
 								c: 'generated',
 								s: 'klient Prismy',
-								d: 'Wygenerowany klient Prismy (output z schema.prisma). Powstaje przy prisma generate — dlatego prepare i build muszą go tworzyć przed startem Vite.'
+								d: 'Wygenerowany klient Prismy (output z schema.prisma). Powstaje przy prisma generate - dlatego prepare i build muszą go tworzyć przed startem Vite.'
 							},
 							{
 								n: '.svelte-kit/',
