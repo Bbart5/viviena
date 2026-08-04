@@ -11,3 +11,4 @@ export { default as Footer } from './components/Footer.svelte';
 export { default as StorageUsageWidget } from './components/StorageUsageWidget.svelte';
 export { default as FileDropInput } from './components/FileDropInput.svelte';
 export { default as SavingOverlay } from './components/SavingOverlay.svelte';
+export { default as Seo } from './components/Seo.svelte';
