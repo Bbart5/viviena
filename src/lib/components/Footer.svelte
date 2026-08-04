@@ -74,19 +74,14 @@
 	<div
 		class="mx-auto mt-20 flex max-w-360 flex-col items-center justify-between gap-4 border-t border-outline-variant/30 pt-8 sm:flex-row"
 	>
-		<p class="text-xs text-brand-muted">© Stowarzyszenie VIVIENA</p>
-		<p class="text-xs text-brand-muted">
+		<p class="text-md text-brand-muted">© Stowarzyszenie VIVIENA</p>
+		<p class="text-md text-brand-muted">
 			Created by <a
 				href="https://mmbs.pl"
 				target="_blank"
 				rel="noreferrer"
-				class="transition-colors hover:text-primary">MMBS Studio</a
+				class="font-bold transition-colors hover:text-primary">MMBS Studio</a
 			>
 		</p>
-		<div class="flex gap-6">
-			<span class="text-xs text-brand-muted">KRS: 0001209507</span>
-			<span class="text-xs text-brand-muted">NIP: 7262717174</span>
-			<span class="text-xs text-brand-muted">REGON: 543483854</span>
-		</div>
 	</div>
 </footer>
