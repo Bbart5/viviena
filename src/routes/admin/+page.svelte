@@ -19,6 +19,11 @@
 	onMount(observeSectionHashes);
 </script>
 
+<svelte:head>
+	<title>Panel administracyjny | Stowarzyszenie VIVIENA</title>
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <LogoutButton />
 
 <SavingOverlay />

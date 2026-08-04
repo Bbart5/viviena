@@ -8,7 +8,8 @@ import jwt from 'jsonwebtoken';
 
 MailTransport.getInstance();
 
-const PROTECTED_PREFIXES = [resolve('/admin'), resolve('/api/admin')] as const;
+const ADMIN_PREFIX = resolve('/admin');
+const PROTECTED_PREFIXES = [ADMIN_PREFIX, resolve('/api/admin')] as const;
 const PUBLIC_PATHS = [resolve('/admin/login'), resolve('/admin/logout')] as const;
 const API_PREFIX = resolve('/api');
 const LOGIN_PATH = resolve('/admin/login');
@@ -40,5 +41,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		throw redirect(303, LOGIN_PATH);
 	}
 
-	return resolve(event);
+	const response = await resolve(event);
+
+	// Belt-and-braces with robots.txt: crawlers must never index the admin panel or API.
+	if (currentPath.startsWith(ADMIN_PREFIX) || currentPath.startsWith(API_PREFIX)) {
+		response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+	}
+
+	return response;
 };

@@ -40,6 +40,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Logowanie | Stowarzyszenie VIVIENA</title>
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="flex min-h-screen items-center justify-center bg-surface-container-low">
 	<div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
 		<h1 class="mb-8 text-center font-headline text-3xl font-bold text-brand-text">Logowanie</h1>
