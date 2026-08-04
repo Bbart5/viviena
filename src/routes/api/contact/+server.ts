@@ -1,7 +1,6 @@
 import { GMAIL_USER } from '$env/static/private';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { MailTransport } from '$lib/server/mail/MailTransport';
-import { ValidationError } from 'yup';
 import { contactSchema, type ContactSchema } from '$lib/schemas/contact-schema';
 
 function escapeHtml(value: string): string {
@@ -26,24 +25,25 @@ export async function POST({ request }: RequestEvent) {
 	try {
 		const body = await request.json();
 
-		// The same yup schema the form validates with client-side.
-		let contact: ContactSchema;
-		try {
-			contact = await contactSchema.validate(body, { stripUnknown: true });
-		} catch (error) {
-			if (error instanceof ValidationError) {
-				return json(
-					{
-						success: false,
-						field: error.path,
-						message: error.message
-					},
-					{ status: 400 }
-				);
-			}
+		// The same zod schema the form validates with client-side; z.object()
+		// strips unknown keys, matching yup's old stripUnknown behaviour.
+		const parsed = contactSchema.safeParse(body);
 
-			throw error;
+		if (!parsed.success) {
+			// First issue only - mirrors yup's abortEarly default the client relies on.
+			const issue = parsed.error.issues[0];
+
+			return json(
+				{
+					success: false,
+					field: issue.path.join('.') || undefined,
+					message: issue.message
+				},
+				{ status: 400 }
+			);
 		}
+
+		const contact: ContactSchema = parsed.data;
 
 		const transporter = MailTransport.getInstance();
 
