@@ -11,6 +11,8 @@
 		/** OG image path, resolved against the production origin. */
 		image?: string;
 		noindex?: boolean;
+		/** X/Twitter @handle for twitter:site - set once the association has an account. */
+		twitterSite?: string;
 		/** One or more JSON-LD objects rendered as application/ld+json. */
 		jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 	}
@@ -21,6 +23,7 @@
 		path,
 		image = '/og/home.png',
 		noindex = false,
+		twitterSite,
 		jsonLd
 	}: Props = $props();
 
@@ -63,6 +66,9 @@
 
 	<!-- Twitter / X -->
 	<meta name="twitter:card" content="summary_large_image" />
+	{#if twitterSite}
+		<meta name="twitter:site" content={twitterSite} />
+	{/if}
 	<meta name="twitter:title" content={fullTitle} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={imageUrl} />
